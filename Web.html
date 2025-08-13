@@ -80,6 +80,35 @@
         .result-card-content.active { display: block; }
         .toggle-icon { transition: transform 0.3s ease; }
         .toggle-icon.rotated { transform: rotate(180deg); }
+        
+        .color-tabs-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #ddd;
+        }
+        .color-tab {
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            background-color: #e9ecef;
+            color: #495057;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+        .color-tab:hover {
+            background-color: #dbe7ff;
+            color: #3367D6;
+        }
+        .color-tab.active {
+            background-color: #4285F4;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
 
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -143,33 +172,17 @@
         #calculationDetailsContent h4 { font-size: 1.1rem; font-weight: 700; margin-top: 1rem; margin-bottom: 0.5rem; border-bottom: 1px solid #ddd; padding-bottom: 0.25rem;}
         #calculationDetailsContent p { font-family: 'Courier New', Courier, monospace; font-size: 0.9rem; margin-bottom: 0.25rem; }
 
-        /* Racetrack Animation */
         .racetrack-modal .modal-content { max-width: 800px; }
         .racetrack { position: relative; width: 100%; height: 50px; background-color: #e9ecef; border-radius: 25px; margin-bottom: 1rem; overflow: hidden; }
         .racetrack-cursor {
-            position: absolute;
-            top: 50%;
-            left: 0;
-            transform: translateY(-50%);
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(145deg, #ffffff, #e6e6e6);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            color: #333;
+            position: absolute; top: 50%; left: 0; transform: translateY(-50%); width: 40px; height: 40px;
+            background: linear-gradient(145deg, #ffffff, #e6e6e6); border-radius: 50%; display: flex;
+            align-items: center; justify-content: center; font-size: 1.2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); color: #333;
         }
         .racetrack-progress {
-            position: absolute;
-            left: 0;
-            top: 0;
-            height: 100%;
-            width: 100%;
-            background: linear-gradient(90deg, #a8d08d, #5a9bd5);
-            transform: translateX(-100%);
+            position: absolute; left: 0; top: 0; height: 100%; width: 100%;
+            background: linear-gradient(90deg, #a8d08d, #5a9bd5); transform: translateX(-100%);
         }
 
         @media (max-width: 768px) {
@@ -181,7 +194,7 @@
 
     <div class="container p-6 sm:p-10">
         <div class="flex flex-col items-center mb-8">
-            <img src="./CLogo.png" alt="Company Logo" class="header-logo mb-4">
+            <img src="./CLogo.png" alt="Company Logo" class="header-logo mb-4" onerror="this.onerror=null;this.src='https://placehold.co/200x50/FFFFFF/000000?text=Logo';">
             <h1 class="text-2xl sm:text-3xl font-bold text-center">Style Wise Plan Calculator</h1>
             <p class="text-center text-gray-600 text-sm sm:text-base">B4 - Sector 63, Noida</p>
         </div>
@@ -190,7 +203,6 @@
 
         <form id="costForm" class="space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Form fields with individual clear buttons -->
                 <div class="form-group">
                     <label for="style_no" class="block text-sm mb-1 font-medium text-gray-700">Style Number:</label>
                     <div class="form-input-container">
@@ -199,17 +211,11 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="process_selected_values" class="block text-sm mb-1 font-medium text-gray-700">Process:</label>
+                    <label for="color_input" class="block text-sm mb-1 font-medium text-gray-700">Color:</label>
                     <div class="form-input-container">
-                        <select id="process_selected_values" class="form-select w-full bg-white pr-8">
-                            <option value="N/A">None</option>
-                            <option value="Embroidery">Embroidery</option>
-                            <option value="Washing">Washing</option>
-                            <option value="Adda Work">Adda Work</option>
-                            <option value="Printing">Printing</option>
-                            <option value="Embroidery + Washing">Embroidery + Washing</option>
-                            <option value="All">All Processes</option>
-                        </select>
+                        <input type="text" id="color_input" list="color_list" class="form-input w-full pr-8" required>
+                        <datalist id="color_list"></datalist>
+                        <span class="clear-input-btn hidden"><i class="fas fa-times-circle"></i></span>
                     </div>
                 </div>
                 <div class="form-group">
@@ -240,6 +246,20 @@
                         <span class="clear-input-btn hidden"><i class="fas fa-times-circle"></i></span>
                     </div>
                 </div>
+                 <div class="form-group md:col-span-2">
+                    <label for="process_selected_values" class="block text-sm mb-1 font-medium text-gray-700">Process:</label>
+                    <div class="form-input-container">
+                        <select id="process_selected_values" class="form-select w-full bg-white pr-8">
+                            <option value="N/A">None</option>
+                            <option value="Embroidery">Embroidery</option>
+                            <option value="Washing">Washing</option>
+                            <option value="Adda Work">Adda Work</option>
+                            <option value="Printing">Printing</option>
+                            <option value="Embroidery + Washing">Embroidery + Washing</option>
+                            <option value="All">All Processes</option>
+                        </select>
+                    </div>
+                </div>
             </div>
 
             <div class="flex justify-center mt-8 space-x-4">
@@ -266,7 +286,7 @@
                     <p>Delete Styles</p>
                 </div>
             </div>
-            <input type="file" id="importFile" class="hidden" accept=".xlsx, .xls">
+            <input type="file" id="importFile" class="hidden" accept=".xlsx, .xls, .csv">
             <div id="selectionModeButtons" class="hidden flex justify-center items-center flex-wrap gap-4"></div>
         </div>
 
@@ -325,15 +345,61 @@
         </div>
     </div>
 
-    <div id="duplicateStyleModal" class="modal-overlay hidden">
+    <div id="existingStyleModal" class="modal-overlay hidden">
         <div class="modal-content">
-            <h3 class="text-xl font-bold mb-4">Duplicate Style</h3>
+            <h3 class="text-xl font-bold mb-4">Style Already Exists</h3>
             <p id="modalMessage" class="mb-6"></p>
             <div class="flex flex-col sm:flex-row gap-3">
-                <button type="button" id="modalAddAnother" class="btn btn-primary w-full">Add as Serial #<span id="nextSerialNum"></span></button>
-                <button type="button" id="modalNavigate" class="btn btn-secondary w-full">Go to Existing</button>
+                <button type="button" id="modalAppendQty" class="btn btn-primary w-full">Append Quantity</button>
+                <button type="button" id="modalGoToExisting" class="btn btn-secondary w-full">Go to Existing</button>
                 <button type="button" class="btn btn-danger w-full" onclick="this.closest('.modal-overlay').classList.add('hidden')">Cancel</button>
             </div>
+        </div>
+    </div>
+
+    <div id="editStyleModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h3 class="text-xl font-bold mb-4">Edit Style Color</h3>
+            <form id="editForm" class="space-y-4">
+                <input type="hidden" id="edit_style_no">
+                <input type="hidden" id="edit_original_color">
+                <div>
+                    <label for="edit_color_name" class="block text-sm font-medium text-gray-700">Color:</label>
+                    <input type="text" id="edit_color_name" list="color_list" class="form-input w-full mt-1" required>
+                </div>
+                <div>
+                    <label for="edit_order_qty" class="block text-sm font-medium text-gray-700">Order Quantity:</label>
+                    <input type="number" id="edit_order_qty" class="form-input w-full mt-1" min="0" required>
+                </div>
+                <div>
+                    <label for="edit_sam_stitching" class="block text-sm font-medium text-gray-700">Stitching SAM:</label>
+                    <input type="number" id="edit_sam_stitching" class="form-input w-full mt-1" step="0.01" min="0" required>
+                </div>
+                <div>
+                    <label for="edit_sam_cutting" class="block text-sm font-medium text-gray-700">Cutting SAM:</label>
+                    <input type="number" id="edit_sam_cutting" class="form-input w-full mt-1" step="0.01" min="0" required>
+                </div>
+                <div>
+                    <label for="edit_sam_finishing" class="block text-sm font-medium text-gray-700">Finishing SAM:</label>
+                    <input type="number" id="edit_sam_finishing" class="form-input w-full mt-1" step="0.01" min="0" required>
+                </div>
+                <div>
+                    <label for="edit_process_selected_values" class="block text-sm font-medium text-gray-700">Process:</label>
+                    <select id="edit_process_selected_values" class="form-select w-full bg-white mt-1">
+                        <option value="N/A">None</option>
+                        <option value="Embroidery">Embroidery</option>
+                        <option value="Washing">Washing</option>
+                        <option value="Adda Work">Adda Work</option>
+                        <option value="Printing">Printing</option>
+                        <option value="Embroidery + Washing">Embroidery + Washing</option>
+                        <option value="All">All Processes</option>
+                    </select>
+                </div>
+                <div class="flex gap-3 mt-6 justify-end">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <button type="button" class="btn btn-secondary" onclick="this.closest('.modal-overlay').classList.add('hidden')">Cancel</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -374,9 +440,8 @@
             [4000, 4999, 0.50], [5000, Infinity, 0.55]
         ];
         const DELETE_PASSWORD = "DELETE";
-        let allCalculations = {};
-        let globalSerialCounter = 0;
-        let raceInterval = null;
+        let allCalculations = {}; // { styleNo: { color: {calculationData} } }
+        let colorList = new Set();
 
         const costForm = document.getElementById('costForm');
         const allResultsContainer = document.getElementById('allResultsContainer');
@@ -384,7 +449,29 @@
         const importFileInput = document.getElementById('importFile');
         const generateReportBtn = document.getElementById('generateReportBtn');
         const deleteStylesBtn = document.getElementById('deleteStylesBtn');
-        
+        const colorInput = document.getElementById('color_input');
+        const colorDataList = document.getElementById('color_list');
+
+        function initializeColors() {
+            const commonColors = [
+                "Black", "White", "Gray", "Navy", "Blue", "Red", "Green", "Beige", "Brown", "Khaki",
+                "Olive", "Maroon", "Charcoal", "Ivory", "Cream", "Pink", "Purple", "Yellow", "Orange",
+                "Teal", "Burgundy", "Silver", "Gold", "Tan", "Mustard", "Coral", "Mint", "Lavender",
+                "Rose", "Sky Blue"
+            ];
+            commonColors.forEach(c => colorList.add(c));
+            updateColorDatalist();
+        }
+
+        function updateColorDatalist() {
+            colorDataList.innerHTML = '';
+            [...colorList].sort().forEach(color => {
+                const option = document.createElement('option');
+                option.value = color;
+                colorDataList.appendChild(option);
+            });
+        }
+
         function calculate(style, order_qty, sam_stitch, sam_cut, sam_fin, processes) {
             const slabInfo = EFFICIENCY_SLABS.find(([lo, hi]) => order_qty >= lo && order_qty <= hi) || [5000, Infinity, 0.55];
             const slabLabel = (slabInfo[1] === Infinity) ? `${slabInfo[0]}+` : `${slabInfo[0]}-${slabInfo[1]}`;
@@ -424,78 +511,110 @@
             }) + suffix;
         }
 
-        function renderResultCard(result) {
-            const cardId = `result-${result.globalSerialNo}`;
+        function renderAllStyleGroups() {
+            allResultsContainer.innerHTML = '';
+            const sortedStyleNos = Object.keys(allCalculations).sort();
+            sortedStyleNos.forEach((styleNo, index) => renderStyleGroupCard(styleNo, index + 1));
+            updateActionButtonsState();
+        }
+
+        function renderStyleGroupCard(styleNo, serialNo) {
+            const styleData = allCalculations[styleNo];
+            const colors = Object.keys(styleData).sort();
+            const totalQty = colors.reduce((sum, color) => sum + styleData[color]['Order Qty'], 0);
+            const avgCost = colors.reduce((sum, color) => sum + styleData[color]['Per-Piece Cost'], 0) / colors.length;
+
+            const cardId = `result-${styleNo.replace(/[^a-zA-Z0-9]/g, '-')}`;
             const cardHtml = `
-                <div id="${cardId}" class="result-card overflow-hidden" data-global-serial="${result.globalSerialNo}">
+                <div id="${cardId}" class="result-card overflow-hidden rounded-lg border border-gray-200" data-style-no="${styleNo}">
                     <div class="result-card-header">
                         <div class="flex items-center gap-4 flex-grow">
                            <div class="checkbox-container">
-                                <input type="checkbox" class="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" data-global-serial="${result.globalSerialNo}">
+                                <input type="checkbox" class="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" data-style-no="${styleNo}">
                             </div>
-                            <span class="font-bold">${result.globalSerialNo}. ${result['Style No.']}-${String(result.serialNo).padStart(3, '0')}</span>
+                            <span class="font-bold">${serialNo}. ${styleNo}</span>
                         </div>
-                        <div class="flex items-center gap-3">
-                            <span class="text-sm font-bold text-green-700 bg-green-100 px-3 py-1 rounded-full whitespace-nowrap">Cost: ${formatNumber(result['Per-Piece Cost'], 2, '₹')}</span>
-                            <button data-action="show-race" class="text-gray-500 hover:text-blue-600 p-1 rounded-full hover:bg-blue-100 transition-colors" title="Show Production Flow">
-                                <i class="fas fa-tachometer-alt"></i>
-                            </button>
-                             <button data-action="show-details" class="text-gray-500 hover:text-blue-600 p-1 rounded-full hover:bg-blue-100 transition-colors" title="Show Calculation Details">
-                                <i class="fas fa-calculator"></i>
-                            </button>
+                        <div class="flex items-center gap-4">
+                            <span class="text-sm font-semibold text-gray-600 bg-gray-200 px-3 py-1 rounded-full whitespace-nowrap" title="Total Order Quantity">
+                                <i class="fas fa-box-open mr-1"></i> ${formatNumber(totalQty, 0)}
+                            </span>
+                            <span class="text-sm font-semibold text-gray-600 bg-gray-200 px-3 py-1 rounded-full whitespace-nowrap" title="Number of Colors">
+                                <i class="fas fa-palette mr-1"></i> ${colors.length}
+                            </span>
+                            <span class="text-sm font-bold text-green-700 bg-green-100 px-3 py-1 rounded-full whitespace-nowrap">
+                                Avg Cost: ${formatNumber(avgCost, 2, '₹')}
+                            </span>
                             <svg class="toggle-icon w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </div>
                     </div>
                     <div class="result-card-content bg-white">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                            <div class="bg-gray-50 p-3 rounded-lg"><span class="font-medium text-gray-600">Order Quantity:</span><span class="block font-bold text-lg">${formatNumber(result['Order Qty'], 0, '', ' Pcs')}</span></div>
-                            <div class="bg-gray-50 p-3 rounded-lg"><span class="font-medium text-gray-600">Process:</span><span class="block font-bold text-lg">${result['Process']}</span></div>
-                            <div class="bg-gray-50 p-3 rounded-lg"><span class="font-medium text-gray-600">Efficiency:</span><span class="block font-bold text-lg">${result['Efficiency Slab']} (${formatNumber(result['Efficiency %'], 0, '', '%')})</span></div>
-                            <div class="bg-gray-50 p-3 rounded-lg"><span class="font-medium text-gray-600">CPM:</span><span class="block font-bold text-lg">${formatNumber(result['CPM'], 6)}</span></div>
+                        <div class="color-tabs-container">
+                            ${colors.map((color, index) => `<div class="color-tab ${index === 0 ? 'active' : ''}" data-color="${color}">${color}</div>`).join('')}
                         </div>
-                        <div class="details-grid">
-                            <div class="detail-section">
-                                <h4>Stitching</h4>
-                                <div class="detail-item"><span>Stitching SAM:</span> <span>${formatNumber(result['Stitching SAM'], 2, '', ' Min')}</span></div>
-                                <div class="detail-item"><span>Plan SAM:</span> <span>${formatNumber(result['Plan SAM'], 2, '', ' Min')}</span></div>
-                                <div class="detail-item"><span>Rate / piece:</span> <span>${formatNumber(result['Stitching Rate'], 2, '₹')}</span></div>
-                                <div class="detail-item font-bold border-t mt-1 pt-1"><span>Budget:</span> <span>${formatNumber(result['Stitching Budget'], 2, '₹')}</span></div>
-                            </div>
-                             <div class="detail-section">
-                                <h4>Cutting</h4>
-                                <div class="detail-item"><span>SAM:</span> <span>${formatNumber(result['Cutting SAM'], 2, '', ' Min')}</span></div>
-                                <div class="detail-item"><span>Rate / piece:</span> <span>${formatNumber(result['Cutting Rate'], 2, '₹')}</span></div>
-                                <div class="detail-item font-bold border-t mt-1 pt-1"><span>Budget:</span> <span>${formatNumber(result['Cutting Budget'], 2, '₹')}</span></div>
-                            </div>
-                             <div class="detail-section">
-                                <h4>Finishing</h4>
-                                <div class="detail-item"><span>SAM:</span> <span>${formatNumber(result['Finishing SAM'], 2, '', ' Min')}</span></div>
-                                <div class="detail-item"><span>Rate / piece:</span> <span>${formatNumber(result['Finishing Rate'], 2, '₹')}</span></div>
-                                <div class="detail-item font-bold border-t mt-1 pt-1"><span>Budget:</span> <span>${formatNumber(result['Finishing Budget'], 2, '₹')}</span></div>
-                            </div>
-                            <div class="detail-section">
-                                <h4>Overheads</h4>
-                                <div class="detail-item"><span>Part-1 (1.5x):</span> <span>${formatNumber(result['Overhead Part-1'], 2, '₹')}</span></div>
-                                <div class="detail-item"><span>Part-2 (1.0x):</span> <span>${formatNumber(result['Overhead Part-2'], 2, '₹')}</span></div>
-                            </div>
-                        </div>
-                        <div class="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                            <h4 class="font-bold text-lg text-blue-800 mb-2">Totals</h4>
-                            <div class="space-y-2">
-                                <div class="flex justify-between items-center"><span class="font-medium text-gray-700">Total Budget:</span><span class="font-extrabold text-xl text-blue-900">${formatNumber(result['Total Budget'], 2, '₹')}</span></div>
-                                <div class="flex justify-between items-center"><span class="font-medium text-gray-700">Per-Piece Cost:</span><span class="font-extrabold text-xl text-blue-900">${formatNumber(result['Per-Piece Cost'], 2, '₹')}</span></div>
-                            </div>
-                        </div>
+                        <div class="color-details-content"></div>
                     </div>
                 </div>`;
-            allResultsContainer.insertAdjacentHTML('afterbegin', cardHtml);
+            allResultsContainer.insertAdjacentHTML('beforeend', cardHtml);
+            const newCard = document.getElementById(cardId);
+            if (colors.length > 0) {
+                renderColorDetails(newCard, styleNo, colors[0]);
+            }
         }
-
-        function reRenderAllResults() {
-            allResultsContainer.innerHTML = '';
-            const allFlatResults = Object.values(allCalculations).flat().sort((a, b) => b.globalSerialNo - a.globalSerialNo);
-            allFlatResults.forEach(renderResultCard);
-            updateActionButtonsState();
+        
+        function renderColorDetails(cardElement, styleNo, color) {
+            const result = allCalculations[styleNo][color];
+            const detailsContainer = cardElement.querySelector('.color-details-content');
+            
+            const detailsHtml = `
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                    <div class="bg-gray-50 p-3 rounded-lg"><span class="font-medium text-gray-600">Order Quantity:</span><span class="block font-bold text-lg">${formatNumber(result['Order Qty'], 0, '', ' Pcs')}</span></div>
+                    <div class="bg-gray-50 p-3 rounded-lg"><span class="font-medium text-gray-600">Process:</span><span class="block font-bold text-lg">${result['Process']}</span></div>
+                    <div class="bg-gray-50 p-3 rounded-lg"><span class="font-medium text-gray-600">Efficiency:</span><span class="block font-bold text-lg">${result['Efficiency Slab']} (${formatNumber(result['Efficiency %'], 0, '', '%')})</span></div>
+                    <div class="bg-gray-50 p-3 rounded-lg"><span class="font-medium text-gray-600">CPM:</span><span class="block font-bold text-lg">${formatNumber(result['CPM'], 6)}</span></div>
+                </div>
+                <div class="details-grid">
+                    <div class="detail-section">
+                        <h4>Stitching</h4>
+                        <div class="detail-item"><span>Stitching SAM:</span> <span>${formatNumber(result['Stitching SAM'], 2, '', ' Min')}</span></div>
+                        <div class="detail-item"><span>Plan SAM:</span> <span>${formatNumber(result['Plan SAM'], 2, '', ' Min')}</span></div>
+                        <div class="detail-item"><span>Rate / piece:</span> <span>${formatNumber(result['Stitching Rate'], 2, '₹')}</span></div>
+                        <div class="detail-item font-bold border-t mt-1 pt-1"><span>Budget:</span> <span>${formatNumber(result['Stitching Budget'], 2, '₹')}</span></div>
+                    </div>
+                     <div class="detail-section">
+                        <h4>Cutting</h4>
+                        <div class="detail-item"><span>SAM:</span> <span>${formatNumber(result['Cutting SAM'], 2, '', ' Min')}</span></div>
+                        <div class="detail-item"><span>Rate / piece:</span> <span>${formatNumber(result['Cutting Rate'], 2, '₹')}</span></div>
+                        <div class="detail-item font-bold border-t mt-1 pt-1"><span>Budget:</span> <span>${formatNumber(result['Cutting Budget'], 2, '₹')}</span></div>
+                    </div>
+                     <div class="detail-section">
+                        <h4>Finishing</h4>
+                        <div class="detail-item"><span>SAM:</span> <span>${formatNumber(result['Finishing SAM'], 2, '', ' Min')}</span></div>
+                        <div class="detail-item"><span>Rate / piece:</span> <span>${formatNumber(result['Finishing Rate'], 2, '₹')}</span></div>
+                        <div class="detail-item font-bold border-t mt-1 pt-1"><span>Budget:</span> <span>${formatNumber(result['Finishing Budget'], 2, '₹')}</span></div>
+                    </div>
+                    <div class="detail-section">
+                        <h4>Overheads</h4>
+                        <div class="detail-item"><span>Part-1 (1.5x):</span> <span>${formatNumber(result['Overhead Part-1'], 2, '₹')}</span></div>
+                        <div class="detail-item"><span>Part-2 (1.0x):</span> <span>${formatNumber(result['Overhead Part-2'], 2, '₹')}</span></div>
+                    </div>
+                </div>
+                <div class="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <div class="flex justify-between items-center mb-2">
+                         <h4 class="font-bold text-lg text-blue-800">Totals for ${color}</h4>
+                         <div class="flex items-center gap-2">
+                             <button data-action="edit-color" class="text-gray-500 hover:text-green-600 p-2 rounded-full hover:bg-green-100 transition-colors" title="Edit Color Details"><i class="fas fa-edit"></i></button>
+                             <button data-action="delete-color" class="text-gray-500 hover:text-red-600 p-2 rounded-full hover:bg-red-100 transition-colors" title="Delete Color"><i class="fas fa-trash-alt"></i></button>
+                             <button data-action="show-race" class="text-gray-500 hover:text-blue-600 p-2 rounded-full hover:bg-blue-100 transition-colors" title="Show Production Flow"><i class="fas fa-tachometer-alt"></i></button>
+                             <button data-action="show-details" class="text-gray-500 hover:text-blue-600 p-2 rounded-full hover:bg-blue-100 transition-colors" title="Show Calculation Details"><i class="fas fa-calculator"></i></button>
+                         </div>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center"><span class="font-medium text-gray-700">Total Budget:</span><span class="font-extrabold text-xl text-blue-900">${formatNumber(result['Total Budget'], 2, '₹')}</span></div>
+                        <div class="flex justify-between items-center"><span class="font-medium text-gray-700">Per-Piece Cost:</span><span class="font-extrabold text-xl text-blue-900">${formatNumber(result['Per-Piece Cost'], 2, '₹')}</span></div>
+                    </div>
+                </div>
+            `;
+            detailsContainer.innerHTML = detailsHtml;
         }
         
         function showMessage(text, type = 'success') {
@@ -506,21 +625,26 @@
             setTimeout(() => messagesDiv.classList.add('hidden'), 5000);
         }
 
-        function processCalculation(style, order_qty, sam_stitch, sam_cut, sam_fin, processes, serialNo) {
+        function processCalculation(style, color, order_qty, sam_stitch, sam_cut, sam_fin, processes) {
             const results = calculate(style, order_qty, sam_stitch, sam_cut, sam_fin, processes);
-            results.serialNo = serialNo;
-            results.globalSerialNo = ++globalSerialCounter;
+            results.timestamp = new Date().toISOString();
+            results.color = color;
 
             if (!allCalculations[style]) {
-                allCalculations[style] = [];
+                allCalculations[style] = {};
             }
-            allCalculations[style].push(results);
+            allCalculations[style][color] = results;
 
-            reRenderAllResults();
+            if (!colorList.has(color)) {
+                colorList.add(color);
+                updateColorDatalist();
+            }
+
+            renderAllStyleGroups();
             saveState();
             costForm.reset();
             costForm.querySelectorAll('input, select').forEach(el => el.dispatchEvent(new Event('input')));
-            showMessage(`Style ${style}-${String(serialNo).padStart(3, '0')} calculated and saved.`);
+            showMessage(`Style ${style} - ${color} calculated and saved.`);
         }
         
         function updateActionButtonsState() {
@@ -531,49 +655,89 @@
 
         function saveState() {
             localStorage.setItem('allCalcsB5', JSON.stringify(allCalculations));
-            localStorage.setItem('globalSerialCounterB5', globalSerialCounter.toString());
+            localStorage.setItem('colorListB5', JSON.stringify([...colorList]));
         }
 
         function loadState() {
             const savedCalcs = localStorage.getItem('allCalcsB5');
-            const savedCounter = localStorage.getItem('globalSerialCounterB5');
+            const savedColors = localStorage.getItem('colorListB5');
+            
+            initializeColors();
+
+            if (savedColors) {
+                JSON.parse(savedColors).forEach(c => colorList.add(c));
+                updateColorDatalist();
+            }
             if (savedCalcs) {
                 allCalculations = JSON.parse(savedCalcs);
-                globalSerialCounter = savedCounter ? parseInt(savedCounter) : 0;
-                if(Object.keys(allCalculations).length === 0) {
-                    globalSerialCounter = 0;
-                } else {
-                    const maxSerial = Math.max(0, ...Object.values(allCalculations).flat().map(r => r.globalSerialNo || 0));
-                    globalSerialCounter = Math.max(globalSerialCounter, maxSerial);
-                }
-                reRenderAllResults();
+                renderAllStyleGroups();
             }
         }
         
         costForm.addEventListener('submit', function(event) {
             event.preventDefault();
             const style = document.getElementById('style_no').value.trim();
+            const color = document.getElementById('color_input').value.trim();
             const order_qty = parseInt(document.getElementById('order_qty').value);
             const sam_stitching = parseFloat(document.getElementById('sam_stitching').value);
             const sam_cutting = parseFloat(document.getElementById('sam_cutting').value);
             const sam_finishing = parseFloat(document.getElementById('sam_finishing').value);
             const processes = document.getElementById('process_selected_values').value;
             
-            if (!style || isNaN(order_qty) || isNaN(sam_stitching) || isNaN(sam_cutting) || isNaN(sam_finishing)) {
-                showMessage('Please fill all fields with valid numbers.', 'danger');
+            if (!style || !color || isNaN(order_qty) || isNaN(sam_stitching) || isNaN(sam_cutting) || isNaN(sam_finishing)) {
+                showMessage('Please fill all fields with valid values.', 'danger');
                 return;
             }
             
-            if (allCalculations[style]) {
-                const nextSerial = allCalculations[style].length + 1;
-                const dupModal = document.getElementById('duplicateStyleModal');
-                dupModal.querySelector('#modalMessage').textContent = `Style "${style}" already exists.`;
-                dupModal.querySelector('#nextSerialNum').textContent = nextSerial;
-                dupModal.classList.remove('hidden');
-                dupModal.dataset.formData = JSON.stringify({ style, order_qty, sam_stitching, sam_cutting, sam_finishing, processes, serialNo: nextSerial });
+            if (allCalculations[style] && allCalculations[style][color]) {
+                const modal = document.getElementById('existingStyleModal');
+                modal.querySelector('#modalMessage').textContent = `Style "${style}" with color "${color}" already exists. What would you like to do?`;
+                modal.classList.remove('hidden');
+                modal.dataset.formData = JSON.stringify({ style, color, order_qty, sam_stitching, sam_cutting, sam_finishing, processes });
             } else {
-                processCalculation(style, order_qty, sam_stitching, sam_cutting, sam_finishing, processes, 1);
+                processCalculation(style, color, order_qty, sam_stitching, sam_cutting, sam_finishing, processes);
             }
+        });
+
+        document.getElementById('modalAppendQty').addEventListener('click', () => {
+            const modal = document.getElementById('existingStyleModal');
+            const data = JSON.parse(modal.dataset.formData);
+            const existingCalc = allCalculations[data.style][data.color];
+            
+            const newQty = existingCalc['Order Qty'] + data.order_qty;
+            
+            const newResults = calculate(data.style, newQty, existingCalc['Stitching SAM'], existingCalc['Cutting SAM'], existingCalc['Finishing SAM'], existingCalc['Process']);
+            newResults.timestamp = new Date().toISOString();
+            newResults.color = data.color;
+
+            allCalculations[data.style][data.color] = newResults;
+            
+            renderAllStyleGroups();
+            saveState();
+            showMessage(`Appended ${data.order_qty} to Style ${data.style} - ${data.color}. New Qty: ${newQty}.`);
+            modal.classList.add('hidden');
+        });
+
+        document.getElementById('modalGoToExisting').addEventListener('click', () => {
+            const modal = document.getElementById('existingStyleModal');
+            const data = JSON.parse(modal.dataset.formData);
+            const cardId = `result-${data.style.replace(/[^a-zA-Z0-9]/g, '-')}`;
+            const targetElement = document.getElementById(cardId);
+
+            if (targetElement) {
+                targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                const content = targetElement.querySelector('.result-card-content');
+                if (!content.classList.contains('active')) {
+                    targetElement.querySelector('.result-card-header').click();
+                }
+                setTimeout(() => {
+                    const colorTab = targetElement.querySelector(`.color-tab[data-color="${data.color}"]`);
+                    if (colorTab) {
+                        colorTab.click();
+                    }
+                }, 300);
+            }
+            modal.classList.add('hidden');
         });
 
         document.getElementById('clearInputBtn').addEventListener('click', () => {
@@ -597,50 +761,12 @@
             }
         });
 
-        document.getElementById('modalAddAnother').addEventListener('click', () => {
-            const modal = document.getElementById('duplicateStyleModal');
-            const data = JSON.parse(modal.dataset.formData);
-            processCalculation(data.style, data.order_qty, data.sam_stitching, data.sam_cutting, data.sam_finishing, data.processes, data.serialNo);
-            modal.classList.add('hidden');
-        });
-
-        document.getElementById('modalNavigate').addEventListener('click', () => {
-            const modal = document.getElementById('duplicateStyleModal');
-            const data = JSON.parse(modal.dataset.formData);
-            const firstResultForStyle = allCalculations[data.style][0];
-            const targetElement = document.getElementById(`result-${firstResultForStyle.globalSerialNo}`);
-            if (targetElement) {
-                targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                const content = targetElement.querySelector('.result-card-content');
-                if (!content.classList.contains('active')) {
-                    targetElement.querySelector('.result-card-header').click();
-                }
-            }
-            modal.classList.add('hidden');
-        });
-
         allResultsContainer.addEventListener('click', (e) => {
             const header = e.target.closest('.result-card-header');
-            const detailsButton = e.target.closest('button[data-action="show-details"]');
-            const raceButton = e.target.closest('button[data-action="show-race"]');
-
-            if (detailsButton) {
-                e.stopPropagation();
-                const card = e.target.closest('.result-card');
-                const globalSerial = parseInt(card.dataset.globalSerial);
-                const result = Object.values(allCalculations).flat().find(r => r.globalSerialNo === globalSerial);
-                if (result) showCalculationBreakdown(result);
-                return;
-            }
-            
-            if (raceButton) {
-                e.stopPropagation();
-                const card = e.target.closest('.result-card');
-                const globalSerial = parseInt(card.dataset.globalSerial);
-                const result = Object.values(allCalculations).flat().find(r => r.globalSerialNo === globalSerial);
-                if (result) startInfiniteRaceAnimation(result);
-                return;
-            }
+            const card = e.target.closest('.result-card');
+            const styleNo = card ? card.dataset.styleNo : null;
+            const colorTab = e.target.closest('.color-tab');
+            const actionButton = e.target.closest('button[data-action]');
 
             if (header && !e.target.closest('.checkbox-container')) {
                 const content = header.nextElementSibling;
@@ -648,7 +774,106 @@
                 content.classList.toggle('active');
                 icon.classList.toggle('rotated');
             }
+
+            if (colorTab && styleNo) {
+                const color = colorTab.dataset.color;
+                card.querySelectorAll('.color-tab').forEach(tab => tab.classList.remove('active'));
+                colorTab.classList.add('active');
+                renderColorDetails(card, styleNo, color);
+            }
+
+            if(actionButton && styleNo) {
+                e.stopPropagation();
+                const action = actionButton.dataset.action;
+                const activeColor = card.querySelector('.color-tab.active').dataset.color;
+                const result = allCalculations[styleNo][activeColor];
+                if (action === 'show-race') {
+                    startInfiniteRaceAnimation(result);
+                } else if (action === 'show-details') {
+                    showCalculationBreakdown(result);
+                } else if (action === 'edit-color') {
+                    openEditModal(styleNo, activeColor);
+                } else if (action === 'delete-color') {
+                    handleDeleteColor(styleNo, activeColor);
+                }
+            }
         });
+
+        function openEditModal(styleNo, color) {
+            const data = allCalculations[styleNo][color];
+            const modal = document.getElementById('editStyleModal');
+
+            document.getElementById('edit_style_no').value = styleNo;
+            document.getElementById('edit_original_color').value = color;
+            document.getElementById('edit_color_name').value = color;
+            document.getElementById('edit_order_qty').value = data['Order Qty'];
+            document.getElementById('edit_sam_stitching').value = data['Stitching SAM'];
+            document.getElementById('edit_sam_cutting').value = data['Cutting SAM'];
+            document.getElementById('edit_sam_finishing').value = data['Finishing SAM'];
+            document.getElementById('edit_process_selected_values').value = data['Process'];
+
+            modal.classList.remove('hidden');
+        }
+
+        document.getElementById('editForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const modal = document.getElementById('editStyleModal');
+            
+            const styleNo = document.getElementById('edit_style_no').value;
+            const originalColor = document.getElementById('edit_original_color').value;
+            const newColor = document.getElementById('edit_color_name').value.trim();
+            
+            const order_qty = parseInt(document.getElementById('edit_order_qty').value);
+            const sam_stitching = parseFloat(document.getElementById('edit_sam_stitching').value);
+            const sam_cutting = parseFloat(document.getElementById('edit_sam_cutting').value);
+            const sam_finishing = parseFloat(document.getElementById('edit_sam_finishing').value);
+            const processes = document.getElementById('edit_process_selected_values').value;
+            
+            if (!newColor) {
+                showMessage('Color name cannot be empty.', 'danger');
+                return;
+            }
+
+            if (newColor !== originalColor && allCalculations[styleNo][newColor]) {
+                showMessage(`Color "${newColor}" already exists for style "${styleNo}". Please choose a different name.`, 'danger');
+                return;
+            }
+
+            const originalTimestamp = allCalculations[styleNo][originalColor].timestamp;
+            const newResults = calculate(styleNo, order_qty, sam_stitching, sam_cutting, sam_finishing, processes);
+            newResults.timestamp = originalTimestamp;
+            newResults.color = newColor;
+
+            if (newColor !== originalColor) {
+                delete allCalculations[styleNo][originalColor];
+            }
+            
+            allCalculations[styleNo][newColor] = newResults;
+
+            if (!colorList.has(newColor)) {
+                colorList.add(newColor);
+                updateColorDatalist();
+            }
+            
+            saveState();
+            renderAllStyleGroups();
+            modal.classList.add('hidden');
+            showMessage(`Style ${styleNo} - ${newColor} updated successfully.`);
+        });
+
+        function handleDeleteColor(styleNo, color) {
+            if (confirm(`Are you sure you want to delete the color "${color}" from style "${styleNo}"? This cannot be undone.`)) {
+                delete allCalculations[styleNo][color];
+
+                if (Object.keys(allCalculations[styleNo]).length === 0) {
+                    delete allCalculations[styleNo];
+                }
+
+                saveState();
+                renderAllStyleGroups();
+                showMessage(`Color ${color} from style ${styleNo} has been deleted.`);
+            }
+        }
 
         function startInfiniteRaceAnimation(result) {
             const modal = document.getElementById('racetrackModal');
@@ -656,9 +881,8 @@
 
             const { 'Cutting SAM': sam_cut, 'Stitching SAM': sam_stitch, 'Finishing SAM': sam_fin } = result;
             const maxSam = Math.max(sam_cut, sam_stitch, sam_fin, 1);
-            const baseLoopDuration = 5; // The longest process takes 5 seconds.
+            const baseLoopDuration = 5;
 
-            // Corrected Logic: Duration is proportional to SAM. Higher SAM = longer duration.
             const durationCut = (sam_cut / maxSam) * baseLoopDuration;
             const durationStitch = (sam_stitch / maxSam) * baseLoopDuration;
             const durationFin = (sam_fin / maxSam) * baseLoopDuration;
@@ -673,18 +897,15 @@
                 for (const key in elements) {
                     const el = elements[key];
                     el.time.textContent = `${el.sam.toFixed(2)} SAM`;
-                    
-                    // Reset
                     el.cursor.style.transition = 'none';
                     el.progress.style.transition = 'none';
                     el.cursor.style.left = '0%';
                     el.progress.style.transform = 'translateX(-100%)';
 
-                    // Animate
                     setTimeout(() => {
                         el.cursor.style.transition = `left ${el.duration}s linear`;
                         el.progress.style.transition = `transform ${el.duration}s linear`;
-                        el.cursor.style.left = '100%';
+                        el.cursor.style.left = 'calc(100% - 40px)';
                         el.progress.style.transform = 'translateX(0%)';
                     }, 50);
                 }
@@ -702,7 +923,7 @@
         function showCalculationBreakdown(r) {
             const eff = r['Efficiency %'] / 100;
             const breakdownHtml = `
-                <h3 class="text-xl font-bold mb-4 text-center">Calculation for ${r['Style No.']}-${String(r.serialNo).padStart(3, '0')}</h3>
+                <h3 class="text-xl font-bold mb-4 text-center">Calculation for ${r['Style No.']} - ${r.color}</h3>
                 <h4>Rates per Piece</h4>
                 <p><b>Stitching:</b> (${r['Stitching SAM']} Min × 1.2) / ${eff} Eff = ${formatNumber(r['Stitching Rate'], 4, '₹')}</p>
                 <p><b>Cutting:</b> ${r['Cutting SAM']} Min / ${eff} Eff = ${formatNumber(r['Cutting Rate'], 4, '₹')}</p>
@@ -734,57 +955,10 @@
                     const pdfWidth = doc.internal.pageSize.getWidth() - 20;
                     const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
                     doc.addImage(imgData, 'PNG', 10, 10, pdfWidth, pdfHeight);
-                    doc.save(`Calculation_Details_${r['Style No.'].replace(/[/\\?%*:|"<>]/g, '-')}.pdf`);
+                    doc.save(`Calculation_Details_${r['Style No.'].replace(/[/\\?%*:|"<>]/g, '-')}_${r.color}.pdf`);
                 });
             };
         }
-        
-        importStylesBtn.addEventListener('click', () => importFileInput.click());
-        importFileInput.addEventListener('change', (event) => {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = new Uint8Array(e.target.result);
-                    const workbook = XLSX.read(data, { type: 'array' });
-                    const firstSheetName = workbook.SheetNames[0];
-                    const worksheet = workbook.Sheets[firstSheetName];
-                    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-                    const headers = jsonData.shift().map(h => h ? h.trim() : '');
-
-                    const requiredHeaders = ["Style No.", "Order Qty", "Stitching Sam", "Cutting Sam", "Finishing Sam"];
-                    if (!requiredHeaders.every(h => headers.includes(h))) {
-                        throw new Error("Excel file is missing required headers: " + requiredHeaders.join(', '));
-                    }
-
-                    let importedCount = 0, skippedCount = 0;
-                    jsonData.forEach(row => {
-                        const rowData = headers.reduce((obj, key, i) => ({ ...obj, [key]: row[i] }), {});
-                        const style = rowData["Style No."];
-                        const order_qty = parseInt(rowData["Order Qty"]);
-                        const sam_stitching = parseFloat(rowData["Stitching Sam"]);
-                        const sam_cutting = parseFloat(rowData["Cutting Sam"]);
-                        const sam_finishing = parseFloat(rowData["Finishing Sam"]);
-                        const processes = rowData["Process"] || "N/A";
-
-                        if (!style || isNaN(order_qty) || isNaN(sam_stitching) || isNaN(sam_cutting) || isNaN(sam_finishing)) {
-                            skippedCount++; return;
-                        }
-                        const serialNo = allCalculations[style] ? allCalculations[style].length + 1 : 1;
-                        processCalculation(style, order_qty, sam_stitching, sam_cutting, sam_finishing, processes, serialNo);
-                        importedCount++;
-                    });
-                    showMessage(`Imported ${importedCount} styles. Skipped ${skippedCount} invalid rows.`);
-                } catch (error) {
-                    console.error("Import Error:", error);
-                    showMessage(error.message || "Failed to import file. Check format.", "danger");
-                } finally {
-                    importFileInput.value = '';
-                }
-            };
-            reader.readAsArrayBuffer(file);
-        });
         
         deleteStylesBtn.addEventListener('click', () => !deleteStylesBtn.classList.contains('disabled') && enterSelectionMode('delete'));
         generateReportBtn.addEventListener('click', () => !generateReportBtn.classList.contains('disabled') && enterSelectionMode('report'));
@@ -815,39 +989,37 @@
         }
 
         function updateActionBtnState() {
-            const anyChecked = getSelectedSerials().length > 0;
-            document.getElementById('actionBtn').disabled = !anyChecked;
+            const anyChecked = getSelectedStyles().length > 0;
+            const actionBtn = document.getElementById('actionBtn');
+            if (actionBtn) {
+               actionBtn.disabled = !anyChecked;
+            }
         }
         
         function exitSelectionMode() {
             allResultsContainer.classList.remove('selection-mode');
             document.getElementById('mainActionButtons').classList.remove('hidden');
             document.getElementById('selectionModeButtons').classList.add('hidden');
-            reRenderAllResults();
+            renderAllStyleGroups();
         }
         
-        function getSelectedSerials() {
-            return Array.from(allResultsContainer.querySelectorAll('input[type="checkbox"]:checked')).map(cb => parseInt(cb.dataset.globalSerial));
+        function getSelectedStyles() {
+            return Array.from(allResultsContainer.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.dataset.styleNo);
         }
         
         function handleDeleteSelected() {
-            const serialsToDelete = getSelectedSerials();
+            const stylesToDelete = getSelectedStyles();
             const modal = document.getElementById('deleteConfirmModal');
-            modal.querySelector('#deleteConfirmMessage').textContent = `This will permanently delete ${serialsToDelete.length} style(s).`;
+            modal.querySelector('#deleteConfirmMessage').textContent = `This will permanently delete ${stylesToDelete.length} style(s) and all their colors.`;
             modal.classList.remove('hidden');
             
             document.getElementById('confirmDeleteBtn').onclick = () => {
                 const passwordInput = document.getElementById('deletePassword');
                 if (passwordInput.value === DELETE_PASSWORD) {
-                    for (const styleKey in allCalculations) {
-                        allCalculations[styleKey] = allCalculations[styleKey].filter(
-                            result => !serialsToDelete.includes(result.globalSerialNo)
-                        );
-                        if (allCalculations[styleKey].length === 0) delete allCalculations[styleKey];
-                    }
-                    if (Object.keys(allCalculations).length === 0) {
-                        globalSerialCounter = 0;
-                    }
+                    stylesToDelete.forEach(styleNo => {
+                        delete allCalculations[styleNo];
+                    });
+
                     saveState();
                     exitSelectionMode();
                     showMessage('Selected styles deleted.', 'success');
@@ -861,15 +1033,14 @@
         }
         
         function handleReportGeneration() {
-            const selectedResults = Object.values(allCalculations).flat()
-                .filter(r => getSelectedSerials().includes(r.globalSerialNo))
-                .sort((a,b) => a.globalSerialNo - b.globalSerialNo);
-            showReportPreview(selectedResults);
+            const selectedStyles = getSelectedStyles();
+            const resultsForReport = selectedStyles.flatMap(styleNo => Object.values(allCalculations[styleNo]));
+            showReportPreview(resultsForReport);
         }
 
         function showReportPreview(results) {
             const aggregated = aggregateReportData(results);
-            let previewHtml = `<h3 class="text-xl font-bold mb-4 text-center">Report Preview (${results.length} styles)</h3>
+            let previewHtml = `<h3 class="text-xl font-bold mb-4 text-center">Report Preview (${results.length} style-colors)</h3>
             <h4 class="report-section-title">Aggregated Summary</h4>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 text-sm">
                 <div class="report-summary-item"><span>Total Order Qty:</span><span class="font-semibold">${formatNumber(aggregated["Total Order Quantity"], 0)}</span></div>
@@ -880,15 +1051,16 @@
             <h4 class="report-section-title">Detailed Breakdown</h4>
             <div class="overflow-x-auto"><table class="w-full text-sm text-left">
                 <thead class="bg-gray-100"><tr>
-                    <th class="p-2">#</th><th class="p-2">Style</th><th class="p-2">Qty</th><th class="p-2">Total Budget</th><th class="p-2">P.P. Cost</th>
+                    <th class="p-2">Style</th><th class="p-2">Color</th><th class="p-2">Qty</th><th class="p-2">Total Budget</th><th class="p-2">P.P. Cost</th><th class="p-2">Timestamp</th>
                 </tr></thead><tbody>`;
             results.forEach(r => {
                 previewHtml += `<tr class="border-b">
-                    <td class="p-2">${r.globalSerialNo}</td>
-                    <td class="p-2">${r['Style No.']}-${String(r.serialNo).padStart(3, '0')}</td>
+                    <td class="p-2">${r['Style No.']}</td>
+                    <td class="p-2">${r.color}</td>
                     <td class="p-2">${formatNumber(r['Order Qty'], 0)}</td>
                     <td class="p-2">${formatNumber(r['Total Budget'], 2, '₹')}</td>
                     <td class="p-2">${formatNumber(r['Per-Piece Cost'], 2, '₹')}</td>
+                    <td class="p-2">${new Date(r.timestamp).toLocaleString()}</td>
                 </tr>`;
             });
             previewHtml += `</tbody></table></div>`;
@@ -908,26 +1080,11 @@
         function aggregateReportData(results) {
             const total = (key) => results.reduce((sum, r) => sum + (isFinite(r[key]) ? r[key] : 0), 0);
             const count = (key) => results.filter(r => isFinite(r[key])).length || 0;
-            const avg = (key) => total(key) / count(key) || 0;
+            const avg = (key) => total(key) / (count(key) || 1);
             
-            const avgStitchingSAM = avg('Stitching SAM');
-            const avgCuttingSAM = avg('Cutting SAM');
-            const avgFinishingSAM = avg('Finishing SAM');
-
             return {
                 "Total Order Quantity": total('Order Qty'),
                 "Average Efficiency": avg('Efficiency %'),
-                "Total Stitching SAM": total('Stitching SAM'),
-                "Average Stitching SAM": avgStitchingSAM,
-                "Average Cutting SAM": avgCuttingSAM,
-                "Average Finishing SAM": avgFinishingSAM,
-                "Average Combined SAM": avgStitchingSAM + avgCuttingSAM + avgFinishingSAM,
-                "Total Planned SAM (Stitching)": total('Plan SAM'),
-                "Total Stitching Budget": total('Stitching Budget'),
-                "Total Cutting Budget": total('Cutting Budget'),
-                "Total Finishing Budget": total('Finishing Budget'),
-                "Total Overhead Part-1": total('Overhead Part-1'),
-                "Total Overhead Part-2": total('Overhead Part-2'),
                 "Grand Total Budget": total('Total Budget'),
                 "Average Per-Piece Cost": avg('Per-Piece Cost'),
             };
@@ -936,34 +1093,29 @@
         function generateExcelReport(results) {
             const wb = XLSX.utils.book_new();
             
-            // Aggregated Sheet
             const aggregatedData = aggregateReportData(results);
             const summaryData = Object.entries(aggregatedData).map(([key, value]) => [key, value]);
             const wsSummary = XLSX.utils.aoa_to_sheet([["Metric", "Value"], ...summaryData]);
             wsSummary['!cols'] = [{ wch: 30 }, { wch: 20 }];
             XLSX.utils.book_append_sheet(wb, wsSummary, "Aggregated Summary");
 
-            // Detailed Sheet
-            const headerRow1 = ["", "", "", "", "", "", "STITCHING", "", "", "", "Cutting", "", "", "Finishing", "", "", "Over Heads", "", "Ttl Cost & CPM", ""];
             const headerRow2 = [
-                "Global Serial No.", "Style No.", "Process", "Order Qty", "Slab", "Eff%",
-                "Sam", "Plan Sam", "Rate", "Budget", "Sam", "Rate", "Budget", "Sam", "Rate", "Budget",
-                "Part-1", "Part-2", "CPM", "Per Pc Cost"
+                "Style No.", "Color", "Process", "Order Qty", "Slab", "Eff%",
+                "Stitching Sam", "Plan Sam", "Stitching Rate", "Stitching Budget", 
+                "Cutting Sam", "Cutting Rate", "Cutting Budget", 
+                "Finishing Sam", "Finishing Rate", "Finishing Budget",
+                "Overhead Part-1", "Overhead Part-2", "CPM", "Per Pc Cost", "Timestamp"
             ];
             const detailedData = results.map(r => [
-                r.globalSerialNo, `${r['Style No.']}-${String(r.serialNo).padStart(3, '0')}`, r['Process'], r['Order Qty'], r['Efficiency Slab'], r['Efficiency %'],
+                r['Style No.'], r.color, r['Process'], r['Order Qty'], r['Efficiency Slab'], r['Efficiency %'],
                 r['Stitching SAM'], r['Plan SAM'], r['Stitching Rate'], r['Stitching Budget'],
                 r['Cutting SAM'], r['Cutting Rate'], r['Cutting Budget'],
                 r['Finishing SAM'], r['Finishing Rate'], r['Finishing Budget'],
-                r['Overhead Part-1'], r['Overhead Part-2'], r['CPM'], r['Per-Piece Cost']
+                r['Overhead Part-1'], r['Overhead Part-2'], r['CPM'], r['Per-Piece Cost'],
+                new Date(r.timestamp).toLocaleString()
             ].map(cell => (typeof cell === 'number' && !isFinite(cell)) ? 'N/A' : cell));
             
-            const wsDetailed = XLSX.utils.aoa_to_sheet([["Monthly Budget calculation"], headerRow1, headerRow2, ...detailedData]);
-            wsDetailed['!merges'] = [
-                { s: { r: 0, c: 0 }, e: { r: 0, c: 19 } }, { s: { r: 1, c: 6 }, e: { r: 1, c: 9 } },
-                { s: { r: 1, c: 10 }, e: { r: 1, c: 12 } }, { s: { r: 1, c: 13 }, e: { r: 1, c: 15 } },
-                { s: { r: 1, c: 16 }, e: { r: 1, c: 17 } }, { s: { r: 1, c: 18 }, e: { r: 1, c: 19 } }
-            ];
+            const wsDetailed = XLSX.utils.aoa_to_sheet([headerRow2, ...detailedData]);
             wsDetailed['!cols'] = headerRow2.map(h => ({wch: h.length + 5}));
             XLSX.utils.book_append_sheet(wb, wsDetailed, "Detailed Data");
             
