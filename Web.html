@@ -190,8 +190,36 @@
             background: linear-gradient(90deg, #a8d08d, #5a9bd5); transform: translateX(-100%);
         }
 
+        .sort-dropdown {
+            position: absolute;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            z-index: 10;
+            width: 200px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+            right: 0;
+        }
+        .sort-option {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .sort-option:hover {
+            background-color: #f1f3f4;
+        }
+        .sort-option.active {
+            background-color: #e9f0ff;
+            font-weight: 600;
+            color: #1a73e8;
+        }
+
         @media (max-width: 768px) {
             .result-card-header { flex-wrap: wrap; gap: 0.5rem; }
+            #searchSortContainer { flex-direction: column; align-items: stretch; }
         }
     </style>
 </head>
@@ -199,9 +227,9 @@
 
     <div class="container p-6 sm:p-10">
         <div class="flex flex-col items-center mb-8">
-            <img src="./CLogo.png" alt="Company Logo" class="header-logo mb-4" onerror="this.onerror=null;this.src='https://placehold.co/200x50/FFFFFF/000000?text=Logo';">
+            <img src="./CLogo.png" alt="Company Logo" class="header-logo mb-4" onerror="this.onerror=null;this.src='https://https://vamanioverseas.com/';">
             <h1 class="text-2xl sm:text-3xl font-bold text-center">Style Wise Plan Calculator</h1>
-            <p class="text-center text-gray-600 text-sm sm:text-base">B4 - Sector 63, Noida</p>
+            <p class="text-center text-gray-600 text-sm sm:text-base">Plant B4 - Sector 63, Noida</p>
         </div>
 
         <div id="messages" class="hidden"></div>
@@ -294,8 +322,26 @@
             <input type="file" id="importFile" class="hidden" accept=".xlsx, .xls, .csv">
             <div id="selectionModeButtons" class="hidden flex justify-center items-center flex-wrap gap-4"></div>
         </div>
+        
+        <div id="searchSortContainer" class="flex flex-wrap gap-4 items-center justify-between mt-8 mb-4 p-4 bg-gray-50 rounded-lg">
+            <div class="flex-grow flex items-center border border-gray-300 rounded-lg overflow-hidden">
+                <input type="text" id="searchInput" class="form-input w-full border-none focus:ring-0" placeholder="Search Style No...">
+                <button id="searchBtn" class="btn btn-primary rounded-l-none px-4"><i class="fas fa-search"></i></button>
+            </div>
+            <div class="relative">
+                <button id="sortBtn" class="btn btn-secondary bg-gray-200 hover:bg-gray-300 text-gray-800">
+                    <i class="fas fa-sort-amount-down"></i>
+                    <span>Sort By</span>
+                </button>
+                <div id="sortDropdown" class="sort-dropdown hidden">
+                    <div class="sort-option" data-sort="time"><span>Creation Time</span><i class="fas"></i></div>
+                    <div class="sort-option" data-sort="alpha"><span>Style Number</span><i class="fas"></i></div>
+                    <div class="sort-option" data-sort="qty"><span>Total Quantity</span><i class="fas"></i></div>
+                </div>
+            </div>
+        </div>
 
-        <div id="allResultsContainer" class="mt-8 space-y-4"></div>
+        <div id="allResultsContainer" class="mt-4 space-y-4"></div>
     </div>
 
     <!-- Modals -->
@@ -458,6 +504,7 @@
         const DELETE_PASSWORD = "DELETE";
         let allCalculations = {}; // { styleNo: { color: {calculationData} } }
         let colorList = new Set();
+        let sortState = { by: 'time', order: 'desc' }; // Default sort
 
         const costForm = document.getElementById('costForm');
         const allResultsContainer = document.getElementById('allResultsContainer');
@@ -465,6 +512,10 @@
         const importFileInput = document.getElementById('importFile');
         const colorInput = document.getElementById('color_input');
         const colorDataList = document.getElementById('color_list');
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const sortBtn = document.getElementById('sortBtn');
+        const sortDropdown = document.getElementById('sortDropdown');
 
         function initializeColors() {
             const commonColors = [
@@ -527,7 +578,29 @@
 
         function renderAllStyleGroups(isSelectionMode = false) {
             allResultsContainer.innerHTML = '';
-            const sortedStyleNos = Object.keys(allCalculations).sort();
+            let sortedStyleNos = Object.keys(allCalculations);
+
+            // Sorting logic
+            if (sortState.by === 'alpha') {
+                sortedStyleNos.sort((a, b) => a.localeCompare(b));
+            } else if (sortState.by === 'time') {
+                sortedStyleNos.sort((a, b) => {
+                    const timeA = Math.min(...Object.values(allCalculations[a]).map(c => new Date(c.timestamp).getTime()));
+                    const timeB = Math.min(...Object.values(allCalculations[b]).map(c => new Date(c.timestamp).getTime()));
+                    return timeA - timeB;
+                });
+            } else if (sortState.by === 'qty') {
+                 sortedStyleNos.sort((a, b) => {
+                    const qtyA = Object.values(allCalculations[a]).reduce((sum, c) => sum + c['Order Qty'], 0);
+                    const qtyB = Object.values(allCalculations[b]).reduce((sum, c) => sum + c['Order Qty'], 0);
+                    return qtyA - qtyB;
+                });
+            }
+
+            if (sortState.order === 'desc') {
+                sortedStyleNos.reverse();
+            }
+
             sortedStyleNos.forEach((styleNo, index) => renderStyleGroupCard(styleNo, index + 1, isSelectionMode));
             updateActionButtonsState();
         }
@@ -757,7 +830,9 @@
         document.getElementById('modalGoToExisting').addEventListener('click', () => {
             const modal = document.getElementById('existingStyleModal');
             const data = JSON.parse(modal.dataset.formData);
-            const cardId = `result-group-${Object.keys(allCalculations).sort().indexOf(data.style) + 1}`;
+            const sortedStyleNos = Object.keys(allCalculations).sort();
+            const serialIndex = sortedStyleNos.indexOf(data.style) + 1;
+            const cardId = `result-group-${serialIndex}`;
             const targetElement = document.getElementById(cardId);
 
             if (targetElement) {
@@ -1140,12 +1215,11 @@
             let previewHtml = `<h3 class="text-xl font-bold mb-4 text-center">Report Preview (${results.length} style-colors)</h3>`;
             if(includeAggregated) {
                 previewHtml += `<h4 class="report-section-title">Aggregated Summary</h4>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 text-sm">
-                    <div class="report-summary-item"><span>Total Order Qty:</span><span class="font-semibold">${formatNumber(aggregated["Total Order Quantity"], 0)}</span></div>
-                    <div class="report-summary-item"><span>Avg. Efficiency:</span><span class="font-semibold">${formatNumber(aggregated["Average Efficiency"], 1, '', '%')}</span></div>
-                    <div class="report-summary-item"><span>Grand Total Budget:</span><span class="font-semibold">${formatNumber(aggregated["Grand Total Budget"], 2, '₹')}</span></div>
-                    <div class="report-summary-item"><span>Avg. Per-Piece Cost:</span><span class="font-semibold">${formatNumber(aggregated["Average Per-Piece Cost"], 2, '₹')}</span></div>
-                </div>`;
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 text-sm">`;
+                Object.entries(aggregated).forEach(([key, value]) => {
+                     previewHtml += `<div class="report-summary-item"><span>${key}:</span><span class="font-semibold">${value}</span></div>`;
+                });
+                previewHtml += `</div>`;
             }
             previewHtml += `<h4 class="report-section-title">Detailed Breakdown</h4>
             <div class="overflow-x-auto"><table class="w-full text-sm text-left">
@@ -1181,11 +1255,26 @@
             const count = (key) => results.filter(r => isFinite(r[key])).length || 0;
             const avg = (key) => total(key) / (count(key) || 1);
             
+            const avgStitchingSAM = avg('Stitching SAM');
+            const avgCuttingSAM = avg('Cutting SAM');
+            const avgFinishingSAM = avg('Finishing SAM');
+            
             return {
-                "Total Order Quantity": total('Order Qty'),
-                "Average Efficiency": avg('Efficiency %'),
-                "Grand Total Budget": total('Total Budget'),
-                "Average Per-Piece Cost": avg('Per-Piece Cost'),
+                "Total Order Quantity": formatNumber(total('Order Qty'), 0),
+                "Average Efficiency": formatNumber(avg('Efficiency %'), 1, '', '%'),
+                "Total Stitching SAM": formatNumber(total('Stitching SAM'), 2),
+                "Average Stitching SAM": formatNumber(avgStitchingSAM, 2),
+                "Average Cutting SAM": formatNumber(avgCuttingSAM, 2),
+                "Average Finishing SAM": formatNumber(avgFinishingSAM, 2),
+                "Average Combined SAM": formatNumber(avgStitchingSAM + avgCuttingSAM + avgFinishingSAM, 2),
+                "Total Planned SAM (Stitching)": formatNumber(total('Plan SAM'), 2),
+                "Total Stitching Budget": formatNumber(total('Stitching Budget'), 2, '₹'),
+                "Total Cutting Budget": formatNumber(total('Cutting Budget'), 2, '₹'),
+                "Total Finishing Budget": formatNumber(total('Finishing Budget'), 2, '₹'),
+                "Total Overhead Part-1": formatNumber(total('Overhead Part-1'), 2, '₹'),
+                "Total Overhead Part-2": formatNumber(total('Overhead Part-2'), 2, '₹'),
+                "Grand Total Budget": formatNumber(total('Total Budget'), 2, '₹'),
+                "Average Per-Piece Cost": formatNumber(avg('Per-Piece Cost'), 2, '₹'),
             };
         }
 
@@ -1194,7 +1283,7 @@
             
             if(includeAggregated) {
                 const aggregatedData = aggregateReportData(results);
-                const summaryData = Object.entries(aggregatedData).map(([key, value]) => [key, value]);
+                const summaryData = Object.entries(aggregatedData).map(([key, value]) => [key, value.replace(/<[^>]*>/g, '')]); // Strip HTML for Excel
                 const wsSummary = XLSX.utils.aoa_to_sheet([["Metric", "Value"], ...summaryData]);
                 wsSummary['!cols'] = [{ wch: 30 }, { wch: 20 }];
                 XLSX.utils.book_append_sheet(wb, wsSummary, "Aggregated Summary");
@@ -1269,7 +1358,71 @@
             reader.readAsArrayBuffer(file);
         });
 
+        // Search and Sort Logic
+        searchBtn.addEventListener('click', () => {
+            const searchTerm = searchInput.value.trim();
+            if (!searchTerm) return;
+            
+            const foundCard = Array.from(allResultsContainer.children).find(card => card.dataset.styleNo === searchTerm);
+
+            if (foundCard) {
+                foundCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                const content = foundCard.querySelector('.result-card-content');
+                if (!content.classList.contains('active')) {
+                    foundCard.querySelector('.result-card-header').click();
+                }
+                foundCard.style.transition = 'all 0.3s ease';
+                foundCard.style.boxShadow = '0 0 0 3px #4285F4';
+                setTimeout(() => {
+                    foundCard.style.boxShadow = '';
+                }, 2000);
+            } else {
+                showMessage(`Style "${searchTerm}" not found.`, 'danger');
+            }
+        });
+
+        sortBtn.addEventListener('click', () => {
+            sortDropdown.classList.toggle('hidden');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!sortBtn.contains(e.target) && !sortDropdown.contains(e.target)) {
+                sortDropdown.classList.add('hidden');
+            }
+        });
+
+        sortDropdown.addEventListener('click', (e) => {
+            const option = e.target.closest('.sort-option');
+            if (!option) return;
+
+            const newSortBy = option.dataset.sort;
+            if (sortState.by === newSortBy) {
+                sortState.order = sortState.order === 'asc' ? 'desc' : 'asc';
+            } else {
+                sortState.by = newSortBy;
+                sortState.order = 'asc';
+            }
+            
+            updateSortUI();
+            renderAllStyleGroups();
+            sortDropdown.classList.add('hidden');
+        });
+
+        function updateSortUI() {
+            sortDropdown.querySelectorAll('.sort-option').forEach(opt => {
+                const icon = opt.querySelector('i');
+                if (opt.dataset.sort === sortState.by) {
+                    opt.classList.add('active');
+                    icon.className = `fas ${sortState.order === 'asc' ? 'fa-sort-up' : 'fa-sort-down'}`;
+                } else {
+                    opt.classList.remove('active');
+                    icon.className = 'fas';
+                }
+            });
+        }
+
         loadState();
+        updateSortUI();
     });
     </script>
 </body>
