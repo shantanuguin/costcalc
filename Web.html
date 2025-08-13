@@ -98,6 +98,8 @@
             cursor: pointer;
             transition: all 0.2s;
             border: 1px solid transparent;
+            display: flex;
+            align-items: center;
         }
         .color-tab:hover {
             background-color: #dbe7ff;
@@ -132,6 +134,9 @@
         .selection-mode .result-card-header:hover { background-color: #ffeeba; }
         .checkbox-container { display: none; }
         .selection-mode .checkbox-container { display: block; }
+        .selection-mode .color-checkbox { display: inline-block; }
+        .color-checkbox { display: none; }
+
 
         .report-modal-content { max-width: 800px; text-align: left; max-height: 85vh; overflow-y: auto; }
         .report-summary-item { display: flex; justify-content: space-between; padding: 0.4rem 0; border-bottom: 1px dashed #e9ecef; }
@@ -417,6 +422,17 @@
         </div>
     </div>
     
+    <div id="reportTypeModal" class="modal-overlay hidden">
+        <div class="modal-content text-center">
+            <h3 class="text-xl font-bold mb-4">Generate Report</h3>
+            <p class="mb-6">Include the "Aggregated Summary" sheet in the report?</p>
+            <div class="flex gap-3">
+                <button id="reportWithSummary" class="btn btn-primary w-full">Yes, Include</button>
+                <button id="reportWithoutSummary" class="btn btn-secondary w-full">No, Detailed Only</button>
+            </div>
+        </div>
+    </div>
+
     <div id="reportPreviewModal" class="modal-overlay hidden">
         <div class="modal-content report-modal-content">
             <div id="reportPreviewContent"></div>
@@ -445,10 +461,8 @@
 
         const costForm = document.getElementById('costForm');
         const allResultsContainer = document.getElementById('allResultsContainer');
-        const importStylesBtn = document.getElementById('importStylesBtn');
+        const actionsContainer = document.getElementById('actionsContainer');
         const importFileInput = document.getElementById('importFile');
-        const generateReportBtn = document.getElementById('generateReportBtn');
-        const deleteStylesBtn = document.getElementById('deleteStylesBtn');
         const colorInput = document.getElementById('color_input');
         const colorDataList = document.getElementById('color_list');
 
@@ -511,26 +525,26 @@
             }) + suffix;
         }
 
-        function renderAllStyleGroups() {
+        function renderAllStyleGroups(isSelectionMode = false) {
             allResultsContainer.innerHTML = '';
             const sortedStyleNos = Object.keys(allCalculations).sort();
-            sortedStyleNos.forEach((styleNo, index) => renderStyleGroupCard(styleNo, index + 1));
+            sortedStyleNos.forEach((styleNo, index) => renderStyleGroupCard(styleNo, index + 1, isSelectionMode));
             updateActionButtonsState();
         }
 
-        function renderStyleGroupCard(styleNo, serialNo) {
+        function renderStyleGroupCard(styleNo, serialNo, isSelectionMode = false) {
             const styleData = allCalculations[styleNo];
             const colors = Object.keys(styleData).sort();
             const totalQty = colors.reduce((sum, color) => sum + styleData[color]['Order Qty'], 0);
             const avgCost = colors.reduce((sum, color) => sum + styleData[color]['Per-Piece Cost'], 0) / colors.length;
 
-            const cardId = `result-${styleNo.replace(/[^a-zA-Z0-9]/g, '-')}`;
+            const cardId = `result-group-${serialNo}`;
             const cardHtml = `
                 <div id="${cardId}" class="result-card overflow-hidden rounded-lg border border-gray-200" data-style-no="${styleNo}">
                     <div class="result-card-header">
                         <div class="flex items-center gap-4 flex-grow">
                            <div class="checkbox-container">
-                                <input type="checkbox" class="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" data-style-no="${styleNo}">
+                                <input type="checkbox" class="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded style-checkbox" data-style-no="${styleNo}">
                             </div>
                             <span class="font-bold">${serialNo}. ${styleNo}</span>
                         </div>
@@ -549,7 +563,11 @@
                     </div>
                     <div class="result-card-content bg-white">
                         <div class="color-tabs-container">
-                            ${colors.map((color, index) => `<div class="color-tab ${index === 0 ? 'active' : ''}" data-color="${color}">${color}</div>`).join('')}
+                            ${colors.map((color, index) => `
+                                <div class="color-tab ${index === 0 ? 'active' : ''}" data-color="${color}">
+                                    <input type="checkbox" class="color-checkbox mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" data-style-no="${styleNo}" data-color="${color}">
+                                    <span>${color}</span>
+                                </div>`).join('')}
                         </div>
                         <div class="color-details-content"></div>
                     </div>
@@ -649,8 +667,10 @@
         
         function updateActionButtonsState() {
             const hasEntries = Object.keys(allCalculations).length > 0;
-            generateReportBtn.classList.toggle('disabled', !hasEntries);
-            deleteStylesBtn.classList.toggle('disabled', !hasEntries);
+            const generateReportBtn = document.getElementById('generateReportBtn');
+            const deleteStylesBtn = document.getElementById('deleteStylesBtn');
+            if (generateReportBtn) generateReportBtn.classList.toggle('disabled', !hasEntries);
+            if (deleteStylesBtn) deleteStylesBtn.classList.toggle('disabled', !hasEntries);
         }
 
         function saveState() {
@@ -665,12 +685,28 @@
             initializeColors();
 
             if (savedColors) {
-                JSON.parse(savedColors).forEach(c => colorList.add(c));
-                updateColorDatalist();
+                try {
+                    const parsedColors = JSON.parse(savedColors);
+                    if (Array.isArray(parsedColors)) {
+                        parsedColors.forEach(c => colorList.add(c));
+                        updateColorDatalist();
+                    }
+                } catch (e) {
+                    console.error("Failed to load colors from localStorage", e);
+                    localStorage.removeItem('colorListB5');
+                }
             }
             if (savedCalcs) {
-                allCalculations = JSON.parse(savedCalcs);
-                renderAllStyleGroups();
+                 try {
+                    const parsedCalcs = JSON.parse(savedCalcs);
+                    if (typeof parsedCalcs === 'object' && parsedCalcs !== null) {
+                        allCalculations = parsedCalcs;
+                        renderAllStyleGroups();
+                    }
+                } catch (e) {
+                    console.error("Failed to load calculations from localStorage", e);
+                    localStorage.removeItem('allCalcsB5');
+                }
             }
         }
         
@@ -721,7 +757,7 @@
         document.getElementById('modalGoToExisting').addEventListener('click', () => {
             const modal = document.getElementById('existingStyleModal');
             const data = JSON.parse(modal.dataset.formData);
-            const cardId = `result-${data.style.replace(/[^a-zA-Z0-9]/g, '-')}`;
+            const cardId = `result-group-${Object.keys(allCalculations).sort().indexOf(data.style) + 1}`;
             const targetElement = document.getElementById(cardId);
 
             if (targetElement) {
@@ -775,7 +811,8 @@
                 icon.classList.toggle('rotated');
             }
 
-            if (colorTab && styleNo) {
+            if (colorTab && !e.target.matches('.color-checkbox')) {
+                 e.preventDefault();
                 const color = colorTab.dataset.color;
                 card.querySelectorAll('.color-tab').forEach(tab => tab.classList.remove('active'));
                 colorTab.classList.add('active');
@@ -798,6 +835,36 @@
                 }
             }
         });
+        
+        allResultsContainer.addEventListener('change', (e) => {
+            const target = e.target;
+            if (!allResultsContainer.classList.contains('selection-mode')) return;
+
+            if (target.matches('.style-checkbox')) {
+                const card = target.closest('.result-card');
+                const isChecked = target.checked;
+                card.querySelectorAll('.color-checkbox').forEach(cb => cb.checked = isChecked);
+            }
+            
+            if (target.matches('.color-checkbox')) {
+                 const card = target.closest('.result-card');
+                 const allColorCheckboxes = card.querySelectorAll('.color-checkbox');
+                 const checkedColors = card.querySelectorAll('.color-checkbox:checked');
+                 const styleCheckbox = card.querySelector('.style-checkbox');
+                 
+                 if(checkedColors.length === allColorCheckboxes.length) {
+                    styleCheckbox.checked = true;
+                    styleCheckbox.indeterminate = false;
+                 } else if (checkedColors.length > 0) {
+                    styleCheckbox.indeterminate = true;
+                 } else {
+                    styleCheckbox.checked = false;
+                    styleCheckbox.indeterminate = false;
+                 }
+            }
+            updateActionBtnState();
+        });
+
 
         function openEditModal(styleNo, color) {
             const data = allCalculations[styleNo][color];
@@ -867,11 +934,13 @@
 
                 if (Object.keys(allCalculations[styleNo]).length === 0) {
                     delete allCalculations[styleNo];
+                     showMessage(`Color ${color} deleted. Style ${styleNo} was removed as it had no other colors.`, 'success');
+                } else {
+                    showMessage(`Color ${color} from style ${styleNo} has been deleted.`);
                 }
 
                 saveState();
                 renderAllStyleGroups();
-                showMessage(`Color ${color} from style ${styleNo} has been deleted.`);
             }
         }
 
@@ -960,10 +1029,31 @@
             };
         }
         
-        deleteStylesBtn.addEventListener('click', () => !deleteStylesBtn.classList.contains('disabled') && enterSelectionMode('delete'));
-        generateReportBtn.addEventListener('click', () => !generateReportBtn.classList.contains('disabled') && enterSelectionMode('report'));
-        
-        function enterSelectionMode(mode) {
+        actionsContainer.addEventListener('click', (event) => {
+            const target = event.target;
+            const importBtn = target.closest('#importStylesBtn');
+            const generateBtn = target.closest('#generateReportBtn');
+            const deleteBtn = target.closest('#deleteStylesBtn');
+
+            if (importBtn && !importBtn.classList.contains('disabled')) {
+                importFileInput.click();
+            } else if (generateBtn && !generateBtn.classList.contains('disabled')) {
+                const modal = document.getElementById('reportTypeModal');
+                modal.classList.remove('hidden');
+                document.getElementById('reportWithSummary').onclick = () => {
+                    modal.classList.add('hidden');
+                    enterSelectionMode('report', true);
+                };
+                document.getElementById('reportWithoutSummary').onclick = () => {
+                    modal.classList.add('hidden');
+                    enterSelectionMode('report', false);
+                };
+            } else if (deleteBtn && !deleteBtn.classList.contains('disabled')) {
+                enterSelectionMode('delete');
+            }
+        });
+
+        function enterSelectionMode(mode, includeAggregated) {
             allResultsContainer.classList.add('selection-mode');
             document.getElementById('mainActionButtons').classList.add('hidden');
             const selectionContainer = document.getElementById('selectionModeButtons');
@@ -974,22 +1064,23 @@
                 <button id="cancelSelectionBtn" class="btn btn-secondary"><i class="fas fa-times"></i>Cancel</button>
             `;
             
+            renderAllStyleGroups(true);
+
             document.getElementById('cancelSelectionBtn').addEventListener('click', exitSelectionMode);
             document.getElementById('selectAllBtn').addEventListener('click', () => {
-                const allChecked = Array.from(allResultsContainer.querySelectorAll('input[type="checkbox"]')).every(cb => cb.checked);
-                allResultsContainer.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = !allChecked);
+                const allChecked = Array.from(allResultsContainer.querySelectorAll('.style-checkbox')).every(cb => cb.checked);
+                allResultsContainer.querySelectorAll('.style-checkbox, .color-checkbox').forEach(cb => cb.checked = !allChecked);
                 updateActionBtnState();
             });
             document.getElementById('actionBtn').addEventListener('click', () => {
                 if (mode === 'delete') handleDeleteSelected();
-                if (mode === 'report') handleReportGeneration();
+                if (mode === 'report') handleReportGeneration(includeAggregated);
             });
-            allResultsContainer.addEventListener('change', updateActionBtnState);
             updateActionBtnState();
         }
 
         function updateActionBtnState() {
-            const anyChecked = getSelectedStyles().length > 0;
+            const anyChecked = getSelectedColors().length > 0;
             const actionBtn = document.getElementById('actionBtn');
             if (actionBtn) {
                actionBtn.disabled = !anyChecked;
@@ -1000,29 +1091,35 @@
             allResultsContainer.classList.remove('selection-mode');
             document.getElementById('mainActionButtons').classList.remove('hidden');
             document.getElementById('selectionModeButtons').classList.add('hidden');
-            renderAllStyleGroups();
+            renderAllStyleGroups(false);
         }
         
-        function getSelectedStyles() {
-            return Array.from(allResultsContainer.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.dataset.styleNo);
+        function getSelectedColors() {
+             return Array.from(allResultsContainer.querySelectorAll('.color-checkbox:checked'))
+                .map(cb => ({ styleNo: cb.dataset.styleNo, color: cb.dataset.color }));
         }
         
         function handleDeleteSelected() {
-            const stylesToDelete = getSelectedStyles();
+            const colorsToDelete = getSelectedColors();
             const modal = document.getElementById('deleteConfirmModal');
-            modal.querySelector('#deleteConfirmMessage').textContent = `This will permanently delete ${stylesToDelete.length} style(s) and all their colors.`;
+            modal.querySelector('#deleteConfirmMessage').textContent = `This will permanently delete ${colorsToDelete.length} selected color(s).`;
             modal.classList.remove('hidden');
             
             document.getElementById('confirmDeleteBtn').onclick = () => {
                 const passwordInput = document.getElementById('deletePassword');
                 if (passwordInput.value === DELETE_PASSWORD) {
-                    stylesToDelete.forEach(styleNo => {
-                        delete allCalculations[styleNo];
+                    colorsToDelete.forEach(({ styleNo, color }) => {
+                        if (allCalculations[styleNo] && allCalculations[styleNo][color]) {
+                            delete allCalculations[styleNo][color];
+                            if (Object.keys(allCalculations[styleNo]).length === 0) {
+                                delete allCalculations[styleNo];
+                            }
+                        }
                     });
 
                     saveState();
                     exitSelectionMode();
-                    showMessage('Selected styles deleted.', 'success');
+                    showMessage(`${colorsToDelete.length} color(s) deleted.`, 'success');
                     modal.classList.add('hidden');
                     passwordInput.value = '';
                     document.getElementById('deleteError').textContent = '';
@@ -1032,23 +1129,25 @@
             };
         }
         
-        function handleReportGeneration() {
-            const selectedStyles = getSelectedStyles();
-            const resultsForReport = selectedStyles.flatMap(styleNo => Object.values(allCalculations[styleNo]));
-            showReportPreview(resultsForReport);
+        function handleReportGeneration(includeAggregated) {
+            const selectedColors = getSelectedColors();
+            const resultsForReport = selectedColors.map(({styleNo, color}) => allCalculations[styleNo][color]);
+            showReportPreview(resultsForReport, includeAggregated);
         }
 
-        function showReportPreview(results) {
+        function showReportPreview(results, includeAggregated) {
             const aggregated = aggregateReportData(results);
-            let previewHtml = `<h3 class="text-xl font-bold mb-4 text-center">Report Preview (${results.length} style-colors)</h3>
-            <h4 class="report-section-title">Aggregated Summary</h4>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 text-sm">
-                <div class="report-summary-item"><span>Total Order Qty:</span><span class="font-semibold">${formatNumber(aggregated["Total Order Quantity"], 0)}</span></div>
-                <div class="report-summary-item"><span>Avg. Efficiency:</span><span class="font-semibold">${formatNumber(aggregated["Average Efficiency"], 1, '', '%')}</span></div>
-                <div class="report-summary-item"><span>Grand Total Budget:</span><span class="font-semibold">${formatNumber(aggregated["Grand Total Budget"], 2, '₹')}</span></div>
-                <div class="report-summary-item"><span>Avg. Per-Piece Cost:</span><span class="font-semibold">${formatNumber(aggregated["Average Per-Piece Cost"], 2, '₹')}</span></div>
-            </div>
-            <h4 class="report-section-title">Detailed Breakdown</h4>
+            let previewHtml = `<h3 class="text-xl font-bold mb-4 text-center">Report Preview (${results.length} style-colors)</h3>`;
+            if(includeAggregated) {
+                previewHtml += `<h4 class="report-section-title">Aggregated Summary</h4>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 text-sm">
+                    <div class="report-summary-item"><span>Total Order Qty:</span><span class="font-semibold">${formatNumber(aggregated["Total Order Quantity"], 0)}</span></div>
+                    <div class="report-summary-item"><span>Avg. Efficiency:</span><span class="font-semibold">${formatNumber(aggregated["Average Efficiency"], 1, '', '%')}</span></div>
+                    <div class="report-summary-item"><span>Grand Total Budget:</span><span class="font-semibold">${formatNumber(aggregated["Grand Total Budget"], 2, '₹')}</span></div>
+                    <div class="report-summary-item"><span>Avg. Per-Piece Cost:</span><span class="font-semibold">${formatNumber(aggregated["Average Per-Piece Cost"], 2, '₹')}</span></div>
+                </div>`;
+            }
+            previewHtml += `<h4 class="report-section-title">Detailed Breakdown</h4>
             <div class="overflow-x-auto"><table class="w-full text-sm text-left">
                 <thead class="bg-gray-100"><tr>
                     <th class="p-2">Style</th><th class="p-2">Color</th><th class="p-2">Qty</th><th class="p-2">Total Budget</th><th class="p-2">P.P. Cost</th><th class="p-2">Timestamp</th>
@@ -1071,7 +1170,7 @@
             previewModal.classList.remove('hidden');
 
             document.getElementById('downloadReportBtn').onclick = () => {
-                generateExcelReport(results);
+                generateExcelReport(results, includeAggregated);
                 previewModal.classList.add('hidden');
                 exitSelectionMode();
             };
@@ -1090,14 +1189,16 @@
             };
         }
 
-        function generateExcelReport(results) {
+        function generateExcelReport(results, includeAggregated) {
             const wb = XLSX.utils.book_new();
             
-            const aggregatedData = aggregateReportData(results);
-            const summaryData = Object.entries(aggregatedData).map(([key, value]) => [key, value]);
-            const wsSummary = XLSX.utils.aoa_to_sheet([["Metric", "Value"], ...summaryData]);
-            wsSummary['!cols'] = [{ wch: 30 }, { wch: 20 }];
-            XLSX.utils.book_append_sheet(wb, wsSummary, "Aggregated Summary");
+            if(includeAggregated) {
+                const aggregatedData = aggregateReportData(results);
+                const summaryData = Object.entries(aggregatedData).map(([key, value]) => [key, value]);
+                const wsSummary = XLSX.utils.aoa_to_sheet([["Metric", "Value"], ...summaryData]);
+                wsSummary['!cols'] = [{ wch: 30 }, { wch: 20 }];
+                XLSX.utils.book_append_sheet(wb, wsSummary, "Aggregated Summary");
+            }
 
             const headerRow2 = [
                 "Style No.", "Color", "Process", "Order Qty", "Slab", "Eff%",
@@ -1121,6 +1222,52 @@
             
             XLSX.writeFile(wb, `Garment_Report_${new Date().toISOString().slice(0,10)}.xlsx`);
         }
+        
+        importFileInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+                    let importedCount = 0, skippedCount = 0;
+                    jsonData.forEach(row => {
+                        const style = row["Style No."];
+                        const color = row["Color"];
+                        const order_qty = parseInt(row["Order Qty"]);
+                        const sam_stitching = parseFloat(row["Stitching Sam"]);
+                        const sam_cutting = parseFloat(row["Cutting Sam"]);
+                        const sam_finishing = parseFloat(row["Finishing Sam"]);
+                        const processes = row["Process"] || "N/A";
+
+                        if (!style || !color || isNaN(order_qty) || isNaN(sam_stitching) || isNaN(sam_cutting) || isNaN(sam_finishing)) {
+                            skippedCount++;
+                            return;
+                        }
+
+                        if (allCalculations[style] && allCalculations[style][color]) {
+                            skippedCount++;
+                            return;
+                        }
+                        
+                        processCalculation(style, color, order_qty, sam_stitching, sam_cutting, sam_finishing, processes);
+                        importedCount++;
+                    });
+                    showMessage(`Imported ${importedCount} styles. Skipped ${skippedCount} duplicate or invalid rows.`);
+                } catch (error) {
+                    console.error("Import Error:", error);
+                    showMessage(error.message || "Failed to import file. Check format and headers.", "danger");
+                } finally {
+                    importFileInput.value = '';
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        });
 
         loadState();
     });
