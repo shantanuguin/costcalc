@@ -1,0 +1,1439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    <title>Our Story</title>
+    
+    <!-- 1. Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 2. Google Fonts (Inter & Great Vibes for signature) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=Great+Vibes&display=swap" rel="stylesheet">
+    
+    <!-- 3. Icon Library -->
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+
+    <!-- 4. Viewport Height Fix -->
+    <script>
+        function setViewportHeight() {
+            let vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+        }
+        setViewportHeight();
+        window.addEventListener('resize', setViewportHeight);
+    </script>
+
+    <!-- 5. Custom CSS (Merged & Heavily Upgraded) -->
+    <style>
+        /* === Base & App Container === */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #111;
+            color: #e5e7eb;
+            overflow: hidden; 
+        }
+        h1, h2, h3 {
+            font-weight: 800;
+            color: #ffffff;
+        }
+        .app-container {
+            width: 100%;
+            max-width: 28rem;
+            margin-left: auto;
+            margin-right: auto;
+            display: none;
+            flex-direction: column;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            background-color: #000000;
+            height: calc(var(--vh, 1vh) * 100);
+            overflow: hidden;
+            position: relative;
+        }
+        @media (min-width: 640px) {
+            .app-container {
+                height: 90vh;
+                max-height: 850px;
+                border-radius: 1.5rem;
+                border: 1px solid #374151;
+            }
+        }
+
+        /* === Splash Screen === */
+        #splash-screen {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            margin: auto;
+            max-width: 28rem;
+            height: calc(var(--vh, 1vh) * 100);
+            background-color: #000;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 1;
+            cursor: pointer;
+            transition: opacity 1s ease-out;
+        }
+        #splash-screen.fade-out {
+            opacity: 0;
+            visibility: hidden;
+        }
+        #splash-logo {
+            font-weight: 800;
+            font-size: 2.5rem;
+            color: #dc2626; /* Red */
+            text-transform: uppercase;
+            letter-spacing: 0.1rem;
+            text-shadow: 0 0 10px rgba(220, 38, 38, 0.5);
+            animation: pulse-splash 2s infinite ease-in-out;
+            text-align: center; /* Added for multi-line */
+        }
+        @keyframes pulse-splash {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 1; }
+        }
+        @media (min-width: 640px) {
+            #splash-screen {
+                height: 90vh;
+                max-height: 850px;
+                border-radius: 1.5rem;
+            }
+        }
+
+        /* === App Header & Progress Bar === */
+        .app-header {
+            display: flex;
+            align-items: center;
+            justify-content: center; /* Centered title */
+            padding: 1rem;
+            border-bottom-width: 1px;
+            flex-shrink: 0;
+            border-color: #1f2937;
+            background-color: #000000;
+            color: #ffffff;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .progress-bar-container {
+            width: 100%;
+            height: 0.5rem;
+            background-color: #1f2937;
+            flex-shrink: 0;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background-color: #065f46; /* Muted Green */
+            width: 0%;
+            transition: width 0.5s ease-out;
+        }
+
+        /* === Page & Chapter Container === */
+        .page-container {
+            width: 100%;
+            flex-grow: 1;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #065f46 #000;
+        }
+        .page-container::-webkit-scrollbar { width: 6px; }
+        .page-container::-webkit-scrollbar-track { background: #000; }
+        .page-container::-webkit-scrollbar-thumb { background-color: #065f46; border-radius: 6px; }
+        
+        .app-chapter {
+            padding: 1rem;
+            display: none;
+        }
+        .app-chapter.active {
+            display: block;
+        }
+        
+        /* === All Modals (Call, Finish) === */
+        .modal-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.7); z-index: 50; opacity: 0; visibility: hidden; transition: all 0.3s ease-in-out; }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        .call-modal-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; max-width: 28rem; margin: 0 auto; background-color: rgba(0, 0, 0, 0.7); z-index: 70; opacity: 0; visibility: hidden; transition: all 0.3s ease-in-out; display: flex; align-items: center; justify-content: center; padding: 1rem; }
+        .call-modal-overlay.active { opacity: 1; visibility: visible; }
+        .call-modal-content { background-color: #1f2937; border-radius: 1.5rem; padding: 1.5rem; width: 100%; max-width: 20rem; text-align: center; border: 1px solid #374151; box-shadow: 0 10px 25px rgba(0,0,0,0.5); opacity: 0; transform: scale(0.8); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .call-modal-overlay.active .call-modal-content { opacity: 1; transform: scale(1); }
+        .call-modal-icon { font-size: 3rem; color: #065f46; margin-bottom: 0.5rem; }
+        .call-modal-title { font-size: 1.25rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem; }
+        .call-modal-text { font-size: 0.875rem; color: #d1d5db; margin-bottom: 1.5rem; line-height: 1.5; }
+        .modal-close-btn { background-color: #065f46; color: #fff; border: none; padding: 0.75rem 1.5rem; border-radius: 99px; font-weight: 700; cursor: pointer; transition: background-color 0.2s; }
+        .modal-close-btn:hover { background-color: #064e3b; }
+        
+        /* === Button Styles === */
+        .main-button {
+            display: inline-block; width: 100%; font-weight: 700; font-size: 1.125rem;
+            padding: 1rem 2.5rem; border-radius: 9999px;
+            box-shadow: 0 10px 15px -3px rgba(6, 95, 70, 0.2);
+            transform: scale(1); transition: all 0.3s ease-in-out;
+            background-color: #065f46; color: #ffffff;
+            cursor: pointer; text-align: center;
+        }
+        .main-button:hover {
+            background-color: #047857;
+            transform: translateY(-0.25rem) scale(1.02);
+            box-shadow: 0 15px 25px -5px rgba(6, 95, 70, 0.3);
+        }
+        .main-button:active { transform: scale(0.98); }
+        .main-button:disabled {
+            background-color: #374151;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        /* === CHAPTER STYLES === */
+        .chapter-header {
+            font-size: 2.25rem; font-weight: 800; color: #fff;
+            text-align: center; margin-bottom: 1rem;
+        }
+        .chapter-subheader {
+            font-size: 1.125rem; color: #9ca3af;
+            text-align: center; margin-bottom: 3rem;
+            max-width: 36rem; margin-left: auto; margin-right: auto;
+        }
+        .dark-card {
+            width: 100%; background-color: #1f2937;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem; border-radius: 1.5rem;
+            border: 1px solid #374151; margin-bottom: 1.5rem;
+        }
+
+        /* Chapter 1: FLAMES */
+        .flames-input { width: 100%; padding: 0.75rem 1rem; border-radius: 0.5rem; border: 2px solid #374151; background-color: #111; color: #fff; font-size: 1rem; transition: border-color 0.2s; }
+        .flames-input:focus { outline: none; border-color: #065f46; }
+        .flames-button {
+            display: inline-block; font-weight: 700; font-size: 1rem;
+            padding: 0.75rem 1.5rem; border-radius: 9999px;
+            box-shadow: 0 10px 15px -3px rgba(6, 95, 70, 0.2);
+            transition: all 0.3s ease-in-out; background-color: #065f46;
+            color: #ffffff; cursor: pointer; text-align: center;
+        }
+        .flames-button:hover { background-color: #047857; transform: translateY(-2px); }
+        .flames-button:disabled { background-color: #374151; cursor: not-allowed; }
+        .flames-result {
+            font-size: 3rem; font-weight: 800; text-align: center; margin-top: 1.5rem;
+            color: #34d399; /* Green */
+            opacity: 0; transform: scale(0.8);
+            animation: flames-pop-in 0.5s ease-out forwards;
+        }
+        @keyframes flames-pop-in { to { opacity: 1; transform: scale(1); } }
+        .flames-result-meaning { font-size: 1.25rem; text-align: center; color: #9ca3af; margin-top: -0.5rem; }
+        .flames-terminal {
+            width: 100%; height: 300px; padding: 1rem;
+            font-family: monospace; font-size: 0.875rem;
+            border-radius: 0.75rem; overflow-y: scroll;
+            background-color: #000; color: #e5e7eb;
+            border: 1px solid #374151; margin-top: 1.5rem;
+            scrollbar-width: thin; scrollbar-color: #065f46 #000;
+        }
+        .flames-terminal::-webkit-scrollbar { width: 6px; }
+        .flames-terminal::-webkit-scrollbar-track { background: #000; }
+        .flames-terminal::-webkit-scrollbar-thumb { background-color: #065f46; }
+        .terminal-line-command { color: #34d399; }
+        .terminal-line-output { color: #e5e7eb; }
+        .terminal-line-process { color: #fde047; }
+        .terminal-line-error { color: #f87171; }
+        .terminal-line-flames { color: #60a5fa; }
+        
+        /* === Chapter 2: Whac-a-Wink === */
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin: 1.5rem auto;
+            width: 100%;
+            max-width: 360px;
+            aspect-ratio: 1 / 1; /* Make it square */
+            position: relative;
+        }
+        .game-hole {
+            background-color: #1f2937;
+            border-radius: 50%;
+            border: 4px solid #374151;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem; /* Emoji size */
+            color: #fff;
+            transition: all 0.1s ease-in-out;
+            user-select: none;
+            overflow: hidden; /* Hide emoji before it appears */
+        }
+        .game-hole span {
+             display: block;
+             transform: scale(0);
+             transition: transform 0.1s ease-in-out;
+        }
+        .game-hole.active-wink {
+            background-color: #059669; /* Green */
+            border-color: #34d399;
+            cursor: pointer;
+        }
+        .game-hole.active-wink span {
+            transform: scale(1);
+        }
+        .game-hole.active-sleepy {
+            background-color: #e11d48; /* Red */
+            border-color: #f87171;
+            cursor: pointer;
+        }
+        .game-hole.active-sleepy span {
+            transform: scale(1);
+        }
+
+        .game-stats {
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin: 1rem 0;
+        }
+        .game-stats span {
+            color: #34d399;
+            font-size: 1.5rem;
+        }
+        
+        /* Chapter 3: Timeline */
+        .timeline-card {
+            background-color: #1f2937; padding: 1.5rem;
+            border-radius: 1.5rem; border: 1px solid #374151;
+            text-align: center; margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .timeline-content { text-align: left; flex-grow: 1; }
+        .timeline-title { font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; color: #34d399; }
+        .timeline-time { font-size: 1.25rem; font-weight: 700; color: #ffffff; }
+        .timeline-icon { font-size: 2.5rem; color: #065f46; margin-left: 1rem; flex-shrink: 0; }
+        
+        /* NEW: Chapter 3 Additions */
+        #cycling-text-container {
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+        #cycling-text-container.fade-in {
+            opacity: 1;
+        }
+        .vibe-btn {
+            background-color: #374151;
+            color: #d1d5db;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 99px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .vibe-btn:hover {
+            background-color: #4b5563;
+        }
+        .vibe-btn.selected {
+            background-color: #065f46;
+            color: #fff;
+            box-shadow: 0 0 10px rgba(6, 95, 70, 0.5);
+        }
+
+        /* Chapter 4: This or That (Upgraded) */
+        .this-or-that-card { background-color: #1f2937; border-radius: 1rem; padding: 1.5rem; margin-bottom: 1.5rem; display: none; }
+        .this-or-that-card.active { display: block; animation: fadeInUp 0.5s; }
+        .this-or-that-question { font-size: 1.5rem; font-weight: 700; text-align: center; margin-bottom: 1.5rem; }
+        .this-or-that-options { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; position: relative; }
+        .this-or-that-btn {
+            padding: 1rem; border-radius: 0.75rem; background-color: #111;
+            border: 2px solid #374151; color: #e5e7eb;
+            font-size: 1.125rem; font-weight: 700; cursor: pointer; transition: all 0.2s;
+        }
+        .this-or-that-btn:hover:not(:disabled) { border-color: #065f46; }
+        .this-or-that-btn.selected { background-color: #065f46; border-color: #065f46; color: #fff; }
+        .this-or-that-btn.match { background-color: #065f46; border-color: #34d399; }
+        .this-or-that-btn.no-match { background-color: #4b5563; border-color: #6b7280; opacity: 0.7; }
+        .this-or-that-answer-text {
+            display: none;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px dashed #374151;
+            font-size: 1rem;
+            font-style: italic;
+            color: #d1d5db;
+            text-align: center;
+        }
+        
+        /* Chapter 5: Letter */
+        #chapter-5 {
+            background: linear-gradient(180deg, rgba(0,0,0,1) 0%, #111 50%, #062f23 100%);
+        }
+        .terminal {
+            width: 100%; height: auto; padding: 1rem;
+            font-family: monospace; font-size: 0.875rem;
+            border-radius: 0.75rem; overflow-y: auto;
+            background-color: #000; color: #e5e7eb;
+            border: 1px solid #374151;
+        }
+        .letter-text {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.125rem; line-height: 1.75rem;
+            color: #e5e7eb;
+        }
+        .signature {
+            font-family: 'Great Vibes', cursive;
+            font-size: 3.5rem;
+            color: #dc2626;
+            text-shadow: 0 0 5px rgba(220, 38, 38, 0.5);
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+    </style>
+</head>
+<body class="bg-black">
+
+    <!-- === SPLASH SCREEN (Click to enter) === -->
+    <div id="splash-screen">
+        <h1 id="splash-logo">Fav Pocha Aloo</h1>
+    </div>
+
+    <!-- === MODALS (Global) === -->
+    <!-- Call Modal -->
+    <div id="call-modal-overlay" class="call-modal-overlay">
+        <div class="call-modal-content">
+            <div id="call-modal-icon" class="call-modal-icon"><ion-icon name="call-outline"></ion-icon></div>
+            <h3 id="call-modal-title" class="call-modal-title">Not So Fast!</h3>
+            <p id="call-modal-text" class="call-modal-text">Eager to hear my voice, huh?</p>
+            <button id="call-modal-close-btn" class="modal-close-btn">Okay, okay...</button>
+        </div>
+    </div>
+    <!-- Finish Modal -->
+    <div id="finish-modal-overlay" class="call-modal-overlay">
+        <div class="call-modal-content">
+            <div class="call-modal-icon"><ion-icon name="heart-circle-outline"></ion-icon></div>
+            <h3 class="call-modal-title">You really think it's over?</h3>
+            <p class="call-modal-text">You've reached the end of this story... for now.</p>
+            <!-- RESTART BUTTON UPDATED -->
+            <button id="finish-modal-restart-btn" class="modal-close-btn">Restart</button>
+        </div>
+    </div>
+    
+    <!-- === MAIN APP CONTAINER === -->
+    <div class="app-container" id="app-body">
+        
+        <!-- Progress Bar -->
+        <div class="progress-bar-container">
+            <div id="progress-bar-fill" class="progress-bar-fill"></div>
+        </div>
+        
+        <!-- App Header -->
+        <header class="app-header">
+            <div class="text-center">
+                <h2 id="header-title" class="font-semibold text-lg">Chapter 1: The Profile</h2>
+            </div>
+        </header>
+        
+        <!-- This container holds the scrolling page -->
+        <div class="page-container" id="page-container">
+
+            <!-- === CHAPTER 1: FLAMES CALCULATOR === -->
+            <div id="chapter-1" class="app-chapter active">
+                <h1 class="chapter-header">Chapter 1: The Destiny Hack</h1>
+                <p class="chapter-subheader">I had to know what the universe thought. So I ran the numbers for us...</p>
+
+                <div class="grid grid-cols-1 gap-6 items-center">
+                    <div>
+                        <div class="space-y-4">
+                            <div>
+                                <label for="name1" class="font-bold mb-2 block">My Name</label>
+                                <input type="text" id="name1" class="flames-input" value="[Your Name]">
+                            </div>
+                            <div>
+                                <label for="name2" class="font-bold mb-2 block">Your Name</label>
+                                <input type="text" id="name2" class="flames-input" value="[Her Name]">
+                            </div>
+                            <button id="calculate-flames-btn" class="flames-button w-full">
+                                Calculate Our Destiny
+                                <ion-icon name="heart-outline" class="ml-2"></ion-icon>
+                            </button>
+                        </div>
+                        <div id="flames-result-container" class="hidden mt-6">
+                            <h2 id="flames-result" class="flames-result">L - Love</h2>
+                            <p id="flames-result-meaning" class="flames-result-meaning">(Well, what did you expect? 😉)</p>
+                        </div>
+                    </div>
+                    <div>
+                        <pre id="flames-terminal" class="flames-terminal">
+<span class="terminal-line-process"># Ready to calculate destiny...</span>
+<span class="terminal-line-output"># Enter names and press 'Calculate'.</span>
+                        </pre>
+                    </div>
+                </div>
+                
+                <button class="main-button mt-8" onclick="showChapter('chapter-2')">
+                    Next Chapter: Whac-a-Wink
+                </button>
+            </div>
+
+            <!-- === CHAPTER 2: WHAC-A-WINK (REPLACED) === -->
+            <div id="chapter-2" class="app-chapter">
+                <h1 class="chapter-header">Chapter 2: Whac-a-Wink</h1>
+                <p id="game-subheader" class="chapter-subheader">A quick game for you. Click the winking emoji (😉) to score. Avoid the sleepy ones (😴)!</p>
+
+                <!-- New Game Grid -->
+                <div class="game-grid">
+                    <div class="game-hole"><span>😉</span></div>
+                    <div class="game-hole"><span>😉</span></div>
+                    <div class="game-hole"><span>😉</span></div>
+                    <div class="game-hole"><span>😉</span></div>
+                    <div class="game-hole"><span>😉</span></div>
+                    <div class="game-hole"><span>😉</span></div>
+                    <div class="game-hole"><span>😉</span></div>
+                    <div class="game-hole"><span>😉</span></div>
+                    <div class="game-hole"><span>😉</span></div>
+                </div>
+                
+                <div class="game-stats">
+                    <!-- EDITED: Increased time to 45s -->
+                    <div>Time: <span id="game-time">45</span>s</div>
+                    <div>Score: <span id="game-score">0</span> / 15</div>
+                </div>
+                
+                <button id="game-start-btn" class="main-button" onclick="startWhackGame()">Start Game</button>
+                
+                <button id="game-next-btn" class="main-button mt-6 hidden" onclick="showChapter('chapter-3')">
+                    Next Chapter: Our Timeline
+                </button>
+            </div>
+
+            <!-- === CHAPTER 3: OUR TIMELINE (HEAVILY EDITED) === -->
+            <div id="chapter-3" class="app-chapter">
+                <h1 class="chapter-header">Chapter 3: The Data</h1>
+                <p class="chapter-subheader">Just keeping track of some important metrics...</p>
+                
+                <div class="w-full space-y-4">
+                    <!-- Feature 1: Live Counter -->
+                    <div class="timeline-card">
+                        <div class="timeline-content">
+                            <h3 class="timeline-title">Connection Established For...</h3>
+                            <p id="time-since-met" class="timeline-time" style="font-size: 1.1rem; letter-spacing: -0.05em; font-family: monospace;">...</p>
+                        </div>
+                        <div class="timeline-icon"><ion-icon name="hourglass-outline"></ion-icon></div>
+                    </div>
+                    
+                    <!-- Feature 2: Cycling Compliment -->
+                    <div class="timeline-card">
+                        <div class="timeline-content">
+                            <h3 class="timeline-title">Daily Compliment (Loading...)</h3>
+                            <div id="cycling-text-container" class="fade-in">
+                                <p id="daily-compliment" class="timeline-time">...has a great laugh.</p>
+                            </div>
+                        </div>
+                        <div class="timeline-icon"><ion-icon name="sparkles-outline"></ion-icon></div>
+                    </div>
+
+                    <!-- Feature 3: Cycling Trait -->
+                     <div class="timeline-card">
+                        <div class="timeline-content">
+                            <h3 class="timeline-title">File Under:</h3>
+                             <p class="timeline-time">
+                                You're a... <span id="cycling-trait" class="text-yellow-300">Leo</span>
+                             </p>
+                        </div>
+                        <div class="timeline-icon"><ion-icon name="folder-open-outline"></ion-icon></div>
+                    </div>
+
+                    <!-- Feature 4: Vibe Poll -->
+                    <div class="timeline-card">
+                        <div class="timeline-content">
+                            <h3 class="timeline-title">Current Vibe Check</h3>
+                            <div class="flex space-x-2 mt-2">
+                                <button class="vibe-btn" onclick="selectVibe(this)">Chill 😌</button>
+                                <button class="vibe-btn" onclick="selectVibe(this)">Goofy 🤪</button>
+                                <button class="vibe-btn" onclick="selectVibe(this)">Flirty 😉</button>
+                            </div>
+                        </div>
+                        <div class="timeline-icon"><ion-icon name="pulse-outline"></ion-icon></div>
+                    </div>
+
+                    <!-- Feature 5 & 6: Birthdays -->
+                    <div class="timeline-card">
+                        <div class="timeline-content">
+                            <h3 class="timeline-title">Your Last Birthday (Aug 20)</h3>
+                            <p id="birthday-past" class="timeline-time">... days ago!</p>
+                        </div>
+                        <div class="timeline-icon"><ion-icon name="gift-outline"></ion-icon></div>
+                    </div>
+                    <div class="timeline-card">
+                        <div class="timeline-content">
+                            <h3 class="timeline-title">Your Next Birthday...</h3>
+                            <p id="birthday-next" class="timeline-time">... days to go!</p>
+                        </div>
+                        <div class="timeline-icon"><ion-icon name="calendar-outline"></ion-icon></div>
+                    </div>
+
+                    <!-- Feature 7: Next Milestone (Month-iversary) -->
+                    <div class="timeline-card">
+                        <div class="timeline-content">
+                            <h3 class="timeline-title">Next Milestone (the 11th)</h3>
+                            <p id="next-milestone" class="timeline-time">... days away!</p>
+                        </div>
+                        <div class="timeline-icon"><ion-icon name="flag-outline"></ion-icon></div>
+                    </div>
+
+                    <!-- Feature 8: Firsts -->
+                    <div class="timeline-card">
+                        <div class="timeline-content">
+                            <h3 class="timeline-title">Notable "Firsts"</h3>
+                            <p class="timeline-time" style="font-size: 1rem; line-height: 1.5rem;">
+                                - First Text: Oct 11, 03:27<br>
+                                - First "Haha Thanks": Oct 11, 21:12
+                            </p>
+                        </div>
+                        <div class="timeline-icon"><ion-icon name="chatbox-ellipses-outline"></ion-icon></div>
+                    </div>
+
+                    <!-- Feature 9: My Status -->
+                    <div class="timeline-card">
+                        <div class="timeline-content">
+                            <h3 class="timeline-title">My Current Status</h3>
+                            <p class="timeline-time">Thinking about you.</p>
+                        </div>
+                        <div class="timeline-icon"><ion-icon name="person-outline"></ion-icon></div>
+                    </div>
+                    
+                    <!-- Feature 10: Random Stat -->
+                    <div class="timeline-card">
+                        <div class="timeline-content">
+                            <h3 class="timeline-title">Random Stat</h3>
+                            <p class="timeline-time">Times you've made me smile: 1,000,000+</p>
+                        </div>
+                        <div class="timeline-icon"><ion-icon name="happy-outline"></ion-icon></div>
+                    </div>
+
+                    <!-- Feature 11: Quick Q -->
+                    <div class="timeline-card">
+                        <div class="timeline-content">
+                            <h3 class="timeline-title">Quick Question</h3>
+                            <p class="timeline-time">What's our go-to emoji?</p>
+                        </div>
+                        <div class="timeline-icon"><ion-icon name="help-circle-outline"></ion-icon></div>
+                    </div>
+                    
+                    <!-- Feature 12: Next Call -->
+                     <div class="timeline-card">
+                        <div class="timeline-content">
+                            <h3 class="timeline-title">Pending...</h3>
+                            <p class="timeline-time">Thinking about our next call...</p>
+                        </div>
+                        <div class="timeline-icon"><ion-icon name="call-outline"></ion-icon></div>
+                    </div>
+
+                </div>
+
+                <button class="main-button mt-8" onclick="showChapter('chapter-4')">
+                    Next Chapter: Our Vibe
+                </button>
+            </div>
+
+            <!-- === CHAPTER 4: THIS OR THAT? (Upgraded) === -->
+            <div id="chapter-4" class="app-chapter">
+                <h1 class="chapter-header">Chapter 4: This or That?</h1>
+                <p class="chapter-subheader">Let's see how in sync we are. Click your answer for each one!</p>
+
+                <!-- Question 1 -->
+                <div class="this-or-that-card active" data-my-answer="Mountains" data-match-response="Yes! We're both adventurers. Let's plan a trip." data-miss-response="That's cool, I guess I'll just have to drag you to the mountains. 😉">
+                    <h2 class="this-or-that-question">Mountains or Beach?</h2>
+                    <div class="this-or-that-options">
+                        <button class="this-or-that-btn" onclick="checkThisOrThat(this)">Mountains 🏔️</button>
+                        <button class="this-or-that-btn" onclick="checkThisOrThat(this)">Beach 🏖️</button>
+                    </div>
+                    <div class="this-or-that-answer-text"></div>
+                </div>
+                <!-- Question 2 -->
+                <div class="this-or-that-card" data-my-answer="Sweet" data-match-response="A match! You're sweet, this is sweet, it's perfect." data-miss-response="Ah, an intellectual. I'll just have to eat all the dessert myself.">
+                    <h2 class="this-or-that-question">Sweet or Savory?</h2>
+                    <div class="this-or-that-options">
+                        <button class="this-or-that-btn" onclick="checkThisOrThat(this)">Sweet 🍰</button>
+                        <button class="this-or-that-btn" onclick="checkThisOrThat(this)">Savory 🥨</button>
+                    </div>
+                    <div class="this-or-that-answer-text"></div>
+                </div>
+                <!-- Question 3 -->
+                <div class="this-or-that-card" data-my-answer="Late Nights" data-match-response="Of course. All the best conversations (like our first one) happen after midnight." data-miss-response="Early mornings? You're lucky you're cute, because that's just wrong.">
+                    <h2 class="this-or-that-question">Late Nights or Early Mornings?</h2>
+                    <div class="this-or-that-options">
+                        <button class="this-or-that-btn" onclick="checkThisOrThat(this)">Late Nights 🌙</button>
+                        <button class="this-or-that-btn" onclick="checkThisOrThat(this)">Early Mornings ☀️</button>
+                    </div>
+                    <div class="this-or-that-answer-text"></div>
+                </div>
+                <!-- Question 4 -->
+                <div class="this-or-that-card" data-my-answer="Home" data-match-response="Perfect. We can just... not move. And be cozy. Forever." data-miss-response="Going out? Fine, but I'm complaining the whole time (and secretly having fun with you).">
+                    <h2 class="this-or-that-question">Going Out or Staying Home?</h2>
+                    <div class="this-or-that-options">
+                        <button class="this-or-that-btn" onclick="checkThisOrThat(this)">Going Out 💃</button>
+                        <button class="this-or-that-btn" onclick="checkThisOrThat(this)">Staying Home 🍿</button>
+                    </div>
+                    <div class="this-or-that-answer-text"></div>
+                </div>
+                
+                <button id="this-or-that-next-btn" class="main-button mt-6 hidden" onclick="showNextThisOrThat()">
+                    Next Question
+                </button>
+            </div>
+            
+            <!-- === CHAPTER 5: THE LETTER === -->
+            <div id="chapter-5" class="app-chapter">
+                <h1 class="chapter-header">Final Chapter: The "Analysis"</h1>
+                <p class="chapter-subheader">This is it. I ran one last 'analysis' for you.</p>
+                
+                <div id="letter-lock-screen" class="w-full text-center space-y-8">
+                    <!-- NEW: Run Analysis Button -->
+                    <button id="run-analysis-btn" class="main-button" onclick="startTerminalPoem()">
+                        <ion-icon name="caret-forward-outline" class="mr-2"></ion-icon>
+                        Run Final_Analysis.py
+                    </button>
+                    <div class="terminal text-left hidden" id="terminal-container">
+                        <pre id="terminal-code"></pre>
+                        <span id="terminal-cursor" class="typing-cursor" style="display: none; background-color: #e5e7eb;"></span>
+                    </div>
+                    <button id="btn-show-letter" class="main-button hidden">Read The Letter</button>
+                </div>
+
+                <div id="letter-content" class="hidden w-full">
+                    <div class="dark-card" style="background: linear-gradient(180deg, rgba(31,41,55,1) 0%, #111 100%);">
+                        <div class="letter-text text-left space-y-6">
+                            <p class="text-3xl font-bold text-white">Dear [Her Name],</p>
+                            <p>You made it. You got through all my nerdy games and code.</p>
+                            <p>I know this whole thing is... a lot. But I wanted to make something for you that wasnt just a text. I wanted to show you the story of how we met, from my perspective.</p>
+                            <p>That 3:27 AM text... I was so nervous to send it. And I waited *all day* for that "Haha Thanks". And it was worth it.</p>
+                            <p>This past month of getting to know you has been insane. You're funny, smart, and [adjective]. I love [mention something specific you like about her].</p>
+                            <p>I really, *really* like you. Happy one-month-of-knowing-each-other.</p>
+                            <p class="signature text-right mt-10">
+                                Yours,<br>
+                                [Your Name]
+                            </p>
+                        </div>
+                    </div>
+                    <button id="final-restart-btn" class="main-button" style="background-color: #1f2937; margin-top: 1rem;">
+                        Restart?
+                    </button>
+                </div>
+            </div>
+
+        </div> <!-- End .page-container -->
+    
+    </div> <!-- End .app-container -->
+    
+    
+    <!-- ============================================= -->
+    <!-- JAVASCRIPT LOGIC (SEQUENTIAL & UPGRADED) -->
+    <!-- ============================================= -->
+    <script>
+        // --- Global State ---
+        let audioCtx = null;
+        let currentChapter = 'chapter-1';
+        let terminalTyping = false; // Prevents sound overlap
+        const sleep = ms => new Promise(res => setTimeout(res, ms));
+        const meetDate = new Date('2025-10-11T03:27:00');
+        
+        // EDITED: Added more global vars for Chapter 3
+        let timelineInterval = null;
+        let timelineSecondCounter = 0;
+        const compliments = [
+            "...is hilarious.",
+            "...has amazing taste in music.",
+            "...is dangerously smart.",
+            "...is kinda cute or whatever."
+        ];
+        let complimentIndex = 0;
+        const traits = [
+            "Leo",
+            "Cutie",
+            "Gamer",
+            "Smarty"
+        ];
+        let traitIndex = 0;
+
+        
+        // --- Global Elements ---
+        const pageContainer = document.getElementById('page-container');
+        const progressBarFill = document.getElementById('progress-bar-fill');
+        const headerTitle = document.getElementById('header-title');
+        const splashScreen = document.getElementById('splash-screen');
+        const appBody = document.getElementById('app-body');
+        const finishModalOverlay = document.getElementById('finish-modal-overlay');
+        
+        // --- Splash Screen & App Init ---
+        splashScreen.addEventListener('click', () => {
+            playSound('click');
+            splashScreen.classList.add('fade-out');
+            setTimeout(initApp, 500);
+        });
+
+        function initApp() {
+            appBody.style.display = 'flex';
+            initAudio(); // Init AudioContext on first interaction
+            showChapter('chapter-1'); // Start at Chapter 1 (FLAMES)
+        }
+
+        // --- NEW: Chapter Navigation Logic ---
+        const chapterData = {
+            'chapter-1': { title: "Chapter 1: Destiny Hack", progress: 20 },
+            'chapter-2': { title: "Chapter 2: Whac-a-Wink", progress: 40 }, // Updated title
+            'chapter-3': { title: "Chapter 3: The Data", progress: 60 }, // Updated title
+            'chapter-4': { title: "Chapter 4: Our Vibe", progress: 80 },
+            'chapter-5': { title: "Final Chapter: The Letter", progress: 100 }
+        };
+
+        function showChapter(chapterId) {
+            playSound('click');
+            currentChapter = chapterId;
+            const chapterInfo = chapterData[chapterId];
+            
+            // EDITED: Clear timeline interval if leaving chapter 3
+            if (chapterId !== 'chapter-3' && timelineInterval) {
+                clearInterval(timelineInterval);
+                timelineInterval = null;
+            }
+
+            document.querySelectorAll('.app-chapter').forEach(c => c.classList.remove('active'));
+            document.getElementById(chapterId).classList.add('active');
+            
+            headerTitle.textContent = chapterInfo.title;
+            progressBarFill.style.width = `${chapterInfo.progress}%`;
+            
+            pageContainer.scrollTop = 0;
+            
+            // Trigger chapter-specific JS
+            if (chapterId === 'chapter-1') initFlames();
+            if (chapterId === 'chapter-2') initWhackGame(); // Updated function call
+            if (chapterId === 'chapter-3') initTimeline();
+            if (chapterId === 'chapter-4') initThisOrThat();
+            if (chapterId === 'chapter-5') initTerminalPoem();
+        }
+        
+        // --- NEW: Sound Engine (Web Audio API) ---
+        function initAudio() {
+            if (audioCtx) return;
+            try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { console.warn('Web Audio API not supported'); }
+        }
+        
+        function playSound(type) {
+            if (!audioCtx) return;
+            const o = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            g.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            
+            if (type === 'click') {
+                o.type = 'triangle';
+                o.frequency.setValueAtTime(800, audioCtx.currentTime);
+                g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+            } else if (type === 'flip' || type === 'whack' || type === 'catch') { // Catch/Whack sound
+                o.type = 'square';
+                o.frequency.setValueAtTime(400, audioCtx.currentTime);
+                g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+            } else if (type === 'match') {
+                o.type = 'sine';
+                o.frequency.setValueAtTime(600, audioCtx.currentTime);
+                o.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.1);
+                g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2);
+            } else if (type === 'win') {
+                o.type = 'sine';
+                o.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+                o.frequency.linearRampToValueAtTime(1046.50, audioCtx.currentTime + 0.5); // C6
+                g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
+            } else if (type === 'error' || type === 'miss') { // Miss sound
+                o.type = 'sawtooth';
+                o.frequency.setValueAtTime(200, audioCtx.currentTime);
+                o.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.2);
+                g.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2);
+            }
+            
+            o.connect(g);
+            g.connect(audioCtx.destination);
+            o.start();
+            o.stop(audioCtx.currentTime + 0.5);
+        }
+        
+        // NEW: Terminal Typing Sound
+        let typingOscillator = null;
+        function playTypingSound(start) {
+            if (!audioCtx) return;
+            if (start && !terminalTyping) {
+                terminalTyping = true;
+                typingOscillator = audioCtx.createOscillator();
+                const g = audioCtx.createGain();
+                typingOscillator.type = 'square';
+                typingOscillator.frequency.setValueAtTime(1200, audioCtx.currentTime);
+                g.gain.setValueAtTime(0.01, audioCtx.currentTime);
+                typingOscillator.connect(g);
+                g.connect(audioCtx.destination);
+                typingOscillator.start();
+            } else if (!start && terminalTyping) {
+                terminalTyping = false;
+                typingOscillator?.stop();
+                typingOscillator = null;
+            }
+        }
+        
+        // --- Modal Logic ---
+        function closeModal(id) {
+            playSound('click');
+            document.getElementById(id).classList.remove('active');
+        }
+
+        // Add listeners to static buttons
+        document.getElementById('call-modal-close-btn').addEventListener('click', () => closeModal('call-modal-overlay'));
+        document.getElementById('finish-modal-restart-btn').addEventListener('click', () => {
+            playSound('click');
+            // Changed to reload the current page instead of a different URL
+            window.location.reload(); 
+        });
+        
+        // --- CHAPTER 1: FLAMES CALCULATOR (FIXED) ---
+        let flamesInitialized = false;
+        function initFlames() {
+            if (flamesInitialized) {
+                // Reset if already initialized
+                document.getElementById('flames-terminal').innerHTML = `<span class="terminal-line-process"># Ready to calculate destiny...</span>\n<span class="terminal-line-output"># Enter names and press 'Calculate'.</span>`;
+                document.getElementById('flames-result-container').classList.add('hidden');
+                document.getElementById('calculate-flames-btn').disabled = false;
+                document.getElementById('calculate-flames-btn').innerHTML = 'Calculate Our Destiny <ion-icon name="heart-outline" class="ml-2"></ion-icon>';
+                return;
+            }
+            
+            const flamesBtn = document.getElementById('calculate-flames-btn');
+            const flamesTerminalEl = document.getElementById('flames-terminal');
+            const flamesResultEl = document.getElementById('flames-result');
+            const flamesResultMeaningEl = document.getElementById('flames-result-meaning');
+            const flamesResultContainer = document.getElementById('flames-result-container');
+            const flamesMeanings = { "F": "Friends", "L": "Love", "A": "Affection", "M": "Marriage", "E": "Enemies", "S": "Siblings" };
+
+            flamesBtn.addEventListener('click', async () => {
+                playSound('click');
+                const name1 = document.getElementById('name1').value;
+                const name2 = document.getElementById('name2').value;
+                if (!name1 || !name2) { flamesTerminalEl.innerHTML = '<span class="terminal-line-error"># Error: Names cannot be empty.</span>'; return; }
+                flamesResultContainer.classList.add('hidden');
+                flamesBtn.disabled = true; flamesBtn.textContent = 'Calculating...';
+                flamesTerminalEl.innerHTML = '';
+                
+                await typeToTerminal('booting destiny_hack.py...', 'process', flamesTerminalEl);
+                await typeToTerminal(`Loading name_1: "${name1}"`, 'output', flamesTerminalEl);
+                await typeToTerminal(`Loading name_2: "${name2}"`, 'output', flamesTerminalEl);
+                await typeToTerminal('Normalization complete. Calculating relationship index...', 'process', flamesTerminalEl);
+                
+                let a = name1.toLowerCase().split(''); let b = name2.toLowerCase().split('');
+                let commonCount = 0;
+                for (let i = 0; i < a.length; i++) {
+                    let char = a[i]; if (!char) continue;
+                    let b_index = b.indexOf(char);
+                    if (b_index !== -1) { a[i] = null; b[b_index] = null; commonCount++; }
+                }
+                let remainingCount = a.filter(Boolean).length + b.filter(Boolean).length;
+                
+                await typeToTerminal(`Common characters found: ${commonCount}`, 'output', flamesTerminalEl);
+                await typeToTerminal(`Remaining characters (FLAMES count): ${remainingCount}`, 'output', flamesTerminalEl);
+                if (remainingCount === 0) {
+                    await typeToTerminal('Count is zero. Hacking... forcing result...', 'error', flamesTerminalEl);
+                    remainingCount = 2; // Hack!
+                    await typeToTerminal(`Hack complete. Count set to ${remainingCount}.`, 'process', flamesTerminalEl);
+                }
+                await typeToTerminal('Injecting into FLAMES algorithm...', 'process', flamesTerminalEl);
+                
+                let flames = ['F', 'L', 'A', 'M', 'E', 'S'];
+                while (flames.length > 1) {
+                    await typeToTerminal(`[ ${flames.join(', ')} ]`, 'flames', flamesTerminalEl);
+                    let index = (remainingCount % flames.length) - 1;
+                    if (index < 0) index = flames.length - 1;
+                    let removed = flames.splice(index, 1)[0];
+                    await typeToTerminal(`Count is ${remainingCount}. Removing: ${removed}`, 'output', flamesTerminalEl);
+                    if (index < flames.length) flames = flames.slice(index).concat(flames.slice(0, index));
+                }
+                
+                let finalResult = flames[0];
+                await typeToTerminal(`Calculation complete. Final Result: [ ${finalResult} ]`, 'process', flamesTerminalEl);
+                await typeToTerminal(`...ERROR: Invalid result. Re-calibrating for 'cuteness > logic'...`, 'error', flamesTerminalEl);
+                await typeToTerminal(`Bypassing logic... Forcing override...`, 'process', flamesTerminalEl);
+                
+                finalResult = 'L'; // CHEESY HACK
+                
+                await typeToTerminal(`Result successfully hacked. It's Love, obviously.`, 'process', flamesTerminalEl);
+                await typeToTerminal(`Final Result: [ ${finalResult} ]`, 'command', flamesTerminalEl);
+                
+                flamesResultEl.textContent = `${finalResult} - ${flamesMeanings[finalResult]}`;
+                flamesResultMeaningEl.textContent = `(Well, what did you expect? The code doesn't lie. ❤️)`;
+                flamesResultContainer.classList.remove('hidden');
+                flamesBtn.disabled = false; flamesBtn.innerHTML = 'Calculate Our Destiny <ion-icon name="heart-outline" class="ml-2"></ion-icon>';
+                playTypingSound(false);
+            });
+            flamesInitialized = true;
+        }
+        async function typeToTerminal(text, type = 'output', el) {
+            return new Promise(async (resolve) => {
+                playTypingSound(true);
+                let line = document.createElement('pre');
+                line.className = `terminal-line-${type}`;
+                let lineText = (type === 'process' || type === 'error') ? `# ${text}` : (type === 'command') ? `&gt;&gt;&t; ${text}` : text;
+                if (type === 'output' || type === 'flames') {
+                    for (let i = 0; i < lineText.length; i++) {
+                        line.innerHTML += lineText[i];
+                        await sleep(5);
+                    }
+                } else {
+                    line.innerHTML = lineText;
+                    await sleep(300);
+                }
+                el.appendChild(line);
+                el.scrollTop = el.scrollHeight;
+                playTypingSound(false);
+                resolve();
+            });
+        }
+
+        // --- CHAPTER 2: WHAC-A-WINK (REPLACED) ---
+        let whackGameInitialized = false;
+        let gameHoles;
+        let gameSubheader;
+        let score, timeLeft, gameActive;
+        let gameTimerInterval, gameLoopInterval;
+        let activeHoleIndex = -1;
+        let activeHoleType = '';
+        const WIN_SCORE = 15;
+        // EDITED: Increased game time
+        const GAME_TIME = 45;
+        const POPUP_TIME = 900; // How long the emoji stays
+        const POPUP_RATE = 1000; // How often a new emoji appears
+
+        function initWhackGame() {
+            // Reset game state
+            clearInterval(gameTimerInterval);
+            clearInterval(gameLoopInterval);
+            gameActive = false;
+            score = 0;
+            timeLeft = GAME_TIME;
+            activeHoleIndex = -1;
+            activeHoleType = '';
+            
+            document.getElementById('game-time').textContent = timeLeft;
+            document.getElementById('game-score').textContent = '0 / 15';
+            document.getElementById('game-start-btn').classList.remove('hidden');
+            document.getElementById('game-start-btn').disabled = false;
+            document.getElementById('game-next-btn').classList.add('hidden');
+            
+            gameSubheader = document.getElementById('game-subheader');
+            gameSubheader.textContent = 'A quick game for you. Click the winking emoji (😉) to score. Avoid the sleepy ones (😴)!';
+            
+            gameHoles = document.querySelectorAll('.game-hole');
+            gameHoles.forEach(hole => {
+                hole.classList.remove('active-wink', 'active-sleepy');
+                // Ensure emojis are hidden
+                const emojiSpan = hole.querySelector('span');
+                if (emojiSpan) emojiSpan.textContent = '😉'; // Reset all to wink
+            });
+
+            if (whackGameInitialized) return; // Already initialized, just resetting
+
+            // Add click listeners ONCE
+            gameHoles.forEach((hole, index) => {
+                hole.addEventListener('click', () => handleHoleClick(index));
+            });
+            whackGameInitialized = true;
+        }
+
+        function startWhackGame() {
+            playSound('click');
+            initWhackGame(); // Reset game state
+            gameActive = true;
+            document.getElementById('game-start-btn').classList.add('hidden');
+            
+            // Timer for game duration
+            gameTimerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('game-time').textContent = timeLeft;
+                
+                if (timeLeft <= 0) {
+                    endWhackGame(false); // Game over, time ran out
+                }
+            }, 1000);
+            
+            // Timer for game logic (popups)
+            gameLoopInterval = setInterval(showNewHole, POPUP_RATE);
+        }
+        
+        function showNewHole() {
+            if (!gameActive) return;
+
+            // Clear previous hole
+            if (activeHoleIndex > -1) {
+                // Check if hole still exists
+                if (gameHoles[activeHoleIndex]) {
+                    gameHoles[activeHoleIndex].classList.remove('active-wink', 'active-sleepy');
+                }
+            }
+
+            // Pick a new random hole
+            activeHoleIndex = Math.floor(Math.random() * gameHoles.length);
+            
+            // Pick a type (70% wink, 30% sleepy)
+            if (Math.random() < 0.7) {
+                activeHoleType = 'wink';
+                gameHoles[activeHoleIndex].querySelector('span').textContent = '😉';
+                gameHoles[activeHoleIndex].classList.add('active-wink');
+            } else {
+                activeHoleType = 'sleepy';
+                gameHoles[activeHoleIndex].querySelector('span').textContent = '😴';
+                gameHoles[activeHoleIndex].classList.add('active-sleepy');
+            }
+
+            // Set timeout to hide it if not clicked
+            const currentHoleIndex = activeHoleIndex; // Capture index for timeout
+            setTimeout(() => {
+                if (gameActive && gameHoles[currentHoleIndex]) {
+                     gameHoles[currentHoleIndex].classList.remove('active-wink', 'active-sleepy');
+                     if (activeHoleIndex === currentHoleIndex) { // Check if it's still the same hole
+                         activeHoleIndex = -1;
+                         activeHoleType = '';
+                     }
+                }
+            }, POPUP_TIME);
+        }
+
+        function handleHoleClick(index) {
+            if (!gameActive || index !== activeHoleIndex) return; // Not active or wrong hole
+
+            if (activeHoleType === 'wink') {
+                playSound('catch'); // Good sound
+                score++;
+            } else if (activeHoleType === 'sleepy') {
+                playSound('error'); // Bad sound
+                score = Math.max(0, score - 1); // Penalize
+            }
+
+            // Update score
+            document.getElementById('game-score').textContent = `${score} / 15`;
+
+            // Clear hole immediately
+            gameHoles[activeHoleIndex].classList.remove('active-wink', 'active-sleepy');
+            activeHoleIndex = -1;
+            activeHoleType = '';
+            
+            // Check for win
+            if (score >= WIN_SCORE) {
+                endWhackGame(true);
+            }
+        }
+        
+        function endWhackGame(didWin) {
+            gameActive = false;
+            clearInterval(gameTimerInterval);
+            clearInterval(gameLoopInterval);
+            
+            // Clear all holes
+             gameHoles.forEach(hole => {
+                hole.classList.remove('active-wink', 'active-sleepy');
+            });
+            activeHoleIndex = -1;
+            
+            if (didWin) {
+                playSound('win');
+                gameSubheader.textContent = "You win! You're too fast for me... 😉";
+                document.getElementById('game-next-btn').classList.remove('hidden');
+            } else {
+                playSound('error');
+                gameSubheader.textContent = 'Game Over. Click "Start" to try again!';
+                document.getElementById('game-start-btn').classList.remove('hidden');
+            }
+        }
+        
+        // --- CHAPTER 3: TIMELINE LOGIC (HEAVILY EDITED) ---
+        let timelineInitialized = false;
+
+        function initTimeline() {
+            // This part runs only once to set static dates
+            if (!timelineInitialized) {
+                const bday = new Date('2004-08-20T00:00:00');
+                const now = new Date();
+                
+                // Birthday
+                let lastBday = new Date(now.getFullYear(), bday.getMonth(), bday.getDate());
+                if (now < lastBday) {
+                    lastBday.setFullYear(lastBday.getFullYear() - 1);
+                }
+                let nextBday = new Date(lastBday.getFullYear() + 1, lastBday.getMonth(), lastBday.getDate());
+                
+                const diffLastBday = now - lastBday;
+                const daysSinceBday = Math.floor(diffLastBday / (1000 * 60 * 60 * 24));
+                document.getElementById('birthday-past').textContent = `${daysSinceBday} days ago!`;
+                
+                const diffNextBday = nextBday - now;
+                const daysUntilBday = Math.ceil(diffNextBday / (1000 * 60 * 60 * 24));
+                document.getElementById('birthday-next').textContent = `${daysUntilBday} days to go!`;
+
+                timelineInitialized = true;
+            }
+
+            // Reset vibe buttons
+            document.querySelectorAll('.vibe-btn').forEach(btn => btn.classList.remove('selected'));
+            
+            // This part runs every time the chapter is shown
+            timelineSecondCounter = 0;
+            updateLiveCounter(); // Call once immediately to set all text
+            cycleCompliment(); // Call once
+            cycleTrait(); // Call once
+
+            if (timelineInterval) clearInterval(timelineInterval); // Clear any old interval
+            timelineInterval = setInterval(() => {
+                timelineSecondCounter++;
+                updateLiveCounter(); // Update live counter every second
+                
+                // Update cycling text every 3 seconds
+                if (timelineSecondCounter % 3 === 0) {
+                    cycleCompliment();
+                    cycleTrait();
+                }
+            }, 1000);
+        }
+
+        function updateLiveCounter() {
+            const now = new Date();
+            const diffMeet = now - meetDate; // meetDate is global constant
+
+            if (diffMeet < 0) {
+                 document.getElementById('time-since-met').textContent = 'Connection pending...';
+            } else {
+                let seconds = Math.floor(diffMeet / 1000);
+                let minutes = Math.floor(seconds / 60);
+                let hours = Math.floor(minutes / 60);
+                let days = Math.floor(hours / 24);
+
+                seconds = seconds % 60;
+                minutes = minutes % 60;
+                hours = hours % 24;
+
+                // Pad with zeros
+                const pad = (num) => num.toString().padStart(2, '0');
+                const timeEl = document.getElementById('time-since-met');
+                if (timeEl) {
+                    timeEl.innerHTML = 
+                       `${days}d : ${pad(hours)}h : ${pad(minutes)}m : ${pad(seconds)}s`;
+                }
+            }
+
+            // Also update "Next Milestone"
+            const milestoneEl = document.getElementById('next-milestone');
+            let nextMilestoneDate = new Date(now.getFullYear(), now.getMonth(), 11);
+            if (now.getDate() > 11) {
+                nextMilestoneDate.setMonth(nextMilestoneDate.getMonth() + 1);
+            }
+            const diffMilestone = nextMilestoneDate - now;
+            const daysUntilMilestone = Math.ceil(diffMilestone / (1000 * 60 * 60 * 24));
+            if (daysUntilMilestone === 0) {
+                milestoneEl.textContent = `It's today!`;
+            } else {
+                milestoneEl.textContent = `${daysUntilMilestone} days away!`;
+            }
+        }
+
+        // NEW: Cycle compliments
+        function cycleCompliment() {
+            const el = document.getElementById('daily-compliment');
+            const container = document.getElementById('cycling-text-container');
+            if (!el || !container) return;
+            
+            container.classList.remove('fade-in');
+            
+            setTimeout(() => {
+                complimentIndex = (complimentIndex + 1) % compliments.length;
+                el.textContent = compliments[complimentIndex];
+                container.classList.add('fade-in');
+            }, 500); // Wait for fade-out
+        }
+
+        // NEW: Cycle traits
+        function cycleTrait() {
+            const el = document.getElementById('cycling-trait');
+            if (!el) return;
+            traitIndex = (traitIndex + 1) % traits.length;
+            el.textContent = traits[traitIndex];
+        }
+
+        // NEW: Vibe button logic
+        function selectVibe(selectedBtn) {
+            playSound('click');
+            document.querySelectorAll('.vibe-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            selectedBtn.classList.add('selected');
+        }
+
+
+        // --- CHAPTER 4: THIS OR THAT LOGIC (Upgraded) ---
+        let thisOrThatInitialized = false;
+        let thisOrThatCurrent = 0;
+        const totalThisOrThat = 4;
+        let thisOrThatCards;
+        function initThisOrThat() {
+            thisOrThatInitialized = true; 
+            thisOrThatCurrent = 0;
+            thisOrThatCards = document.querySelectorAll('#chapter-4 .this-or-that-card');
+            
+            document.getElementById('this-or-that-next-btn').classList.add('hidden');
+            document.getElementById('this-or-that-next-btn').textContent = "Next Question";
+
+            thisOrThatCards.forEach((card, index) => {
+                card.classList.remove('active');
+                card.querySelectorAll('.this-or-that-btn').forEach(btn => {
+                    btn.disabled = false;
+                    btn.classList.remove('selected', 'match', 'no-match');
+                });
+                card.querySelector('.this-or-that-answer-text').style.display = 'none';
+                if (index === 0) card.classList.add('active'); // Show first card
+            });
+        }
+        function checkThisOrThat(btn) {
+            playSound('click');
+            const card = btn.closest('.this-or-that-card');
+            if (card.querySelector('.this-or-that-btn:disabled')) return; 
+
+            const myAnswer = card.dataset.myAnswer;
+            const herAnswer = btn.textContent.split(' ')[0];
+            const options = card.querySelectorAll('.this-or-that-btn');
+            const answerTextEl = card.querySelector('.this-or-that-answer-text');
+            
+            let responseText = "";
+            
+            options.forEach(opt => {
+                opt.disabled = true;
+                let optAnswer = opt.textContent.split(' ')[0];
+                if (optAnswer === myAnswer) opt.classList.add('match');
+                else opt.classList.add('no-match');
+                if (opt === btn) opt.classList.add('selected');
+            });
+            
+            if (myAnswer === herAnswer) {
+                responseText = card.dataset.matchResponse;
+                playSound('match');
+            } else {
+                responseText = card.dataset.missResponse;
+                playSound('error');
+            }
+            
+            answerTextEl.textContent = responseText;
+            answerTextEl.style.display = 'block';
+            
+            thisOrThatCurrent++;
+            if (thisOrThatCurrent === totalThisOrThat) {
+                document.getElementById('this-or-that-next-btn').textContent = "Final Chapter";
+            }
+            document.getElementById('this-or-that-next-btn').classList.remove('hidden');
+        }
+        
+        function showNextThisOrThat() {
+            playSound('click');
+            if (thisOrThatCurrent === totalThisOrThat) {
+                showChapter('chapter-5');
+                return;
+            }
+            
+            thisOrThatCards.forEach(card => card.classList.remove('active'));
+            thisOrThatCards[thisOrThatCurrent].classList.add('active');
+            document.getElementById('this-or-that-next-btn').classList.add('hidden');
+        }
+
+        // --- CHAPTER 5: LETTER LOGIC (Fixed) ---
+        let terminalPoemInitialized = false;
+        function initTerminalPoem() {
+            // Reset state every time
+            terminalPoemInitialized = true; 
+            document.getElementById('terminal-container').classList.add('hidden');
+            document.getElementById('btn-show-letter').classList.add('hidden');
+            document.getElementById('letter-content').classList.add('hidden');
+            document.getElementById('run-analysis-btn').classList.remove('hidden');
+            // Ensure lock screen is visible
+            document.getElementById('letter-lock-screen').style.display = 'block';
+        }
+        
+        async function startTerminalPoem() {
+            playSound('click');
+            const codeEl = document.getElementById('terminal-code');
+            const cursorEl = document.getElementById('terminal-cursor');
+            const nextBtn = document.getElementById('btn-show-letter');
+            const runBtn = document.getElementById('run-analysis-btn');
+            
+            if (!codeEl || !cursorEl || !nextBtn) return;
+            
+            runBtn.classList.add('hidden');
+            document.getElementById('terminal-container').classList.remove('hidden');
+            codeEl.innerHTML = '';
+            nextBtn.classList.add('hidden');
+            cursorEl.style.display = 'inline-block';
+
+            const lines = [
+                { class: 'text-gray-400', text: '# init_connection.py' },
+                { class: 'text-red-500', text: 'import { Her } from "xiaxo_tea"' },
+                { class: 'text-red-500', text: 'from { Me } import "Nervous_Guy"' },
+                { class: 'text-gray-700', text: ' ' },
+                { class: 'text-gray-400', text: '# Analyzing log: 11-Oct-2025' },
+                { class: 'text-green-500', text: 'def check_connection(time):' },
+                { class: 'text-green-500', text: '    if time == "03:27":' },
+                { class: 'text-green-500', text: '        return Me.send("Hope she doesn\'t think I\'m weird")' },
+                { class: 'text-green-500', text: '    if time == "21:12":' },
+                { class: 'text-green-500', text: '        return Her.reply("Haha Thanks")' },
+                { class: 'text-gray-700', text: ' ' },
+                { class: 'text-gray-400', text: '# Result:' },
+                { class: 'text-green-400', text: '>>> Connection_Status: PERFECT' },
+                { class: 'text-green-400', text: '>>> Risk_Analysis: "Worth it."' },
+                { class: 'text-gray-700', text: ' ' },
+                { class: 'text-red-500', text: 'print(f"One month later... I\'m so glad I texted you.")' },
+                { class: 'text-green-400', text: '>>> One month later... I\'m so glad I texted you.' },
+            ];
+            
+            playTypingSound(true);
+            for (const line of lines) {
+                let p = document.createElement('pre');
+                p.className = line.class;
+                // Replace leading spaces with non-breaking spaces for proper indentation
+                const indentedText = line.text.replace(/^( +)/, (match) => '&nbsp;'.repeat(match.length));
+                
+                for (let i = 0; i < indentedText.length; i++) {
+                    // Handle &nbsp; as a single entity
+                    if (indentedText.substring(i, i + 6) === '&nbsp;') {
+                        p.innerHTML += '&nbsp;';
+                        i += 5;
+                    } else {
+                        p.innerHTML += indentedText.charAt(i);
+                    }
+                    await sleep(10);
+                }
+                codeEl.appendChild(p);
+                await sleep(50);
+            }
+            playTypingSound(false);
+            
+            cursorEl.style.display = 'none';
+            nextBtn.classList.remove('hidden');
+        }
+        
+        document.getElementById('btn-show-letter').addEventListener('click', () => {
+            playSound('click');
+            document.getElementById('letter-lock-screen').style.display = 'none';
+            document.getElementById('letter-content').classList.remove('hidden');
+        });
+        
+        document.getElementById('final-restart-btn').addEventListener('click', () => {
+            playSound('click');
+            finishModalOverlay.classList.add('active');
+        });
+
+    </script>
+</body>
+</html>

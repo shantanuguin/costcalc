@@ -1,0 +1,1908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    <title>Our Story - Chat</title>
+    
+    <!-- 1. Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 2. Google Fonts (Inter: Clean, Premium, Sans-Serif) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
+    
+    <!-- 3. Icon Library -->
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+
+    <!-- 4. Custom CSS - BLACK & MUTED GREEN THEME - DYNAMIC FIXES -->
+    <style>
+        /* Base styles - NEW DARK THEME */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #111; /* Dark bg for outside */
+            color: #e5e7eb; /* Gray 200 */
+            overflow: hidden; /* NEW! Prevents all page scrolling */
+        }
+        
+        h1, h2, h3 {
+            font-weight: 800; /* Extra-bold for titles */
+            color: #ffffff;
+        }
+
+        /* The main app container */
+        .app-container {
+            width: 100%;
+            max-width: 28rem; /* 448px, max-w-md */
+            margin-left: auto;
+            margin-right: auto;
+            display: none; /* Hidden by default */
+            flex-direction: column;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            background-color: #000000; /* TRUE BLACK */
+            height: calc(var(--vh, 1vh) * 100); /* MODIFIED */
+            overflow: hidden; /* Main frame is fixed */
+            position: relative; /* For the splash screen */
+        }
+        
+        /* === NEW! NETFLIX-STYLE SPLASH SCREEN === */
+        #splash-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            margin: auto;
+            max-width: 28rem; /* Match app container */
+            height: calc(var(--vh, 1vh) * 100); /* MODIFIED */
+            background-color: #000;
+            z-index: 100;
+            display: flex;
+            flex-direction: column; /* Stack text and heart */
+            align-items: center;
+            justify-content: center;
+            opacity: 1;
+            overflow: hidden; /* Hide overflowing hearts */
+        }
+        #splash-logo {
+            font-weight: 800;
+            font-size: 2.5rem; /* text-4xl */
+            color: #dc2626; /* BLOOD-ISH RED */
+            text-transform: uppercase;
+            letter-spacing: 0.5rem;
+            opacity: 0;
+            text-shadow: 0 0 10px rgba(220, 38, 38, 0.5), 0 0 20px rgba(220, 38, 38, 0.3);
+            animation: netflix-intro 2.5s ease-out forwards;
+            cursor: pointer; /* NEW! Clickable */
+        }
+        
+        @keyframes netflix-intro {
+            0% {
+                opacity: 0;
+                letter-spacing: 0.5rem;
+                transform: scale(0.8);
+            }
+            50% {
+                opacity: 1;
+                letter-spacing: 0.1rem;
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+                letter-spacing: 0.1rem;
+            }
+        }
+        
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                visibility: hidden;
+            }
+        }
+        
+        /* === NEW! FAKE INSTAGRAM FEED SCREEN === */
+        #insta-feed-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 90; /* Below splash, above chat */
+            background-color: #000;
+            max-width: 28rem;
+            margin: 0 auto;
+            display: none; /* Hidden by default */
+            flex-direction: column;
+            opacity: 0;
+            animation: fadeIn 0.5s ease-in forwards;
+            height: calc(var(--vh, 1vh) * 100); /* MODIFIED */
+        }
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+        @keyframes slideUpAndFadeOut {
+            to {
+                opacity: 0;
+                transform: translateY(-100%);
+                visibility: hidden;
+            }
+        }
+        .insta-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #1f2937;
+        }
+        .insta-avatar {
+            width: 2rem; /* 32px */
+            height: 2rem; /* 32px */
+            border-radius: 99px;
+            margin-right: 0.75rem;
+            flex-shrink: 0; /* Prevent shrinking */
+            overflow: hidden;
+            background-color: #1f2937;
+        }
+        .insta-avatar-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .insta-post-image {
+            width: 100%;
+            height: auto;
+            max-height: 60vh;
+            object-fit: cover;
+            background-color: #111;
+        }
+        .insta-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1rem;
+            font-size: 1.75rem; /* 28px */
+        }
+        .insta-likes {
+            padding: 0 0.75rem; /* Add padding around text */
+            font-weight: 700;
+            font-size: 0.875rem;
+            margin-left: -0.75rem; /* Pull closer to heart */
+            color: #e5e7eb; /* Ensure it's white-ish */
+        }
+        .insta-comments-section {
+            padding: 0 1rem;
+            font-size: 0.875rem;
+            flex-grow: 1;
+            overflow-y: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .insta-comments-section::-webkit-scrollbar { display: none; }
+        .insta-comment {
+            display: flex;
+            align-items: start;
+            margin-bottom: 0.5rem;
+        }
+        .insta-comment-avatar {
+            width: 1.5rem; /* 24px */
+            height: 1.5rem; /* 24px */
+            border-radius: 99px;
+            margin-right: 0.5rem;
+            flex-shrink: 0;
+            overflow: hidden;
+            background-color: #1f2937;
+            /* NEW! Center placeholder text */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .insta-comment-body {
+            line-height: 1.4;
+        }
+        .insta-comment-body strong {
+            font-weight: 700;
+            margin-right: 0.25rem;
+        }
+        .insta-comment-reply {
+            font-size: 0.75rem;
+            color: #78716c;
+            font-weight: 700;
+            padding-left: 2rem;
+        }
+        .insta-footer {
+            padding: 0.75rem 1rem;
+            border-top: 1px solid #1f2937;
+            font-size: 0.875rem;
+            color: #78716c;
+        }
+        
+        /* Share animation */
+        @keyframes pop {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+        }
+        .animate-pop {
+            animation: pop 0.4s ease-in-out;
+        }
+        
+        /* Reply popup */
+        #insta-reply-popup {
+            position: absolute;
+            bottom: 4rem;
+            left: 1rem;
+            right: 1rem;
+            background-color: #262626;
+            color: #fff;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.5s ease-out forwards;
+            z-index: 100;
+        }
+        
+        /* === PROGRESS BAR === */
+        .progress-bar-container {
+            width: 100%;
+            height: 0.5rem; /* h-2 */
+            background-color: #1f2937; /* gray-800 */
+            flex-shrink: 0;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background-color: #065f46; /* MUTED GREEN */
+            width: 0%;
+            transition: width 0.5s ease-out;
+        }
+
+        /* Page container - THIS SCROLLS */
+        .page-container {
+            width: 100%;
+            flex-grow: 1; /* Takes up all space above nav */
+            overflow-y: auto; /* THIS is the part that scrolls */
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            background-color: #000000; /* TRUE BLACK */
+        }
+        .page-container::-webkit-scrollbar { display: none; }
+        
+        /* === PAGE 1: "CHAT" - CSS FIXED === */
+        .dm-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            border-bottom-width: 1px;
+            flex-shrink: 0;
+            border-color: #1f2937;
+            background-color: #000000;
+            color: #ffffff;
+            position: sticky; /* Make header sticky */
+            top: 0; /* Stick to top of scrollable container */
+            z-index: 10; /* Ensure it's above chat log */
+        }
+        .chat-log {
+            flex-grow: 1;
+            padding: 1rem;
+            background-color: #000000;
+        }
+        
+        /* Hinge-style Prompt */
+        .chat-prompt {
+            padding: 0.75rem 1rem;
+            margin: 1rem 1rem 0 1rem;
+            background-color: #1f2937; /* GREY */
+            border-radius: 0.75rem;
+            border-left: 4px solid #065f46; /* Muted Green */
+            opacity: 0;
+            animation: fadeInUp 0.5s 0.5s ease-out forwards;
+        }
+        .chat-prompt-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #a1a1aa; /* gray-400 */
+            margin-bottom: 0.25rem;
+        }
+        .chat-prompt-content {
+            font-size: 1rem;
+            color: #e5e7eb;
+            font-style: italic;
+        }
+
+        /* === NEW! HINGE CHAT STARTER === */
+        .hinge-chat-starter {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 1.5rem 1rem;
+            margin-bottom: 1rem;
+            opacity: 0;
+            animation: fadeInUp 0.5s 0.8s ease-out forwards;
+        }
+        .hinge-chat-starter-avatar {
+            width: 5rem; /* 80px */
+            height: 5rem;
+            border-radius: 99px;
+            overflow: hidden;
+            margin-bottom: 0.75rem;
+            border: 2px solid #374151;
+        }
+        .hinge-chat-starter-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .hinge-chat-starter-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #fff;
+        }
+        .hinge-chat-starter-handle {
+            font-size: 0.875rem;
+            color: #71717a; /* zinc-500 */
+            margin-bottom: 1rem;
+        }
+        .hinge-chat-starter-button {
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: #fff;
+            background-color: #27272a; /* zinc-800 */
+            border: 1px solid #3f3f46; /* zinc-700 */
+            padding: 0.5rem 1.25rem;
+            border-radius: 99px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .hinge-chat-starter-button:hover {
+            background-color: #3f3f46;
+        }
+        
+        .chat-bubble-wrapper {
+            position: relative;
+            max-width: 20rem;
+            margin-bottom: 0.75rem;
+            display: flex; /* Use flex for alignment */
+        }
+        .chat-bubble {
+            padding: 0.75rem 1rem;
+            border-radius: 1.25rem;
+            width: auto; /* Fit content */
+            max-width: 100%; /* Don't overflow wrapper */
+            font-size: 1rem;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        .chat-bubble-mine-wrapper {
+            margin-left: auto;
+            justify-content: flex-end; /* Align bubble to the right */
+        }
+        .chat-bubble-hers-wrapper {
+            margin-right: auto;
+            justify-content: flex-start; /* Align bubble to the left */
+        }
+        .chat-bubble-mine {
+            border-bottom-right-radius: 0.25rem;
+            background-color: #065f46; /* MUTED GREEN */
+            color: #ffffff;
+        }
+        .chat-bubble-hers {
+            border-bottom-left-radius: 0.25rem;
+            background-color: #1f2937; /* GREY */
+            color: #e5e7eb;
+        }
+        
+        /* Grouped message 'no-tail' */
+        .chat-bubble-mine.no-tail {
+            border-bottom-right-radius: 1.25rem;
+        }
+        .chat-bubble-hers.no-tail {
+            border-bottom-left-radius: 1.25rem;
+        }
+        
+        /* Wrong answer bubble (MODIFIED) */
+        .chat-bubble.chat-bubble-wrong {
+            background-color: #991b1b; /* DARK BLOOD RED */
+            color: #fecaca; /* Red-100 */
+        }
+        
+        .chat-bubble-internal {
+            width: 100%;
+            text-align: center;
+            font-size: 0.875rem;
+            color: #fde68a; /* NEW! COZY BROWN (light text) */
+            background-color: #854d0e; /* NEW! COZY BROWN (bg) */
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            animation: fadeInUp 0.5s ease-out forwards;
+            margin-bottom: 0.75rem;
+            white-space: pre-wrap; /* Allow line breaks */
+        }
+        .chat-timestamp {
+            text-align: center;
+            font-size: 0.75rem;
+            color: #78716c;
+            margin-top: 0.75rem;
+            margin-bottom: 0.75rem;
+            opacity: 0;
+            animation: fadeInUp 0.5s 0.3s ease-out forwards;
+        }
+        .typing-indicator {
+            padding: 0.75rem 1rem;
+            border-radius: 1.25rem;
+            width: 4rem; /* Fixed width for typing dots */
+            height: 2.5rem; /* Fixed height for bubble */
+            margin-right: auto;
+            border-bottom-left-radius: 0.25rem;
+            background-color: #1f2937;
+            opacity: 0;
+            animation: fadeInUp 0.5s ease-out forwards;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        /* My typing indicator */
+        .typing-indicator-mine {
+            margin-right: 0;
+            margin-left: auto; /* Align right */
+            border-bottom-left-radius: 1.25rem; /* Full curve */
+            border-bottom-right-radius: 0.25rem; /* Tail */
+            background-color: #065f46; /* Muted Green */
+        }
+        .typing-indicator-mine span {
+            background-color: #d1d5db; /* Lighter dots */
+        }
+        
+        .typing-indicator span {
+            display: inline-block;
+            width: 0.5rem; height: 0.5rem;
+            border-radius: 9999px;
+            margin-left: 0.125rem; margin-right: 0.125rem;
+            background-color: #78716c;
+            animation: typing-blink 1s infinite;
+        }
+        .typing-indicator span:nth-child(2) { animation-delay: 0.1s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.2s; }
+        @keyframes typing-blink { 50% { opacity: 0.2; } }
+        
+        .chat-input-area {
+            display: flex;
+            flex-shrink: 0;
+            padding: 0.75rem;
+            border-top-width: 1px;
+            border-color: #1f2937;
+            background-color: #000000;
+            position: sticky; /* Stick to bottom */
+            bottom: 0;
+        }
+        .chat-input {
+            flex-grow: 1;
+            padding: 0.75rem 1rem;
+            border-radius: 9999px;
+            border: 2px solid #1f2937;
+            background-color: #1f2937;
+            color: #e5e7eb;
+        }
+        .chat-input:focus {
+            outline: none;
+            border-color: #065f46; /* MUTED GREEN */
+        }
+        /* Disabled input field */
+        .chat-input:disabled {
+            background-color: #111827; /* gray-900 */
+            cursor: not-allowed;
+        }
+        
+        .chat-send-btn {
+            padding: 0.75rem;
+            margin-left: 0.5rem;
+            color: #065f46;
+            cursor: pointer;
+            transition: color 0.2s ease-in-out;
+        }
+        /* Disabled state for send button */
+        .chat-send-btn.disabled {
+            color: #404040; /* gray-700 */
+            cursor: not-allowed;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* DYNAMIC HEART REACTION */
+        .heart-reaction {
+            position: absolute;
+            bottom: -0.75rem; /* -mb-3 */
+            left: -0.75rem; /* -ml-3 */
+            color: #dc2626; /* BLOOD-ISH RED */
+            background-color: #1f2937; /* GREY */
+            border-radius: 9999px;
+            font-size: 1rem;
+            padding: 0.125rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border: 2px solid #000;
+            opacity: 0;
+            transform: scale(0.5);
+            animation: heart-pop-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        @keyframes heart-pop-in {
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        /* Message Reaction Popup */
+        .reaction-popup {
+            position: absolute;
+            top: -3rem; /* Pop above bubble */
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            background-color: #262626; /* Dark grey */
+            border-radius: 99px;
+            padding: 0.25rem 0.5rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+            z-index: 20;
+            opacity: 0;
+            transform-origin: bottom center;
+            animation: reaction-pop-in 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        .reaction-popup span {
+            font-size: 1.5rem;
+            padding: 0.25rem;
+            cursor: pointer;
+            transition: transform 0.1s ease-out;
+        }
+        .reaction-popup span:hover {
+            transform: scale(1.25);
+        }
+        
+        @keyframes reaction-pop-in {
+            to {
+                opacity: 1;
+                top: -3.5rem;
+            }
+        }
+        
+        /* Wrong answer shake */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+        .shake {
+            animation: shake 0.5s ease-in-out;
+        }
+        
+        /* Seen Receipt */
+        .chat-receipt {
+            text-align: right;
+            font-size: 0.75rem;
+            color: #a1a1aa; /* gray-400 */
+            padding-right: 0.5rem;
+            opacity: 0;
+            animation: fadeInUp 0.5s 0.5s ease-out forwards;
+            height: 1rem; /* Reserve space */
+        }
+        
+        /* General "DARK" UI - CSS FIXED */
+        .main-button {
+            display: inline-block;
+            width: 100%;
+            font-weight: 700;
+            font-size: 1.125rem;
+            padding: 1rem 2.5rem;
+            border-radius: 9999px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transform: scale(1);
+            transition: all 0.3s ease-in-out;
+            background-color: #065f46; /* MUTED GREEN */
+            color: #ffffff;
+            cursor: pointer;
+            text-align: center;
+        }
+        .main-button:hover {
+            background-color: #064e3b;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            transform: translateY(-0.25rem) scale(1.05);
+        }
+        
+        /* === NEW! HINGE PROFILE MODAL === */
+        .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 50;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease-in-out;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            position: absolute;
+            bottom: -100%;
+            left: 0;
+            right: 0;
+            background-color: #f0f0f0; /* Hinge light grey bg */
+            color: #111; /* Black text */
+            border-top-left-radius: 1.5rem;
+            border-top-right-radius: 1.5rem;
+            z-index: 60;
+            transition: bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            max-width: 28rem;
+            margin: 0 auto;
+            max-height: 90vh; /* Don't cover screen */
+            display: flex;
+            flex-direction: column;
+        }
+        .modal-overlay.active .modal-content {
+            bottom: 0;
+        }
+        .modal-grabber {
+            width: 4rem;
+            height: 0.25rem;
+            background-color: #ccc; /* Lighter grabber */
+            border-radius: 99px;
+            margin: 0.75rem auto 0.5rem auto;
+            flex-shrink: 0;
+        }
+        
+        /* NEW HINGE: Profile Content Area */
+        #profile-prompts-container {
+            overflow-y: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            padding: 1rem;
+            padding-top: 2.5rem; /* Space for cross button */
+        }
+        #profile-prompts-container::-webkit-scrollbar { display: none; }
+
+        /* NEW! Hinge Cross Button */
+        .hinge-close-btn {
+            position: absolute;
+            top: 0.75rem;
+            left: 1rem;
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #fff;
+            border-radius: 99px;
+            color: #aaa;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 10;
+            border: 1px solid #ddd;
+        }
+
+        .hinge-profile-main-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 0.5rem; /* Hinge rounds main pic too */
+        }
+        .hinge-profile-header {
+            padding: 1rem 0 0.5rem 0; /* Changed padding */
+            background-color: #f0f0f0;
+        }
+        .hinge-profile-name {
+            font-size: 1.75rem; /* 28px */
+            font-weight: 800;
+            color: #111;
+            display: flex;
+            align-items: center;
+        }
+        .hinge-profile-name span {
+            font-weight: 700;
+            font-size: 1.5rem;
+            margin-left: 0.5rem;
+            color: #333;
+        }
+
+        .hinge-vitals {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            padding: 0.5rem 0 1rem 0; /* Changed padding */
+            border-bottom: 1px solid #ddd;
+            background-color: #f0f0f0;
+        }
+        .hinge-vital-item {
+            display: flex;
+            align-items: center;
+            font-size: 0.875rem; /* 14px */
+            color: #333;
+            font-weight: 500;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 99px;
+            padding: 0.3rem 0.75rem;
+        }
+        .hinge-vital-item ion-icon {
+            font-size: 1rem; /* 16px */
+            margin-right: 0.3rem;
+            color: #555;
+        }
+
+        /* NEW HINGE: Prompt Cards */
+        .hinge-prompt-card {
+            background-color: #ffffff; /* White cards */
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-top: 1rem; /* Space between cards */
+            border: 1px solid #ddd; /* Light border */
+            color: #111; /* Black text */
+            cursor: pointer; /* NEW! Clickable */
+            transition: box-shadow 0.2s ease-in-out;
+        }
+        .hinge-prompt-card:hover {
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        .hinge-prompt-label {
+            font-size: 0.875rem; /* 14px */
+            font-weight: 700;
+            color: #111; /* Bold black */
+            margin-bottom: 0.35rem;
+        }
+        .hinge-prompt-body {
+            font-size: 1rem; /* 16px */
+            color: #555; /* Dark grey text */
+            line-height: 1.5;
+            font-weight: 500;
+        }
+        
+        .hinge-prompt-body-image {
+            margin-top: 0.5rem; /* Space between label and image */
+            width: 100%;
+            height: auto;
+            border-radius: 0.5rem; /* Rounded corners inside the card */
+            display: block;
+        }
+        
+        /* Flirty Call Modal (No changes) */
+        .call-modal-overlay {
+            /* ... existing styles ... */
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            max-width: 28rem;
+            margin: 0 auto;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 70;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .call-modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .call-modal-content {
+            background-color: #1f2937; /* Grey */
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            width: 100%;
+            max-width: 20rem;
+            text-align: center;
+            border: 1px solid #374151;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .call-modal-overlay.active .call-modal-content {
+            opacity: 1;
+            transform: scale(1);
+        }
+        .call-modal-icon {
+            font-size: 3rem;
+            color: #065f46; /* Muted Green */
+            margin-bottom: 0.5rem;
+        }
+        .call-modal-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+        .call-modal-text {
+            font-size: 0.875rem;
+            color: #d1d5db; /* gray-300 */
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+        .modal-close-btn {
+            background-color: #065f46;
+            color: #fff;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 99px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .modal-close-btn:hover {
+            background-color: #064e3b;
+        }
+        
+        /* === NEW! HINGE COMPLIMENT MODAL === */
+        .compliment-modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            max-width: 28rem;
+            margin: 0 auto;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 80; /* Above profile, below nothing */
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease-in-out;
+            display: flex;
+            align-items: flex-end; /* Show at bottom */
+            justify-content: center;
+        }
+        .compliment-modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .compliment-modal-content {
+            background-color: #fff; /* White bg */
+            border-top-left-radius: 1.5rem;
+            border-top-right-radius: 1.5rem;
+            padding: 1rem;
+            width: 100%;
+            max-width: 28rem;
+            box-shadow: 0 -10px 25px rgba(0,0,0,0.1);
+            opacity: 0;
+            transform: translateY(100%);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .compliment-modal-overlay.active .compliment-modal-content {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .compliment-modal-prompt-card {
+            background-color: #f0f0f0; /* Grey card */
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            color: #111;
+        }
+        .compliment-modal-prompt-label {
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: #111;
+            margin-bottom: 0.35rem;
+        }
+        .compliment-modal-prompt-body {
+            font-size: 1rem;
+            color: #555;
+            line-height: 1.5;
+            font-weight: 500;
+            /* For images */
+            max-height: 150px;
+            overflow: hidden;
+            border-radius: 0.5rem;
+        }
+        .compliment-modal-prompt-body img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        #compliment-textarea {
+            width: 100%;
+            height: 80px;
+            border-radius: 0.5rem;
+            border: 1px solid #ccc;
+            padding: 0.75rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            color: #111;
+            margin-bottom: 0.75rem;
+            resize: none;
+        }
+        #compliment-textarea:focus {
+            outline: none;
+            border-color: #065f46;
+        }
+        .compliment-send-btn {
+            background-color: #065f46;
+            color: #fff;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            width: 100%;
+            border-radius: 99px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        /* Scroll to Bottom button */
+        #scroll-to-bottom {
+            position: absolute;
+            bottom: 6rem; /* Above input bar */
+            right: 1.5rem;
+            background-color: #1f2937; /* Grey */
+            color: #fff;
+            width: 3rem;
+            height: 3rem;
+            border-radius: 99px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 15;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+            opacity: 0;
+            transform: scale(0.5);
+            visibility: hidden;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        #scroll-to-bottom.visible {
+            opacity: 1;
+            transform: scale(1);
+            visibility: visible;
+        }
+        
+        /* DESKTOP & TABLET RESPONSIVENESS */
+        @media (min-width: 640px) { /* Tailwind 'sm' breakpoint */
+            body {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                min-height: 100vh;
+                padding: 2rem 0;
+            }
+            .app-container, #splash-screen, #insta-feed-screen {
+                height: 90vh;
+                max-height: 850px;
+                border-radius: 1.5rem;
+                border: 1px solid #374151;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+                overflow: hidden;
+            }
+            .call-modal-overlay, .modal-overlay, .compliment-modal-overlay {
+                border-radius: 1.5rem; 
+            }
+            .modal-content {
+                max-height: 85vh; /* Fit inside the container */
+            }
+            .compliment-modal-content {
+                border-radius: 1.5rem; /* Full radius on desktop */
+                max-width: 24rem;
+                transform: translateY(0); /* Center it */
+                margin-bottom: auto; /* Center it */
+                margin-top: auto; /* Center it */
+            }
+        }
+        
+    </style>
+</head>
+<body>
+
+    <!-- NETFLIX-STYLE SPLASH SCREEN -->
+    <div id="splash-screen">
+        <h1 id="splash-logo">Lipgloss Baddie</h1>
+    </div>
+
+    <!-- FAKE INSTAGRAM FEED SCREEN -->
+    <div id="insta-feed-screen">
+        <!-- Header -->
+        <header class="insta-header">
+            <div class="flex items-center">
+                <div class="insta-avatar">
+                    <img src="./Pictures/LB1.png" alt="xiaxo_tea avatar" class="insta-avatar-img" onerror="this.src='https://placehold.co/64x64/1f2937/fff?text=L&font=inter'">
+                </div>
+                <span class="font-bold text-sm">xiaxo_tea</span>
+            </div>
+            <ion-icon name="ellipsis-vertical-outline" class="text-xl"></ion-icon>
+        </header>
+
+        <!-- Post Image -->
+        <img src="./Pictures/LB1.png" 
+             alt="Her Instagram post" 
+             class="insta-post-image"
+             onerror="this.src='https://placehold.co/448x500/111/fff?text=Her+Pretty+Post&font=inter'">
+
+        <!-- Action Buttons -->
+        <div class="insta-actions">
+            <div class="flex items-center space-x-4">
+                <ion-icon name="heart-outline"></ion-icon>
+                <span class="insta-likes">44 likes</span>
+                <ion-icon name="chatbubble-outline"></ion-icon>
+                <ion-icon id="insta-share-btn" name="paper-plane-outline"></ion-icon>
+            </div>
+            <ion-icon name="bookmark-outline"></ion-icon>
+        </div>
+
+        <!-- Comments -->
+        <div class="insta-comments-section">
+            <div class="insta-comment">
+                <div class="insta-comment-avatar">
+                    <img src="./Pictures/LB1.png" alt="xiaxo_tea avatar" class="insta-avatar-img" onerror="this.src='https://placehold.co/48x48/1f2937/fff?text=L&font=inter'">
+                </div>
+                <div class="insta-comment-body"><strong>xiaxo_tea</strong> ah le ah le ah le~</div>
+            </div>
+            <div class="insta-comment-reply">Reply</div>
+
+            <div class="insta-comment">
+                <div class="insta-comment-avatar">
+                    <span class="font-bold text-xs">S</span> 
+                </div>
+                <div class="insta-comment-body"><strong>su_sneha</strong> ON MY KNEES MOM 🛐</div>
+            </div>
+            <div class="insta-comment-reply">View replies (1)</div>
+            
+            <div class="insta-comment">
+                <div class="insta-comment-avatar">
+                    <span class="font-bold text-xs">J</span>
+                </div>
+                <div class="insta-comment-body"><strong>jessica_j074</strong> Hi girl 👋</div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="insta-footer">
+            Add a comment...
+        </footer>
+
+        <!-- Reply Popup -->
+        <div id="insta-reply-popup" style="display: none;">
+            Replying to <strong>xiaxo_tea</strong>...
+        </div>
+    </div>
+
+
+    <!-- Flirty Call Modal -->
+    <div id="call-modal-overlay" class="call-modal-overlay">
+        <div class="call-modal-content">
+            <div id="call-modal-icon" class="call-modal-icon">
+                <ion-icon name="call-outline"></ion-icon>
+            </div>
+            <h3 id="call-modal-title" class="call-modal-title">Not So Fast!</h3>
+            <p id="call-modal-text" class="call-modal-text">
+                Eager to hear my voice, huh? First, you have to prove you remember it. Get back to the quiz!
+            </p>
+            <button id="call-modal-close-btn" class="modal-close-btn">
+                Okay, okay...
+            </button>
+        </div>
+    </div>
+
+
+    <!-- === NEW! HINGE PROFILE MODAL === -->
+    <div id="profile-modal-overlay" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-grabber"></div>
+            <!-- NEW! Hinge Close Button -->
+            <div id="hinge-close-btn" class="hinge-close-btn">
+                <ion-icon name="close-outline"></ion-icon>
+            </div>
+            
+            <!-- Hinge content container -->
+            <div id="profile-prompts-container">
+                <!-- Main Image -->
+                <img src="./Pictures/LB1.png" 
+                     alt="xiaxo_tea profile picture" 
+                     class="hinge-profile-main-image"
+                     onerror="this.src='https://placehold.co/448x300/111/fff?text=xiaxo_tea&font=inter'">
+                
+                <!-- Header: Name, Age, Zodiac -->
+                <div class="hinge-profile-header">
+                    <h2 class="hinge-profile-name">
+                        xiaxo_tea <span>21</span>
+                    </h2>
+                </div>
+                
+                <!-- Vitals: Location, Vices, etc. -->
+                <div class="hinge-vitals">
+                    <div class="hinge-vital-item">
+                        <ion-icon name="location-outline"></ion-icon> Kolkata
+                    </div>
+                    <div class="hinge-vital-item">
+                        <ion-icon name="leaf-outline"></ion-icon> Leo
+                    </div>
+                    <div class="hinge-vital-item">
+                        <ion-icon name="wine-outline"></ion-icon> Doesn't Drink
+                    </div>
+                    <div class="hinge-vital-item">
+                        <ion-icon name="flame-outline"></ion-icon> Doesn't Smoke
+                    </div>
+                </div>
+
+                <!-- Hinge-Style Prompts (REORDERED) -->
+                <div class="hinge-prompt-card" data-prompt-label="My Simple Pleasures">
+                    <div class="hinge-prompt-label">My Simple Pleasures</div>
+                    <div class="hinge-prompt-body">
+                        Black coffee, and chai (but only with you, of course)
+                    </div>
+                </div>
+                
+                <div class="hinge-prompt-card" data-prompt-label="My Vibe">
+                    <div class="hinge-prompt-label">My Vibe</div>
+                    <div class="hinge-prompt-body">
+                        Loves black and muted green. 🖤💚
+                    </div>
+                </div>
+                
+                <!-- Picture 1 -->
+                <div class="hinge-prompt-card" data-prompt-label="My main picture">
+                    <div class="hinge-prompt-label">My main picture</div>
+                    <img src="./Pictures/LB1.png" 
+                         alt="Hinge picture 1" 
+                         class="hinge-prompt-body-image" 
+                         onerror="this.src='https://placehold.co/400x400/111/fff?text=Picture+1&font=inter'">
+                </div>
+
+                <div class="hinge-prompt-card" data-prompt-label="The Way to My Heart Is...">
+                    <div class="hinge-prompt-label">The Way to My Heart Is...</div>
+                    <div class="hinge-prompt-body">
+                        Home-cooked meals. (Hates eating out, but also doesn't like eating alone).
+                    </div>
+                </div>
+                
+                <div class="hinge-prompt-card" data-prompt-label="We'll Get Along If">
+                    <div class="hinge-prompt-label">We'll Get Along If</div>
+                    <div class="hinge-prompt-body">
+                        You're ready to carry me in BGMI. (Just kidding, I'll carry you... sometimes).
+                    </div>
+                </div>
+                
+                <!-- Picture 2 -->
+                <div class="hinge-prompt-card" data-prompt-label="A recent adventure">
+                    <div class="hinge-prompt-label">A recent adventure</div>
+                    <img src="./Pictures/LB2.png" 
+                         alt="Hinge picture 2" 
+                         class="hinge-prompt-body-image" 
+                         onerror="this.src='https://placehold.co/400x400/111/fff?text=Picture+2&font=inter'">
+                </div>
+
+                <div class="hinge-prompt-card" data-prompt-label="My Ethos">
+                    <div class="hinge-prompt-label">My Ethos</div>
+                    <div class="hinge-prompt-body">
+                        Work hard, but love my sleep even harder.
+                    </div>
+                </div>
+
+                <!-- Picture 3 -->
+                <div class="hinge-prompt-card" data-prompt-label="Feeling cute">
+                    <div class="hinge-prompt-label">Feeling cute</div>
+                    <img src="./Pictures/LB3.png" 
+                         alt="Hinge picture 3" 
+                         class="hinge-prompt-body-image" 
+                         onerror="this.src='https://placehold.co/400x400/111/fff?text=Picture+3&font=inter'">
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    <!-- === NEW! HINGE COMPLIMENT MODAL === -->
+    <div id="compliment-modal-overlay" class="compliment-modal-overlay">
+        <div class="compliment-modal-content">
+            <!-- This card will be populated by JS -->
+            <div id="compliment-prompt-card" class="compliment-modal-prompt-card">
+                <div id="compliment-prompt-label" class="compliment-modal-prompt-label">My Simple Pleasures</div>
+                <div id="compliment-prompt-body" class="compliment-modal-prompt-body">
+                    Black coffee, and chai (but only with you, of course)
+                </div>
+            </div>
+            
+            <textarea id="compliment-textarea" placeholder="Write a compliment..."></textarea>
+            <button id="compliment-send-btn" class="compliment-send-btn">Send</button>
+        </div>
+    </div>
+
+    <!-- === NEW! FINISH MODAL === -->
+    <div id="finish-modal-overlay" class="call-modal-overlay"> <!-- Re-using call-modal-overlay class for styling -->
+        <div class="call-modal-content">
+            <div id="finish-modal-icon" class="call-modal-icon">
+                <ion-icon name="heart-outline"></ion-icon>
+            </div>
+            <h3 id="finish-modal-title" class="call-modal-title">Oh really?</h3>
+            <p id="finish-modal-text" class="call-modal-text">
+                You really think it's already over?
+            </p>
+            <button id="finish-modal-next-btn" class="modal-close-btn">
+                Next Step
+            </button>
+        </div>
+    </div>
+
+
+    <!-- MAIN APP CONTAINER -->
+    <div class="app-container" id="app-body">
+        
+        <!-- PROGRESS BAR -->
+        <div class="progress-bar-container">
+            <div id="progress-bar-fill" class="progress-bar-fill"></div>
+        </div>
+        
+        <!-- This container holds the scrolling page -->
+        <div class="page-container" id="page-container">
+            <header class="dm-header">
+                <ion-icon name="arrow-back-outline" class="text-3xl"></ion-icon>
+                <!-- Clickable profile -->
+                <div id="view-profile-btn" class="text-center cursor-pointer">
+                    <h2 class="font-semibold text-lg">xiaxo_tea</h2>
+                    <p class="text-xs text-gray-500">View Profile</p>
+                </div>
+                <!-- Insta-style icons with IDs -->
+                <div class="flex items-center space-x-4">
+                    <ion-icon id="audio-call-btn" name="call-outline" class="text-2xl cursor-pointer"></ion-icon>
+                    <ion-icon id="video-call-btn" name="videocam-outline" class="text-2xl cursor-pointer"></ion-icon>
+                </div>
+            </header>
+            
+            <div class="chat-log" id="chat-log">
+                <!-- === HINGE CHAT STARTER BLOCK (MOVED) === -->
+                <div class="hinge-chat-starter">
+                    <div class="hinge-chat-starter-avatar">
+                        <img src="./Pictures/LB1.png" alt="xiaxo_tea avatar" onerror="this.src='https://placehold.co/160x160/1f2937/fff?text=L&font=inter'">
+                    </div>
+                    <div class="hinge-chat-starter-name">xiaxo_tea</div>
+                    <div class="hinge-chat-starter-handle">@xiaxo_tea</div>
+                    <button id="chat-view-profile-btn" class="hinge-chat-starter-button">
+                        View Profile
+                    </button>
+                </div>
+
+                <!-- Hinge-style Prompt (MOVED) -->
+                <div class="chat-prompt">
+                    <div class="chat-prompt-label">REPLYING TO THE PICTURE</div>
+                    <div class="chat-prompt-content">"The pictures on your posts look way too pretty!"</div>
+                </div>
+
+                <!-- JS will build the chat here -->
+            </div>
+            
+            <!-- Chat Input Area (sticky) -->
+            <div id="chat-input-area" class="chat-input-area" style="display: none;">
+                <input type="text" id="chat-input" class="chat-input" placeholder="Type your answer...">
+                <button id="chat-send-btn" class="chat-send-btn disabled" disabled>
+                    <ion-icon name="paper-plane-outline" class="text-3xl"></ion-icon>
+                </button>
+            </div>
+            
+        </div> <!-- End .page-container -->
+    
+        <!-- Scroll to Bottom -->
+        <div id="scroll-to-bottom">
+            <ion-icon name="arrow-down-outline"></ion-icon>
+        </div>
+    
+    </div> <!-- End .app-container -->
+    
+    
+    <!-- ============================================= -->
+    <!-- JAVASCRIPT LOGIC (SEQUENTIAL)                 -->
+    <!-- ============================================= -->
+    <script>
+        // --- Global State ---
+        let chatGate = 'age'; // 'age' or 'magic' or 'username' or 'voicenote'
+        let lastBubbleSender = null; // For grouping
+        let lastBubbleWrapper = null;
+        let lastSeenReceipt = null;
+        let currentComplimentContext = null; // NEW! For Hinge compliments
+        
+        let audioCtx = null;
+        
+        const wrongAnswerJokes = [
+            "Hmm, not quite. Are you trying to distract me with how cute you are? Try again.",
+            "Nope! But good try. Is it hot in here or is it just you failing my test?",
+            "That's not it... but you're lucky you're handsome. Give it another shot.",
+            "Wrong. But points for effort, I guess? 😉 Try again.",
+            "Not the answer I was looking for. But speaking of looking... you're looking good today. Now focus!",
+            "Incorrect! My expectations are as high as my standards. (You meet them, but this answer doesn't).",
+            "Close! ...Actually, no, not really. But I like the confidence. Try again.",
+            "My turn to say 'Haha Thanks'... but no. That's wrong.",
+            "Are you guessing? Tsk tsk. I thought you'd remember this!",
+            "Bzzzt! Wrong answer. Don't make me revoke your 'Lipgloss Baddie' fan card."
+        ];
+        function getRandomJoke() {
+            return wrongAnswerJokes[Math.floor(Math.random() * wrongAnswerJokes.length)];
+        }
+        
+        // NEW! Flirty lines for compliments
+        const flirtyLines = [
+            "Oh, stop it you... 🙈",
+            "Is that your way of distracting me? It's working.",
+            "Smooth. Very smooth. 😉",
+            "Keep going, I'm listening... ❤️",
+            "Haha, you're sweet. But I'm still not letting you off the hook!",
+            "Awww, you noticed? You've got a good eye."
+        ];
+        function getRandomFlirtyLine() {
+            return flirtyLines[Math.floor(Math.random() * flirtyLines.length)];
+        }
+        
+        const audioCallPrompts = [
+            "Eager to hear my voice, huh? First, you have to prove you remember it. Get back to the quiz!",
+            "A call? Already? Finish the game, and I *might* just pick up.",
+            "Not so fast! This 'letter' has a few more secrets. Solve them, *then* you can call me.",
+        ];
+        
+        const videoCallPrompts = [
+            "Want to see me *and* hear me? You're greedy. 😉 Finish the letter first.",
+            "A video call? But I haven't even done my makeup! (Just kidding, but seriously, finish the quiz).",
+            "My face is the final prize. You've still got a few levels to go. Keep trying!",
+        ];
+        
+        
+        const progressBarFill = document.getElementById('progress-bar-fill');
+        const chatLog = document.getElementById('chat-log');
+        const pageContainer = document.getElementById('page-container');
+        const inputArea = document.getElementById('chat-input-area');
+        const inputField = document.getElementById('chat-input');
+        const sendBtn = document.getElementById('chat-send-btn');
+        const scrollToBottomBtn = document.getElementById('scroll-to-bottom');
+        
+        const splashScreen = document.getElementById('splash-screen');
+        const instaFeedScreen = document.getElementById('insta-feed-screen');
+        const instaShareBtn = document.getElementById('insta-share-btn');
+        const instaReplyPopup = document.getElementById('insta-reply-popup');
+        const appBody = document.getElementById('app-body');
+        
+        // Modal consts
+        const modalOverlay = document.getElementById('profile-modal-overlay');
+        const viewProfileBtn = document.getElementById('view-profile-btn');
+        const chatViewProfileBtn = document.getElementById('chat-view-profile-btn');
+        const hingeCloseBtn = document.getElementById('hinge-close-btn'); // NEW!
+        
+        // Call Modal Consts
+        const callModalOverlay = document.getElementById('call-modal-overlay');
+        const callModalIcon = document.getElementById('call-modal-icon');
+        const callModalTitle = document.getElementById('call-modal-title');
+        const callModalText = document.getElementById('call-modal-text');
+        const callModalCloseBtn = document.getElementById('call-modal-close-btn');
+        const audioCallBtn = document.getElementById('audio-call-btn');
+        const videoCallBtn = document.getElementById('video-call-btn');
+
+        // NEW! Compliment Modal Consts
+        const complimentModalOverlay = document.getElementById('compliment-modal-overlay');
+        const complimentPromptCard = document.getElementById('compliment-prompt-card');
+        const complimentPromptLabel = document.getElementById('compliment-prompt-label');
+        const complimentPromptBody = document.getElementById('compliment-prompt-body');
+        const complimentTextarea = document.getElementById('compliment-textarea');
+        const complimentSendBtn = document.getElementById('compliment-send-btn');
+        
+        // NEW! Finish Modal Consts
+        const finishModalOverlay = document.getElementById('finish-modal-overlay');
+        const finishModalNextBtn = document.getElementById('finish-modal-next-btn');
+        
+        
+        function updateProgress(percent) {
+            progressBarFill.style.width = `${percent}%`;
+        }
+
+        function initAudio() {
+            if (audioCtx) return;
+            try {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            } catch (e) {
+                console.warn('Web Audio API is not supported in this browser');
+            }
+        }
+        function playSound(type) {
+            if (!audioCtx) return;
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            
+            if (type === 'send') {
+                oscillator.type = 'triangle';
+                oscillator.frequency.setValueAtTime(700, audioCtx.currentTime);
+                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2);
+            } else if (type === 'receive') {
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(880, audioCtx.currentTime);
+                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2);
+            }
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            oscillator.start();
+            oscillator.stop(audioCtx.currentTime + 0.2);
+        }
+        
+
+        // --- Chat Logic ---
+        const sleep = ms => new Promise(res => setTimeout(res, ms));
+
+        function scrollChatToBottom() {
+            pageContainer.scrollTop = pageContainer.scrollHeight;
+        }
+
+        async function addBubble(type, text, delay = 1000, isWrong = false) {
+            await sleep(delay);
+            const wrapper = document.createElement('div');
+            
+            if (type === 'chat-bubble-internal') {
+                wrapper.className = type;
+                wrapper.textContent = text;
+                lastBubbleSender = 'internal';
+            } else {
+                wrapper.className = `chat-bubble-wrapper ${type}-wrapper`;
+                const bubble = document.createElement('div');
+                bubble.className = `chat-bubble ${type}`;
+                bubble.textContent = text;
+                
+                if (lastBubbleSender === type) {
+                    const lastBubble = lastBubbleWrapper.querySelector('.chat-bubble');
+                    if (lastBubble) {
+                        lastBubble.classList.add('no-tail');
+                    }
+                }
+                
+                if (isWrong) {
+                    bubble.classList.add('chat-bubble-wrong');
+                    wrapper.classList.add('shake');
+                    setTimeout(() => wrapper.classList.remove('shake'), 500);
+                }
+                
+                wrapper.appendChild(bubble);
+                lastBubbleSender = type;
+                wrapper.addEventListener('pointerdown', (e) => handlePointerDown(e, wrapper));
+                wrapper.addEventListener('pointerup', handlePointerUp);
+            }
+            
+            chatLog.appendChild(wrapper);
+            lastBubbleWrapper = wrapper;
+            scrollChatToBottom();
+            
+            if (type === 'chat-bubble-hers') {
+                playSound('receive');
+            }
+            return wrapper;
+        }
+
+        async function addTimestamp(text, delay = 500) {
+            lastBubbleSender = null;
+            await sleep(delay);
+            const ts = document.createElement('div');
+            ts.className = 'chat-timestamp';
+            ts.textContent = text;
+            chatLog.appendChild(ts);
+            scrollChatToBottom();
+        }
+
+        async function addReceipt(status, delay = 500) {
+            if (lastSeenReceipt) {
+                lastSeenReceipt.remove();
+            }
+            await sleep(delay);
+            const receipt = document.createElement('div');
+            receipt.className = 'chat-receipt';
+            receipt.textContent = status;
+            chatLog.appendChild(receipt);
+            lastSeenReceipt = receipt;
+            scrollChatToBottom();
+        }
+
+        async function addTypingIndicator(delay = 1000, side = 'hers') {
+            await sleep(delay);
+            const typing = document.createElement('div');
+            typing.className = `typing-indicator ${side === 'mine' ? 'typing-indicator-mine' : ''}`;
+            typing.id = 'typing-bubble';
+            typing.innerHTML = '<span></span><span></span><span></span>';
+            chatLog.appendChild(typing);
+            scrollChatToBottom();
+            if (side === 'hers') {
+                playSound('receive');
+            }
+            return typing;
+        }
+        
+        // --- Reaction Logic ---
+        let pressTimer = null;
+        let isLongPress = false;
+
+        function handlePointerDown(e, wrapper) {
+            isLongPress = false;
+            pressTimer = setTimeout(() => {
+                isLongPress = true;
+                showReactionPopup(e, wrapper);
+            }, 500);
+        }
+        
+        function handlePointerUp() {
+            clearTimeout(pressTimer);
+        }
+        
+        function showReactionPopup(e, wrapper) {
+            document.querySelectorAll('.reaction-popup').forEach(p => p.remove());
+            
+            const popup = document.createElement('div');
+            popup.className = 'reaction-popup';
+            popup.innerHTML = `
+                <span data-reaction="❤️">❤️</span>
+                <span data-reaction="😂">😂</span>
+                <span data-reaction="👍">👍</span>
+                <span data-reaction="🔥">🔥</span>
+            `;
+            wrapper.appendChild(popup);
+            
+            popup.addEventListener('click', (ev) => {
+                if (ev.target.dataset.reaction) {
+                    addReactionToBubble(wrapper, ev.target.dataset.reaction);
+                    popup.remove();
+                }
+            });
+            
+            setTimeout(() => {
+                document.addEventListener('click', () => popup.remove(), { once: true });
+            }, 10);
+        }
+        
+        function addReactionToBubble(wrapper, reaction) {
+            let existing = wrapper.querySelector('.heart-reaction');
+            if (existing) {
+                existing.remove();
+            }
+            const heart = document.createElement('div');
+            heart.className = 'heart-reaction';
+            heart.style.left = 'auto';
+            heart.style.right = '-0.75rem';
+            if (wrapper.classList.contains('chat-bubble-mine-wrapper')) {
+                heart.style.left = '-0.75rem';
+                heart.style.right = 'auto';
+            }
+            heart.innerHTML = reaction;
+            wrapper.appendChild(heart);
+        }
+        
+        
+        async function startChatSequence() {
+            addTimestamp('11 Oct 2025, 03:27', 500);
+            
+            await addBubble('chat-bubble-mine', "I was hesitant to text you at first cus idk I just thought it might get awkward but yeah I had to let you know that the pictures looked so damn pretty istg aaaaaaa!!!", 1500);
+            await addBubble('chat-bubble-mine', "I hope you don't mind me texting you?", 1000);
+            
+            addTimestamp('11 Oct 2025, 21:12', 2000);
+            
+            const typing = await addTypingIndicator(1500);
+            await sleep(3000);
+            
+            typing.remove();
+            const hersBubbleWrapper = await addBubble('chat-bubble-hers', 'Haha Thanks', 0);
+            
+            await sleep(1500);
+            const heart = document.createElement('div');
+            heart.className = 'heart-reaction';
+            heart.innerHTML = '<ion-icon name="heart"></ion-icon>';
+            hersBubbleWrapper.appendChild(heart);
+            
+            const myTyping = await addTypingIndicator(1000, 'mine');
+            await sleep(1500);
+            myTyping.remove();
+            await addBubble('chat-bubble-mine', "not negotiating but you don't look anything more than 19-20", 0);
+            await addReceipt("Delivered", 1000);
+            
+            await sleep(1500);
+            await addReceipt("Seen", 0);
+            const hersTyping2 = await addTypingIndicator(1000);
+            await sleep(2000);
+            hersTyping2.remove();
+
+            await addBubble('chat-bubble-internal', 'Okay, first test... You\'d *better* remember this one. What was the first *funny* age you told me? 😉', 0);
+            chatGate = 'age';
+            inputField.placeholder = 'Enter the funny age...';
+            inputArea.style.display = 'flex';
+            updateProgress(0);
+            inputField.focus();
+        }
+        
+        sendBtn.addEventListener('click', () => handleChatInput());
+        inputField.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') handleChatInput();
+        });
+
+        inputField.addEventListener('input', () => {
+            initAudio();
+            if (inputField.value.trim().length > 0) {
+                sendBtn.classList.remove('disabled');
+                sendBtn.disabled = false;
+            } else {
+                sendBtn.classList.add('disabled');
+                sendBtn.disabled = true;
+            }
+        });
+        
+        // --- Modal Listeners ---
+        function openProfileModal() {
+            modalOverlay.classList.add('active');
+        }
+        function closeProfileModal() {
+            modalOverlay.classList.remove('active');
+        }
+
+        viewProfileBtn.addEventListener('click', openProfileModal);
+        chatViewProfileBtn.addEventListener('click', openProfileModal);
+        hingeCloseBtn.addEventListener('click', closeProfileModal); // NEW!
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) {
+                closeProfileModal();
+            }
+        });
+        
+        // --- Call Modal Listeners ---
+        audioCallBtn.addEventListener('click', () => showCallModal('audio'));
+        videoCallBtn.addEventListener('click', () => showCallModal('video'));
+        callModalCloseBtn.addEventListener('click', () => callModalOverlay.classList.remove('active'));
+        callModalOverlay.addEventListener('click', (e) => {
+            if (e.target === callModalOverlay) {
+                callModalOverlay.classList.remove('active');
+            }
+        });
+        
+        function showCallModal(type) {
+            if (type === 'audio') {
+                const prompt = audioCallPrompts[Math.floor(Math.random() * audioCallPrompts.length)];
+                callModalIcon.innerHTML = '<ion-icon name="call-outline"></ion-icon>';
+                callModalTitle.textContent = 'Calling... Blocked!';
+                callModalText.textContent = prompt;
+            } else if (type === 'video') {
+                const prompt = videoCallPrompts[Math.floor(Math.random() * videoCallPrompts.length)];
+                callModalIcon.innerHTML = '<ion-icon name="videocam-outline"></ion-icon>';
+                callModalTitle.textContent = 'Video... Not Yet!';
+                callModalText.textContent = prompt;
+            }
+            callModalOverlay.classList.add('active');
+        }
+        
+        // --- Scroll to Bottom Listeners ---
+        pageContainer.addEventListener('scroll', () => {
+            if (pageContainer.scrollTop < pageContainer.scrollHeight - pageContainer.clientHeight - 100) {
+                scrollToBottomBtn.classList.add('visible');
+            } else {
+                scrollToBottomBtn.classList.remove('visible');
+            }
+        });
+        scrollToBottomBtn.addEventListener('click', scrollChatToBottom);
+
+
+        // === NEW! COMPLIMENT MODAL LOGIC ===
+        document.querySelectorAll('.hinge-prompt-card').forEach(card => {
+            card.addEventListener('click', () => openComplimentModal(card));
+        });
+
+        function openComplimentModal(cardElement) {
+            // Get the content from the clicked card
+            const label = cardElement.querySelector('.hinge-prompt-label').textContent;
+            const body = cardElement.querySelector('.hinge-prompt-body, .hinge-prompt-body-image');
+            
+            // Populate the modal's card
+            complimentPromptLabel.textContent = label;
+            complimentPromptBody.innerHTML = body.outerHTML; // Clone the body (text or image)
+            
+            currentComplimentContext = label; // Store context
+            complimentTextarea.value = ''; // Clear old text
+            complimentModalOverlay.classList.add('active');
+            complimentTextarea.focus();
+        }
+
+        complimentModalOverlay.addEventListener('click', (e) => {
+            if (e.target === complimentModalOverlay) {
+                complimentModalOverlay.classList.remove('active');
+            }
+        });
+
+        complimentSendBtn.addEventListener('click', sendCompliment);
+
+        function sendCompliment() {
+            const text = complimentTextarea.value.trim();
+            if (!text) return; // Don't send empty compliments
+
+            // Close modals
+            complimentModalOverlay.classList.remove('active');
+            closeProfileModal();
+            
+            // Send to chat!
+            handleChatInput(text, true); // Pass true for isCompliment
+        }
+
+        // NEW! Finish Modal Listeners
+        finishModalNextBtn.addEventListener('click', () => {
+            window.location.href = 'profile.html'; // Redirect to next page
+        });
+        finishModalOverlay.addEventListener('click', (e) => {
+            if (e.target === finishModalOverlay) {
+                finishModalOverlay.classList.remove('active');
+            }
+        });
+
+
+        // === REFACTORED CHAT INPUT & RESPONSE LOGIC ===
+
+        async function handleChatInput(forcedValue = null, isCompliment = false) {
+            const value = forcedValue ? forcedValue : inputField.value.trim();
+            if (!value) return;
+            
+            // 1. Clear input & disable
+            inputField.value = '';
+            inputField.disabled = true;
+            sendBtn.disabled = true;
+            sendBtn.classList.add('disabled');
+            
+            // 2. Play sound & add user bubble
+            playSound('send');
+            await addBubble('chat-bubble-mine', value, 0);
+            await addReceipt("Delivered", 1000);
+            
+            // 3. Process the bot's response
+            await processBotResponse(value, isCompliment);
+        }
+
+        async function processBotResponse(inputValue, isCompliment = false) {
+            // 1. Bot "sees" it and starts "typing"
+            await sleep(1500); // Her "read" delay
+            await addReceipt("Seen", 0);
+            const typing = await addTypingIndicator(1000);
+            await sleep(2000); // She types...
+            typing.remove(); // Stop typing
+            
+            if (isCompliment) {
+                // --- Compliment Logic ---
+                await addBubble('chat-bubble-hers', getRandomFlirtyLine(), 0);
+                
+                // Repeat the current question
+                let question = "";
+                if (chatGate === 'age') question = "Anyway, back to my question... What was that funny age? 😉";
+                else if (chatGate === 'username') question = "You're not getting out of it that easy! What was my reaction to your username?";
+                else if (chatGate === 'voicenote') question = "Cute... but I'm still waiting for the voice note time. A, B, C, or D?";
+                else if (chatGate === 'magic') question = "Nice try, but you still need the magic word from the letter!";
+                
+                if (question) {
+                    await addBubble('chat-bubble-hers', question, 1000);
+                }
+
+            } else {
+                // --- Standard Quiz/Gate Logic ---
+                if (chatGate === 'age') {
+                    if (inputValue === '25') {
+                        updateProgress(25);
+                        await addBubble('chat-bubble-internal', 'Hahaha, \'25\'. Still cracks me up. ACCESS GRANTED.', 0);
+                        await addBubble('chat-bubble-hers', 'Correct! Okay, next one...', 1000);
+                        await addBubble('chat-bubble-hers', 'When I first saw your username "xiaxo_tea", what was my *exact* reaction?', 1500);
+                        await addBubble('chat-bubble-hers', 'A) "Wow, such an aesthetic name!"\nB) "Is that... \'Shaswati\'? Clever!"\nC) "What kind of Chinese username is this??"\nD) "That\'s a weird typo."\nE) "I bet she likes tea."\nF) "Who names themselves after a Xaomi phone?"', 1500);
+                        
+                        chatGate = 'username';
+                        inputField.placeholder = 'Type A, B, C, D, E, or F...';
+                    } else {
+                        await addBubble('chat-bubble-hers', getRandomJoke(), 0, true);
+                    }
+                } else if (chatGate === 'username') {
+                    if (inputValue.toUpperCase() === 'C') {
+                        updateProgress(50);
+                        await addBubble('chat-bubble-internal', 'YES! "What kind of Chinese username" 🤣. You got it.', 0);
+                        await addBubble('chat-bubble-hers', 'Okay, memory test... When did you send me the *first* voice note?', 1500);
+                        await addBubble('chat-bubble-hers', 'A) 11th October, 10:55 PM\nB) 11th October, 11:05 PM\nC) 12th October, 11:05 AM\nD) 11th October, 11:15 PM', 1500);
+                        
+                        chatGate = 'voicenote';
+                        inputField.placeholder = 'Type A, B, C, or D...';
+                    } else {
+                        await addBubble('chat-bubble-hers', getRandomJoke(), 0, true);
+                    }
+                } else if (chatGate === 'voicenote') {
+                    if (inputValue.toUpperCase() === 'B') {
+                        updateProgress(75);
+                        await addBubble('chat-bubble-internal', 'Spot on! 11:05 PM. Your memory is... impressive.', 0);
+                        await addBubble('chat-bubble-hers', 'Okay, last one. This is the final key.', 1500);
+                        await addBubble('chat-bubble-hers', 'Go get the physical letter I gave you. You have to solve the 5 riddles inside.', 2000);
+                        await addBubble('chat-bubble-hers', 'Take the *first letter* from each of the 5 riddle answers. Combine them to make the 5-letter magic word.', 2500);
+
+                        chatGate = 'magic';
+                        inputField.placeholder = 'Enter the 5-letter key...';
+                    } else {
+                        await addBubble('chat-bubble-hers', getRandomJoke(), 0, true);
+                    }
+                } else if (chatGate === 'magic') {
+                    // <-- USER: CHANGE 'ARISE' TO THE CORRECT WORD! -->
+                    if (inputValue.toUpperCase() === 'ARISE') { 
+                        updateProgress(100);
+                        await addBubble('chat-bubble-internal', 'Perfect. 100%. You\'re in.', 0);
+                        
+                        if (lastSeenReceipt) lastSeenReceipt.remove();
+
+                        await addBubble('chat-bubble-mine', "Okay... I kind of made you something.", 1500);
+                        await addBubble('chat-bubble-mine', "I call it... Hinge-stagram. Get it? ... like... Hinge... Instagram... our story... okay it's dumb but I made it for you.", 1500);
+                        await addBubble('chat-bubble-mine', "This is our story, retold.", 1000);
+                        
+                        inputArea.style.display = 'none'; // Hide input permanently
+                        
+                        const nextBtnWrapper = document.createElement('div');
+                        nextBtnWrapper.style.padding = '1rem';
+                        const nextBtn = document.createElement('button');
+                        nextBtn.textContent = 'Finish';
+                        nextBtn.className = 'main-button';
+                        
+                        nextBtn.onclick = () => {
+                            // NEW! Show the finish modal
+                            finishModalOverlay.classList.add('active');
+                        };
+                        nextBtnWrapper.appendChild(nextBtn);
+                        chatLog.appendChild(nextBtnWrapper);
+                        scrollChatToBottom();
+                    } else {
+                        await addBubble('chat-bubble-hers', getRandomJoke(), 0, true);
+                    }
+                }
+            }
+
+            // 4. Re-enable input if game is not over
+            // <-- USER: CHANGE 'ARISE' HERE TOO! -->
+            if (chatGate !== 'magic' || (inputValue.toUpperCase() !== 'ARISE' && chatGate === 'magic')) { 
+                 inputField.disabled = false;
+                 inputField.focus();
+            }
+        }
+
+
+        // --- Initialize App Flow ---
+        
+        document.getElementById('splash-logo').addEventListener('click', handleSplashClick);
+        
+        async function handleSplashClick() {
+            initAudio(); 
+            splashScreen.style.animation = 'fadeOut 0.5s ease-out forwards';
+            await sleep(500); 
+            showInstaFeed(); 
+        }
+
+        function showInstaFeed() {
+            instaFeedScreen.style.display = 'flex';
+            setTimeout(simulateInstaReply, 2000);
+        }
+        
+        async function simulateInstaReply() {
+            instaShareBtn.classList.add('animate-pop');
+            await sleep(400);
+            
+            instaReplyPopup.style.display = 'block';
+            await sleep(2000);
+            
+            instaFeedScreen.style.animation = 'slideUpAndFadeOut 0.8s ease-out forwards';
+            
+            await sleep(300);
+            showChatApp();
+        }
+        
+        function showChatApp() {
+            appBody.style.display = 'flex';
+            startChatSequence();
+            updateProgress(0);
+            inputField.dispatchEvent(new Event('input'));
+        }
+
+    </script>
+</body>
+</html>
