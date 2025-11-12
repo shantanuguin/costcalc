@@ -419,7 +419,7 @@
             <h3 class="call-modal-title">You really think it's over?</h3>
             <p class="call-modal-text">You've reached the end of this story... for now.</p>
             <!-- RESTART BUTTON UPDATED -->
-            <button id="finish-modal-restart-btn" class="modal-close-btn">Restart</button>
+            <button id="finish-modal-restart-btn" class="modal-close-btn" href="./chat.html">Restart</button>
         </div>
     </div>
     
@@ -443,19 +443,19 @@
 
             <!-- === CHAPTER 1: FLAMES CALCULATOR === -->
             <div id="chapter-1" class="app-chapter active">
-                <h1 class="chapter-header">Chapter 1: The Destiny Hack</h1>
+                <h1 class="chapter-header">The Game of Destiny</h1>
                 <p class="chapter-subheader">I had to know what the universe thought. So I ran the numbers for us...</p>
 
                 <div class="grid grid-cols-1 gap-6 items-center">
                     <div>
                         <div class="space-y-4">
                             <div>
-                                <label for="name1" class="font-bold mb-2 block">My Name</label>
+                                <label for="name1" class="font-bold mb-2 block">First Person's Name</label>
                                 <input type="text" id="name1" class="flames-input" value="[Your Name]">
                             </div>
                             <div>
-                                <label for="name2" class="font-bold mb-2 block">Your Name</label>
-                                <input type="text" id="name2" class="flames-input" value="[Her Name]">
+                                <label for="name2" class="font-bold mb-2 block">Second Person's Name</label>
+                                <input type="text" id="name2" class="flames-input" value="[His Name]">
                             </div>
                             <button id="calculate-flames-btn" class="flames-button w-full">
                                 Calculate Our Destiny
@@ -513,14 +513,14 @@
 
             <!-- === CHAPTER 3: OUR TIMELINE (HEAVILY EDITED) === -->
             <div id="chapter-3" class="app-chapter">
-                <h1 class="chapter-header">Chapter 3: The Data</h1>
+                <h1 class="chapter-header">Chapter 3: US? But Numbers</h1>
                 <p class="chapter-subheader">Just keeping track of some important metrics...</p>
                 
                 <div class="w-full space-y-4">
                     <!-- Feature 1: Live Counter -->
                     <div class="timeline-card">
                         <div class="timeline-content">
-                            <h3 class="timeline-title">Connection Established For...</h3>
+                            <h3 class="timeline-title">It's been a while that we met...</h3>
                             <p id="time-since-met" class="timeline-time" style="font-size: 1.1rem; letter-spacing: -0.05em; font-family: monospace;">...</p>
                         </div>
                         <div class="timeline-icon"><ion-icon name="hourglass-outline"></ion-icon></div>
@@ -529,7 +529,7 @@
                     <!-- Feature 2: Cycling Compliment -->
                     <div class="timeline-card">
                         <div class="timeline-content">
-                            <h3 class="timeline-title">Daily Compliment (Loading...)</h3>
+                            <h3 class="timeline-title">I mean I do think that my boo...</h3>
                             <div id="cycling-text-container" class="fade-in">
                                 <p id="daily-compliment" class="timeline-time">...has a great laugh.</p>
                             </div>
@@ -540,7 +540,7 @@
                     <!-- Feature 3: Cycling Trait -->
                      <div class="timeline-card">
                         <div class="timeline-content">
-                            <h3 class="timeline-title">File Under:</h3>
+                            <h3 class="timeline-title">What Defines You:</h3>
                              <p class="timeline-time">
                                 You're a... <span id="cycling-trait" class="text-yellow-300">Leo</span>
                              </p>
@@ -551,11 +551,11 @@
                     <!-- Feature 4: Vibe Poll -->
                     <div class="timeline-card">
                         <div class="timeline-content">
-                            <h3 class="timeline-title">Current Vibe Check</h3>
+                            <h3 class="timeline-title">What do you think of me</h3>
                             <div class="flex space-x-2 mt-2">
-                                <button class="vibe-btn" onclick="selectVibe(this)">Chill 😌</button>
-                                <button class="vibe-btn" onclick="selectVibe(this)">Goofy 🤪</button>
-                                <button class="vibe-btn" onclick="selectVibe(this)">Flirty 😉</button>
+                                <button class="vibe-btn" onclick="selectVibe(this)">STOOPID 😌</button>
+                                <button class="vibe-btn" onclick="selectVibe(this)">BESTEST 🤪</button>
+                                <button class="vibe-btn" onclick="selectVibe(this)">FLIRT 😉</button>
                             </div>
                         </div>
                         <div class="timeline-icon"><ion-icon name="pulse-outline"></ion-icon></div>
@@ -580,7 +580,7 @@
                     <!-- Feature 7: Next Milestone (Month-iversary) -->
                     <div class="timeline-card">
                         <div class="timeline-content">
-                            <h3 class="timeline-title">Next Milestone (the 11th)</h3>
+                            <h3 class="timeline-title">Next of US together! (the holy 11th)</h3>
                             <p id="next-milestone" class="timeline-time">... days away!</p>
                         </div>
                         <div class="timeline-icon"><ion-icon name="flag-outline"></ion-icon></div>
@@ -592,7 +592,8 @@
                             <h3 class="timeline-title">Notable "Firsts"</h3>
                             <p class="timeline-time" style="font-size: 1rem; line-height: 1.5rem;">
                                 - First Text: Oct 11, 03:27<br>
-                                - First "Haha Thanks": Oct 11, 21:12
+                                - First "Haha Thanks": Oct 11, 21:12<br>
+                                - First "Now You All Mine": Oct 21, 03:17
                             </p>
                         </div>
                         <div class="timeline-icon"><ion-icon name="chatbox-ellipses-outline"></ion-icon></div>
@@ -602,7 +603,7 @@
                     <div class="timeline-card">
                         <div class="timeline-content">
                             <h3 class="timeline-title">My Current Status</h3>
-                            <p class="timeline-time">Thinking about you.</p>
+                            <p class="timeline-time">Thinking about you as you read this.</p>
                         </div>
                         <div class="timeline-icon"><ion-icon name="person-outline"></ion-icon></div>
                     </div>
@@ -610,8 +611,8 @@
                     <!-- Feature 10: Random Stat -->
                     <div class="timeline-card">
                         <div class="timeline-content">
-                            <h3 class="timeline-title">Random Stat</h3>
-                            <p class="timeline-time">Times you've made me smile: 1,000,000+</p>
+                            <h3 class="timeline-title">Random Stat Checkpoint</h3>
+                            <p class="timeline-time">Times you've made me smile: 10,000+</p>
                         </div>
                         <div class="timeline-icon"><ion-icon name="happy-outline"></ion-icon></div>
                     </div>
@@ -620,7 +621,7 @@
                     <div class="timeline-card">
                         <div class="timeline-content">
                             <h3 class="timeline-title">Quick Question</h3>
-                            <p class="timeline-time">What's our go-to emoji?</p>
+                            <p class="timeline-time">What's our go-to emoji???</p>
                         </div>
                         <div class="timeline-icon"><ion-icon name="help-circle-outline"></ion-icon></div>
                     </div>
@@ -628,8 +629,8 @@
                     <!-- Feature 12: Next Call -->
                      <div class="timeline-card">
                         <div class="timeline-content">
-                            <h3 class="timeline-title">Pending...</h3>
-                            <p class="timeline-time">Thinking about our next call...</p>
+                            <h3 class="timeline-title">What I want rn??...</h3>
+                            <p class="timeline-time">Ugh, send me a picture/video of you rn!!</p>
                         </div>
                         <div class="timeline-icon"><ion-icon name="call-outline"></ion-icon></div>
                     </div>
@@ -637,7 +638,7 @@
                 </div>
 
                 <button class="main-button mt-8" onclick="showChapter('chapter-4')">
-                    Next Chapter: Our Vibe
+                    Next Chapter: This or That??
                 </button>
             </div>
 
@@ -709,19 +710,19 @@
                 <div id="letter-content" class="hidden w-full">
                     <div class="dark-card" style="background: linear-gradient(180deg, rgba(31,41,55,1) 0%, #111 100%);">
                         <div class="letter-text text-left space-y-6">
-                            <p class="text-3xl font-bold text-white">Dear [Her Name],</p>
-                            <p>You made it. You got through all my nerdy games and code.</p>
-                            <p>I know this whole thing is... a lot. But I wanted to make something for you that wasnt just a text. I wanted to show you the story of how we met, from my perspective.</p>
-                            <p>That 3:27 AM text... I was so nervous to send it. And I waited *all day* for that "Haha Thanks". And it was worth it.</p>
-                            <p>This past month of getting to know you has been insane. You're funny, smart, and [adjective]. I love [mention something specific you like about her].</p>
-                            <p>I really, *really* like you. Happy one-month-of-knowing-each-other.</p>
+                            <p class="text-3xl font-bold text-white">Dear Shaswati,</p>
+                            <p>You made it. You got through all my nerdy ass games and code. Like IT WAS SO DAMN STUPID?? ahahhaah just like me!!</p>
+                            <p>I know this whole thing is... just something~ But I wanted to make something for you that wasnt just a text like a boring ahh something that you read once and you are like yeah that was something so yeah maybe nice and shii. I wanted to be, be in the moment with me as we moved thru our time together.</p>
+                            <p>That 3:27am text... I was so nervous to send it. And I waited, like I had no clue even if I would get a reply but that "Haha Thanks", damn it was so worth it.</p>
+                            <p>This past month of getting to know you has been insane. You're funny, smart, and my cutu bhondu bhalu. I love so many things about youuu!! (RIP to your shoulder tho~).</p>
+                            <p>I really like you and I WILL FUCKING MWAH YOU I SWEAR!!! Happy one-month-of-knowing-each-other and I wish there come 100s more like this.</p>
                             <p class="signature text-right mt-10">
-                                Yours,<br>
-                                [Your Name]
+                                All Yours,<br>
+                                Shantanu
                             </p>
                         </div>
                     </div>
-                    <button id="final-restart-btn" class="main-button" style="background-color: #1f2937; margin-top: 1rem;">
+                    <button id="final-restart-btn" class="main-button" href="./chat.html" style="background-color: #1f2937; margin-top: 1rem;">
                         Restart?
                     </button>
                 </div>
@@ -755,9 +756,9 @@
         let complimentIndex = 0;
         const traits = [
             "Leo",
-            "Cutie",
-            "Gamer",
-            "Smarty"
+            "Pocha Aalu but mine",
+            "Peak Pro Gamer",
+            "Bhondu Bhalu"
         ];
         let traitIndex = 0;
 
@@ -785,10 +786,10 @@
 
         // --- NEW: Chapter Navigation Logic ---
         const chapterData = {
-            'chapter-1': { title: "Chapter 1: Destiny Hack", progress: 20 },
+            'chapter-1': { title: "Chapter 1: The Game of Destiny", progress: 20 },
             'chapter-2': { title: "Chapter 2: Whac-a-Wink", progress: 40 }, // Updated title
-            'chapter-3': { title: "Chapter 3: The Data", progress: 60 }, // Updated title
-            'chapter-4': { title: "Chapter 4: Our Vibe", progress: 80 },
+            'chapter-3': { title: "Chapter 3: US? But Numbers", progress: 60 }, // Updated title
+            'chapter-4': { title: "Chapter 4: This or That??", progress: 80 },
             'chapter-5': { title: "Final Chapter: The Letter", progress: 100 }
         };
 
