@@ -1019,7 +1019,7 @@
         <header class="insta-header">
             <div class="flex items-center">
                 <div class="insta-avatar">
-                    <img src="./Pictures/LB1.png" alt="xiaxo_tea avatar" class="insta-avatar-img" onerror="this.src='https://placehold.co/64x64/1f2937/fff?text=L&font=inter'">
+                    <img src="./LB1.png" alt="xiaxo_tea avatar" class="insta-avatar-img" onerror="this.src='https://placehold.co/64x64/1f2937/fff?text=L&font=inter'">
                 </div>
                 <span class="font-bold text-sm">xiaxo_tea</span>
             </div>
@@ -1027,7 +1027,7 @@
         </header>
 
         <!-- Post Image -->
-        <img src="./Pictures/LB1.png" 
+        <img src="./LB1.png" 
              alt="Her Instagram post" 
              class="insta-post-image"
              onerror="this.src='https://placehold.co/448x500/111/fff?text=Her+Pretty+Post&font=inter'">
@@ -1047,7 +1047,7 @@
         <div class="insta-comments-section">
             <div class="insta-comment">
                 <div class="insta-comment-avatar">
-                    <img src="./Pictures/LB1.png" alt="xiaxo_tea avatar" class="insta-avatar-img" onerror="this.src='https://placehold.co/48x48/1f2937/fff?text=L&font=inter'">
+                    <img src="./LB1.png" alt="xiaxo_tea avatar" class="insta-avatar-img" onerror="this.src='https://placehold.co/48x48/1f2937/fff?text=L&font=inter'">
                 </div>
                 <div class="insta-comment-body"><strong>xiaxo_tea</strong> ah le ah le ah le~</div>
             </div>
@@ -1110,7 +1110,7 @@
             <!-- Hinge content container -->
             <div id="profile-prompts-container">
                 <!-- Main Image -->
-                <img src="./Pictures/LB1.png" 
+                <img src="./LB1.png" 
                      alt="xiaxo_tea profile picture" 
                      class="hinge-profile-main-image"
                      onerror="this.src='https://placehold.co/448x300/111/fff?text=xiaxo_tea&font=inter'">
@@ -1156,7 +1156,7 @@
                 <!-- Picture 1 -->
                 <div class="hinge-prompt-card" data-prompt-label="My main picture">
                     <div class="hinge-prompt-label">My main picture</div>
-                    <img src="./Pictures/LB1.png" 
+                    <img src="./LB1.png" 
                          alt="Hinge picture 1" 
                          class="hinge-prompt-body-image" 
                          onerror="this.src='https://placehold.co/400x400/111/fff?text=Picture+1&font=inter'">
@@ -1179,7 +1179,7 @@
                 <!-- Picture 2 -->
                 <div class="hinge-prompt-card" data-prompt-label="A recent adventure">
                     <div class="hinge-prompt-label">A recent adventure</div>
-                    <img src="./Pictures/LB2.png" 
+                    <img src="./LB2.png" 
                          alt="Hinge picture 2" 
                          class="hinge-prompt-body-image" 
                          onerror="this.src='https://placehold.co/400x400/111/fff?text=Picture+2&font=inter'">
@@ -1195,7 +1195,7 @@
                 <!-- Picture 3 -->
                 <div class="hinge-prompt-card" data-prompt-label="Feeling cute">
                     <div class="hinge-prompt-label">Feeling cute</div>
-                    <img src="./Pictures/LB3.png" 
+                    <img src="./LB3.png" 
                          alt="Hinge picture 3" 
                          class="hinge-prompt-body-image" 
                          onerror="this.src='https://placehold.co/400x400/111/fff?text=Picture+3&font=inter'">
@@ -1266,7 +1266,7 @@
                 <!-- === HINGE CHAT STARTER BLOCK (MOVED) === -->
                 <div class="hinge-chat-starter">
                     <div class="hinge-chat-starter-avatar">
-                        <img src="./Pictures/LB1.png" alt="xiaxo_tea avatar" onerror="this.src='https://placehold.co/160x160/1f2937/fff?text=L&font=inter'">
+                        <img src="./LB1.png" alt="xiaxo_tea avatar" onerror="this.src='https://placehold.co/160x160/1f2937/fff?text=L&font=inter'">
                     </div>
                     <div class="hinge-chat-starter-name">xiaxo_tea</div>
                     <div class="hinge-chat-starter-handle">@xiaxo_tea</div>
@@ -1604,7 +1604,7 @@
             const myTyping = await addTypingIndicator(1000, 'mine');
             await sleep(1500);
             myTyping.remove();
-            await addBubble('chat-bubble-mine', "not negotiating but you don't look anything more than 19-20", 0);
+            await addBubble('chat-bubble-mine', "not negotiating but you don't look anything more than 19-20, Also scroll down, there's another message down there!", 0);
             await addReceipt("Delivered", 1000);
             
             await sleep(1500);
@@ -1817,8 +1817,8 @@
                         updateProgress(75);
                         await addBubble('chat-bubble-internal', 'Spot on! 11:05 PM. Your memory is... impressive.', 0);
                         await addBubble('chat-bubble-hers', 'Okay, last one. This is the final key.', 1500);
-                        await addBubble('chat-bubble-hers', 'Go get the physical letter I gave you. You have to solve the 5 riddles inside.', 2000);
-                        await addBubble('chat-bubble-hers', 'Take the *first letter* from each of the 5 riddle answers. Combine them to make the 5-letter magic word.', 2500);
+                        await addBubble('chat-bubble-hers', 'Go get the physical letter I gave you. You solved the riddle in "Letter I" right?', 2000);
+                        await addBubble('chat-bubble-hers', 'Take the last name of the person in the answer. And that is your magic word.', 2500);
 
                         chatGate = 'magic';
                         inputField.placeholder = 'Enter the 5-letter key...';
@@ -1826,16 +1826,16 @@
                         await addBubble('chat-bubble-hers', getRandomJoke(), 0, true);
                     }
                 } else if (chatGate === 'magic') {
-                    // <-- USER: CHANGE 'ARISE' TO THE CORRECT WORD! -->
-                    if (inputValue.toUpperCase() === 'ARISE') { 
+                    // <-- USER: CHANGE 'MODI' TO THE CORRECT WORD! -->
+                    if (inputValue.toUpperCase() === 'MODI') { 
                         updateProgress(100);
                         await addBubble('chat-bubble-internal', 'Perfect. 100%. You\'re in.', 0);
                         
                         if (lastSeenReceipt) lastSeenReceipt.remove();
 
-                        await addBubble('chat-bubble-mine', "Okay... I kind of made you something.", 1500);
-                        await addBubble('chat-bubble-mine', "I call it... Hinge-stagram. Get it? ... like... Hinge... Instagram... our story... okay it's dumb but I made it for you.", 1500);
-                        await addBubble('chat-bubble-mine', "This is our story, retold.", 1000);
+                        await addBubble('chat-bubble-mine', "Okay... I kinda made this something and I call it Hinge-stagram.", 1500);
+                        await addBubble('chat-bubble-mine', "Get it? ... like... Hinge... Instagram... our story... okay it's dumb but I made it for you cause you wanted to use this app and also we met on Instagram hehe.", 1500);
+                        await addBubble('chat-bubble-mine', "Okay but before that, make sure to check your Hinge Profile by clicking on View Profile in the top under your Username.", 1000);
                         
                         inputArea.style.display = 'none'; // Hide input permanently
                         
@@ -1859,8 +1859,8 @@
             }
 
             // 4. Re-enable input if game is not over
-            // <-- USER: CHANGE 'ARISE' HERE TOO! -->
-            if (chatGate !== 'magic' || (inputValue.toUpperCase() !== 'ARISE' && chatGate === 'magic')) { 
+            // <-- USER: CHANGE 'MODI' HERE TOO! -->
+            if (chatGate !== 'magic' || (inputValue.toUpperCase() !== 'MODI' && chatGate === 'magic')) { 
                  inputField.disabled = false;
                  inputField.focus();
             }
