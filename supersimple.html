@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NIFT CAD Jury Checklist</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        .checkbox-wrapper input:checked + div {
+            background-color: #eff6ff;
+            border-color: #3b82f6;
+        }
+        .checkbox-wrapper input:checked + div span {
+            text-decoration: line-through;
+            color: #94a3b8;
+        }
+        .checkbox-wrapper input:checked + div svg {
+            display: block;
+        }
+        @media print {
+            .no-print {
+                display: none;
+            }
+            body {
+                background-color: white;
+            }
+            .shadow-sm, .shadow-md {
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen pb-12">
+
+    <!-- Header -->
+    <header class="bg-slate-900 text-white p-6 shadow-md sticky top-0 z-50">
+        <div class="max-w-3xl mx-auto flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold flex items-center gap-2">
+                    <i data-lucide="ruler" class="w-6 h-6 text-blue-400"></i>
+                    CAD Jury Checklist
+                </h1>
+                <p class="text-slate-400 text-sm mt-1">NIFT B.F.Tech Sem VII • Max Marks: 40</p>
+            </div>
+            <div class="text-right">
+                <div class="text-3xl font-bold text-blue-400" id="total-progress">0%</div>
+                <div class="text-xs text-slate-400 uppercase tracking-wide">Ready for Jury</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-3xl mx-auto p-4 space-y-6 mt-6" id="checklist-container">
+        <!-- Javascript will inject sections here -->
+    </main>
+
+    <!-- Notes Section -->
+    <div class="max-w-3xl mx-auto p-4 no-print">
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+            <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <i data-lucide="sticky-note" class="w-5 h-5 text-yellow-500"></i>
+                Personal Notes
+            </h3>
+            <textarea id="notes-area" class="w-full h-32 p-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none resize-none text-slate-600" placeholder="E.g., Remember to Xref the column grid, buy A2 paper..."></textarea>
+        </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="max-w-3xl mx-auto p-4 flex gap-4 no-print mb-12">
+        <button onclick="resetChecklist()" class="flex-1 py-3 px-4 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 font-medium transition-colors flex justify-center items-center gap-2">
+            <i data-lucide="rotate-ccw" class="w-4 h-4"></i> Reset All
+        </button>
+        <button onclick="window.print()" class="flex-1 py-3 px-4 rounded-lg bg-slate-900 text-white hover:bg-slate-800 font-medium transition-colors flex justify-center items-center gap-2">
+            <i data-lucide="printer" class="w-4 h-4"></i> Print Checklist
+        </button>
+    </div>
+
+    <script>
+        // Data derived from the PDF assignment
+        const checklistData = [
+            {
+                id: "basic",
+                title: "1. Basic Construction",
+                marks: "15 Marks",
+                description: "Fundamental structural and drafting standards.",
+                icon: "layers",
+                color: "blue",
+                items: [
+                    "Layer Management: Distinct layers created (Walls, Dims, Text, Furn)",
+                    "Line Weights: Appropriate thickness (Thick walls, thin dims)",
+                    "Grid System: Columns placed on a distinct grid",
+                    "Walls: Exterior (thick) vs Interior (thin) partitions",
+                    "Openings: Doors with swing arcs & Windows placed",
+                    "Stairs: Tread/riser numbering & direction arrows",
+                    "Machinery: Sewing, cutting, fusing machines placed",
+                    "Furniture: Admin desks, storage racks, canteen tables",
+                    "Annotation: Every room/dept labeled clearly",
+                    "Dimensions: Overall, internal room, and grid spacing added"
+                ]
+            },
+            {
+                id: "features",
+                title: "2. Additional Features",
+                marks: "15 Marks",
+                description: "Advanced CAD tools and environmental design.",
+                icon: "star",
+                color: "indigo",
+                items: [
+                    "Sustainability: Solar panels, rainwater harvesting, or skylights",
+                    "Landscaping: Trees, shrubs, green patches (Blocks)",
+                    "External Road: Entry/exit gates, driveway, main road connection",
+                    "Super Hatching: Distinct flooring textures used",
+                    "System Library: Used Blocks/Wblocks for repetitive items",
+                    "Xrefs: External References used (or prepared to explain)",
+                    "Centreline Plan: Separate layer/view for grid centers",
+                    "Title Block: Institute, Subject, Name, Scale, North, Legend",
+                    "Viewports: Layout tabs set up with specific scales",
+                    "Drawing Scale: Set to standard (1:50 or 1:100) and labeled"
+                ]
+            },
+            {
+                id: "zones",
+                title: "3. Functional Zones",
+                marks: "Mandatory",
+                description: "Ensure the 'Garment Export House' flow is complete.",
+                icon: "layout-dashboard",
+                color: "emerald",
+                items: [
+                    "Security: Guard room / Time office",
+                    "Admin: HR, Accounts, Conference, Director's Cabin",
+                    "Pre-Production: Merchandising, CAD, Sampling",
+                    "Stores: Fabric Store, Trims Store",
+                    "Production: Cutting, Sewing (Line layout), Finishing",
+                    "Post-Production: Packing, Warehouse, Dispatch Bay",
+                    "Services: Toilets (M/F), Canteen, First Aid, Maintenance"
+                ]
+            },
+            {
+                id: "presentation",
+                title: "4. Presentation & Deliverables",
+                marks: "10 Marks",
+                description: "Final output quality and submission formats.",
+                icon: "file-check",
+                color: "orange",
+                items: [
+                    "Digital File: Main .DWG file saved",
+                    "Template: .DWT file created or layers structured as template",
+                    "PDF Export: Plot style (CTB) correct (lines visible/clean)",
+                    "Hardcopy: A2/A3 print ready (check margins)",
+                    "Cleanliness: No ghost lines or overlapping text",
+                    "Flow: Logical material flow is visible"
+                ]
+            }
+        ];
+
+        // State Management
+        let state = JSON.parse(localStorage.getItem('cadJuryState')) || {};
+        const notes = localStorage.getItem('cadJuryNotes') || '';
+
+        // DOM Elements
+        const container = document.getElementById('checklist-container');
+        const notesArea = document.getElementById('notes-area');
+        const totalProgressEl = document.getElementById('total-progress');
+
+        // Initialize
+        function init() {
+            renderChecklist();
+            notesArea.value = notes;
+            notesArea.addEventListener('input', (e) => {
+                localStorage.setItem('cadJuryNotes', e.target.value);
+            });
+            updateOverallProgress();
+            lucide.createIcons();
+        }
+
+        // Render Logic
+        function renderChecklist() {
+            container.innerHTML = checklistData.map(section => {
+                const sectionState = state[section.id] || [];
+                const totalItems = section.items.length;
+                const checkedItems = sectionState.filter(Boolean).length;
+                const percentage = Math.round((checkedItems / totalItems) * 100);
+
+                return `
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="p-6 border-b border-slate-100 bg-slate-50">
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="flex items-center gap-3">
+                                <div class="p-2 bg-${section.color}-100 rounded-lg text-${section.color}-600">
+                                    <i data-lucide="${section.icon}" class="w-5 h-5"></i>
+                                </div>
+                                <div>
+                                    <h2 class="font-bold text-lg text-slate-800">${section.title}</h2>
+                                    <span class="text-xs font-semibold px-2 py-0.5 rounded bg-${section.color}-100 text-${section.color}-700">${section.marks}</span>
+                                </div>
+                            </div>
+                            <span class="text-xl font-bold text-slate-700" id="progress-text-${section.id}">${percentage}%</span>
+                        </div>
+                        <p class="text-sm text-slate-500 mb-3 ml-12">${section.description}</p>
+                        
+                        <!-- Progress Bar -->
+                        <div class="w-full bg-slate-200 rounded-full h-2 ml-1">
+                            <div id="progress-bar-${section.id}" class="bg-${section.color}-500 h-2 rounded-full transition-all duration-500" style="width: ${percentage}%"></div>
+                        </div>
+                    </div>
+
+                    <div class="p-2">
+                        ${section.items.map((item, index) => {
+                            const isChecked = sectionState[index] ? 'checked' : '';
+                            return `
+                            <label class="checkbox-wrapper cursor-pointer block group">
+                                <input type="checkbox" class="hidden" 
+                                    onchange="toggleItem('${section.id}', ${index})" ${isChecked}>
+                                <div class="flex items-start gap-3 p-3 rounded-lg hover:bg-slate-50 transition-colors border border-transparent group-hover:border-slate-100">
+                                    <div class="w-5 h-5 mt-0.5 rounded border border-slate-300 bg-white flex items-center justify-center flex-shrink-0 transition-colors">
+                                        <svg class="w-3.5 h-3.5 text-blue-600 hidden pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                    </div>
+                                    <span class="text-slate-700 text-sm leading-relaxed select-none transition-all">${item}</span>
+                                </div>
+                            </label>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        // Event Handlers
+        window.toggleItem = (sectionId, itemIndex) => {
+            if (!state[sectionId]) state[sectionId] = [];
+            state[sectionId][itemIndex] = !state[sectionId][itemIndex];
+            
+            // Save
+            localStorage.setItem('cadJuryState', JSON.stringify(state));
+            
+            // Update UI
+            updateSectionProgress(sectionId);
+            updateOverallProgress();
+        };
+
+        function updateSectionProgress(sectionId) {
+            const section = checklistData.find(s => s.id === sectionId);
+            const sectionState = state[sectionId] || [];
+            const checkedCount = sectionState.filter(Boolean).length;
+            const percentage = Math.round((checkedCount / section.items.length) * 100);
+
+            // Update DOM elements directly for performance
+            document.getElementById(`progress-bar-${sectionId}`).style.width = `${percentage}%`;
+            document.getElementById(`progress-text-${sectionId}`).innerText = `${percentage}%`;
+            
+            // Update visual style of checkbox (done via CSS selector logic, but we force redraw if needed)
+            // Actually CSS :checked handles the immediate visual feedback
+        }
+
+        function updateOverallProgress() {
+            let totalItems = 0;
+            let totalChecked = 0;
+
+            checklistData.forEach(section => {
+                totalItems += section.items.length;
+                const sectionState = state[section.id] || [];
+                totalChecked += sectionState.filter(Boolean).length;
+            });
+
+            const totalPercentage = totalItems === 0 ? 0 : Math.round((totalChecked / totalItems) * 100);
+            totalProgressEl.innerText = `${totalPercentage}%`;
+        }
+
+        window.resetChecklist = () => {
+            if(confirm('Are you sure you want to uncheck everything?')) {
+                state = {};
+                localStorage.removeItem('cadJuryState');
+                localStorage.removeItem('cadJuryNotes');
+                document.getElementById('notes-area').value = '';
+                // Reload to refresh all checkboxes easily
+                location.reload(); 
+            }
+        };
+
+        // Start
+        init();
+
+    </script>
+</body>
+</html>
