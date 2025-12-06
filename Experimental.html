@@ -12,7 +12,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <!-- v3 Additions -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
@@ -190,7 +189,7 @@
 
         /* Reaction Trails (v3) */
         .floating-heart { position: fixed; pointer-events: none; font-size: 24px; animation: floatUp 1.5s ease-out forwards; z-index: 1000; }
-        @keyframes floatUp { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-100px) scale(1.5); opacity: 0; } }
+        @keyframes floatUp { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-100px) scale(1.5)', opacity: 0 } }
 
         /* Live Presence Glow (v3) */
         .presence-active { box-shadow: 0 0 15px var(--neon-primary), inset 0 0 10px var(--neon-primary); border-color: var(--neon-primary); }
@@ -215,11 +214,26 @@
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
+
+        /* Zen Mode (v4) - Hides controls and increases focus area */
+        #entry-dialog.zen-active .zen-fade { opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+        #entry-dialog.zen-active .tw-px-4 { padding-left: 1rem; padding-right: 1rem; }
+        #entry-dialog.zen-active .tw-px-8 { padding-left: 2rem; padding-right: 2rem; }
+        #entry-dialog.zen-active #inp-title { font-size: 2rem; }
+
+        /* Audio Player Fix */
+        .custom-audio::-webkit-media-controls-panel { background-color: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+        .custom-audio { height: 50px; }
+
+        .slide-in-toast { animation: slideIn 0.3s ease-out forwards; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .slide-up { animation: slideUp 0.5s ease-out forwards; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body id="app-body" onclick="createRipple(event)">
 
-    <!-- BACKGROUND BLOBS (v2 Position + v3 Weather Logic) -->
+    <!-- BACKGROUND BLOBS -->
     <div id="blob-1" class="liquid-blob" style="background: #7c3aed; top: -10%; left: -10%; width: 50vw; height: 50vw;"></div>
     <div id="blob-2" class="liquid-blob" style="background: #0d9488; bottom: -10%; right: -10%; width: 50vw; height: 50vw; animation-delay: -5s;"></div>
     <div class="liquid-blob" style="background: #2563eb; top: 40%; left: 30%; width: 30vw; height: 30vw; animation-delay: -10s;"></div>
@@ -233,7 +247,7 @@
     <!-- OFFLINE INDICATOR -->
     <div id="offline-indicator" class="tw-fixed tw-top-0 tw-left-0 tw-w-full tw-h-1 tw-bg-red-500 tw-z-[200] tw-hidden tw-animate-pulse"></div>
 
-    <!-- VIEW 1: PREMIUM LOCK SCREEN (v2 Design) -->
+    <!-- VIEW 1: PREMIUM LOCK SCREEN -->
     <div id="auth-view" class="full-screen-center">
         <div class="liquid-card tw-p-8 md:tw-p-10 tw-rounded-[3.5rem] tw-w-[90%] tw-max-w-[340px] tw-text-center tw-relative tw-overflow-hidden tw-border tw-border-white/10 tw-shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)]">
             
@@ -277,22 +291,22 @@
     <!-- VIEW 2: DASHBOARD -->
     <div id="dashboard-view">
         
-        <!-- Glass Header (v2 Layout + v3 Buttons) -->
+        <!-- Glass Header -->
         <header class="tw-absolute tw-top-0 tw-w-full tw-z-40 tw-px-4 md:tw-px-6 tw-py-4 tw-flex tw-items-center tw-justify-between tw-backdrop-blur-md tw-border-b tw-border-white/5">
             <div class="tw-flex tw-items-center tw-gap-4">
-                <!-- Avatar with Battery (v3) & Presence (v3) -->
+                <!-- Avatar with Battery & Presence -->
                 <div class="tw-relative">
                     <div class="tw-w-10 tw-h-10 tw-rounded-full tw-bg-gradient-to-tr tw-from-cyber-neon tw-to-blue-500 tw-flex tw-items-center tw-justify-center tw-text-white tw-font-bold tw-shadow-lg tw-cursor-pointer tw-border-2 tw-border-transparent tw-transition-all" id="avatar-glow" onclick="app.signOut()">
                         <span id="user-initial">U</span>
                     </div>
-                    <!-- Battery (v3) -->
+                    <!-- Battery -->
                     <div class="tw-absolute -tw-bottom-1 -tw-right-1 tw-bg-black tw-rounded-full tw-px-1 tw-border tw-border-white/10 tw-flex tw-items-center tw-gap-0.5">
                         <div class="tw-w-3 tw-h-1.5 tw-rounded-sm tw-border tw-border-green-500 tw-p-[1px]"><div id="battery-level" class="tw-h-full tw-bg-green-500 tw-w-full"></div></div>
                     </div>
                 </div>
                 
                 <div>
-                    <!-- v3 Typing Indicator -->
+                    <!-- Typing Indicator -->
                     <h2 class="tw-text-sm tw-font-bold tw-text-white" id="greeting-text">Welcome Back</h2>
                     <div class="tw-flex tw-items-center tw-gap-2">
                         <div id="typing-indicator" class="tw-hidden tw-text-[10px] tw-text-cyber-accent tw-animate-pulse">Partner is typing...</div>
@@ -308,7 +322,6 @@
             
             <!-- Tools Cluster -->
             <div class="tw-flex tw-gap-2">
-                <!-- v3 Interactions -->
                 <button onclick="app.nudge()" class="tw-p-2 tw-rounded-full tw-bg-white/5 hover:tw-bg-white/10" title="Nudge Partner"><i data-lucide="vibrate" class="tw-w-5 tw-h-5 tw-text-yellow-400"></i></button>
                 <button onclick="app.requestMood()" class="tw-p-2 tw-rounded-full tw-bg-white/5 hover:tw-bg-white/10" title="Ask Mood"><i data-lucide="help-circle" class="tw-w-5 tw-h-5 tw-text-blue-400"></i></button>
                 
@@ -319,7 +332,6 @@
                     <i data-lucide="eye" class="tw-w-5 tw-h-5 tw-text-gray-400" id="privacy-icon"></i>
                 </button>
                 
-                <!-- v3 Theme Music + v2 Soundscapes (Long press vs Click logic separated in app) -->
                 <button class="tw-p-2 tw-rounded-full tw-bg-white/5 hover:tw-bg-white/10" onclick="app.toggleMusic()" title="LoFi Theme">
                     <i data-lucide="music" class="tw-w-5 tw-h-5 tw-text-gray-400" id="music-icon"></i>
                 </button>
@@ -334,19 +346,24 @@
         <main class="tw-flex-1 tw-overflow-y-auto tw-pt-24 tw-pb-24 tw-px-3 md:tw-px-4 custom-scrollbar privacy-blur" id="main-scroll">
             <div class="tw-max-w-3xl tw-mx-auto">
                 
-                <!-- v3 To-Do Widget -->
+                <!-- To-Do Widget -->
                 <div class="liquid-card tw-rounded-2xl tw-p-4 tw-mb-6 glass-shimmer">
                     <div class="tw-flex tw-justify-between tw-items-center tw-mb-2">
                         <h3 class="tw-text-xs tw-text-cyber-accent tw-uppercase tw-font-bold tw-tracking-widest">Shared Goals</h3>
-                        <button onclick="app.addTodo()" class="tw-text-xs tw-text-gray-400 hover:tw-text-white">+ Add</button>
+                        <div class="tw-flex tw-gap-3">
+                            <button onclick="app.addTodo()" class="tw-text-xs tw-text-gray-400 hover:tw-text-white">+ Add</button>
+                            <!-- NEW: Clear All To-Dos Button -->
+                            <button onclick="app.clearAllTodos()" class="tw-text-xs tw-text-red-400 hover:tw-text-red-500" title="Clear All Goals">Clear All</button>
+                        </div>
                     </div>
                     <div id="todo-list" class="tw-space-y-2"></div>
                 </div>
 
-                <!-- FLUX STATUS -->
+                <!-- FLUX STATUS (Stories) -->
                 <div class="tw-mb-8">
                     <div class="tw-flex tw-gap-4 tw-overflow-x-auto no-scrollbar tw-py-2" id="stories-container">
-                        <div class="tw-flex tw-flex-col tw-items-center tw-gap-2 tw-flex-shrink-0 tw-cursor-pointer" onclick="app.openAddModal('status')">
+                        <!-- Clicking this button opens the generic modal, encouraging image upload for a 'status' look -->
+                        <div class="tw-flex tw-flex-col tw-items-center tw-gap-2 tw-flex-shrink-0 tw-cursor-pointer" onclick="app.openAddModal('memory')"> 
                             <div class="tw-w-16 tw-h-16 tw-rounded-full tw-border-2 tw-border-dashed tw-border-white/30 tw-flex tw-items-center tw-justify-center hover:tw-bg-white/5 tw-transition-all">
                                 <i data-lucide="plus" class="tw-w-6 tw-h-6 tw-text-cyber-neon"></i>
                             </div>
@@ -355,7 +372,7 @@
                     </div>
                 </div>
 
-                <!-- Stats Rings + v3 Countdown & Randomizer -->
+                <!-- Stats Rings & Utility Block -->
                 <div class="tw-grid tw-grid-cols-2 md:tw-grid-cols-4 tw-gap-3 md:tw-gap-4 tw-mb-8">
                     <div class="liquid-card tw-p-4 tw-rounded-3xl tw-flex tw-items-center tw-gap-4 tw-relative tw-overflow-hidden">
                         <div class="tw-w-12 tw-h-12 tw-rounded-full tw-border-4 tw-border-cyber-neon/30 tw-flex tw-items-center tw-justify-center">
@@ -367,7 +384,6 @@
                         </div>
                     </div>
                     
-                    <!-- v3 Countdown -->
                     <div class="liquid-card tw-p-4 tw-rounded-3xl tw-flex tw-items-center tw-gap-4 tw-cursor-pointer hover:tw-bg-white/5" onclick="app.toggleCountdown()">
                         <div class="tw-w-12 tw-h-12 tw-rounded-full tw-border-4 tw-border-cyber-accent/30 tw-flex tw-items-center tw-justify-center">
                              <i data-lucide="timer" class="tw-w-5 tw-h-5 tw-text-cyber-accent"></i>
@@ -378,13 +394,11 @@
                         </div>
                     </div>
 
-                    <!-- v3 Randomizer -->
                     <button class="liquid-card tw-p-4 tw-rounded-3xl tw-flex tw-flex-col tw-items-center tw-justify-center hover:tw-bg-white/5" onclick="app.randomMemory()">
                         <i data-lucide="shuffle" class="tw-w-6 tw-h-6 tw-text-purple-400 tw-mb-1"></i>
                         <span class="tw-text-[10px] tw-text-gray-400 tw-uppercase">Shuffle</span>
                     </button>
 
-                    <!-- v2 Mood Sparkline -->
                     <div class="liquid-card tw-p-4 tw-rounded-3xl tw-flex tw-items-end tw-justify-between tw-px-4" id="sparkline"></div>
                 </div>
 
@@ -402,13 +416,13 @@
                 <!-- Timeline -->
                 <div class="tw-relative tw-min-h-[300px]">
                     <div class="timeline-spine-liquid"></div>
-                    <!-- v3 Skeleton -->
+                    <!-- Skeleton -->
                     <div id="skeleton-container" class="tw-space-y-4 tw-ml-4">
                         <div class="liquid-card tw-h-40 tw-rounded-3xl skeleton"></div>
                         <div class="liquid-card tw-h-40 tw-rounded-3xl skeleton"></div>
                     </div>
                     <div id="timeline-container" class="tw-space-y-8 tw-perspective-1000 tw-hidden"></div>
-                    <!-- v3 Back To Top -->
+                    <!-- Back To Top -->
                     <button id="back-to-top" onclick="document.getElementById('main-scroll').scrollTo({top:0, behavior:'smooth'})" class="tw-fixed tw-bottom-24 tw-left-6 tw-p-3 tw-bg-white/10 tw-rounded-full tw-backdrop-blur tw-hidden tw-z-30"><i data-lucide="arrow-up" class="tw-w-5 tw-h-5 text-white"></i></button>
                     
                     <div id="empty-state" class="tw-hidden tw-text-center tw-py-20">
@@ -427,72 +441,72 @@
         </button>
     </div>
 
-    <!-- DIALOG: EDITOR (v2 Style + v3 Tabs) -->
+    <!-- DIALOG: EDITOR -->
     <dialog id="entry-dialog" class="tw-bg-transparent tw-w-full md:tw-max-w-2xl tw-fixed tw-bottom-0 md:tw-top-1/2 md:tw-left-1/2 md:tw--translate-x-1/2 md:tw--translate-y-1/2 tw-m-0">
         <div class="liquid-card tw-rounded-t-[2.5rem] md:tw-rounded-[2.5rem] tw-w-full tw-h-[90vh] md:tw-h-auto md:tw-max-h-[85vh] tw-flex tw-flex-col tw-overflow-hidden tw-border-b-0">
             
-            <!-- v3 Tabs -->
-            <div class="tw-flex tw-border-b tw-border-white/5">
-                <button onclick="app.setEntryType('memory')" class="tw-flex-1 tw-py-4 tw-text-sm tw-font-bold tw-text-cyber-neon type-tab" id="tab-memory">Memory</button>
-                <button onclick="app.setEntryType('poll')" class="tw-flex-1 tw-py-4 tw-text-sm tw-text-gray-400 type-tab" id="tab-poll">Poll</button>
+            <!-- Tabs - zen-fade removed to keep controls accessible in zen mode -->
+            <div class="tw-flex tw-border-b tw-border-white/5 tw-py-1 tw-px-4 md:tw-px-8 zen-fade">
+                <button onclick="app.setEntryType('memory')" class="tw-flex-1 tw-py-3 md:tw-py-4 tw-text-xs md:tw-text-sm tw-font-bold tw-text-cyber-neon type-tab" id="tab-memory">Memory</button>
+                <button onclick="app.setEntryType('poll')" class="tw-flex-1 tw-py-3 md:tw-py-4 tw-text-xs md:tw-text-sm tw-text-gray-400 type-tab" id="tab-poll">Poll</button>
             </div>
 
-            <form id="entry-form" class="tw-flex tw-flex-col tw-h-full">
+            <form id="entry-form" class="tw-flex tw-flex-col tw-h-full" onsubmit="event.preventDefault()">
                 <input type="hidden" name="id" id="entry-id">
                 <input type="hidden" name="type" id="entry-type" value="memory">
                 
                 <!-- Header -->
-                <div class="tw-px-8 tw-pt-6 tw-pb-4 tw-flex tw-justify-between tw-items-center zen-fade">
+                <div class="tw-px-4 md:tw-px-8 tw-pt-4 md:tw-pt-6 tw-pb-3 md:tw-pb-4 tw-flex tw-justify-between tw-items-center">
                     <div>
-                        <h2 class="tw-text-2xl tw-font-bold tw-text-white" id="dialog-title">New Entry</h2>
-                        <div class="tw-text-xs tw-text-gray-400" id="word-count">0 words</div>
+                        <h2 class="tw-text-xl md:tw-text-2xl tw-font-bold tw-text-white" id="dialog-title">New Entry</h2>
+                        <div class="tw-text-[11px] tw-text-gray-400 zen-fade" id="word-count">0 words</div>
                     </div>
                     <div class="tw-flex tw-gap-2">
                         <button type="button" onclick="app.toggleZen()" class="tw-p-2 tw-rounded-full hover:tw-bg-white/10" title="Zen Mode"><i data-lucide="align-justify" class="tw-w-5 tw-h-5"></i></button>
-                        <button type="button" onclick="app.closeDialog()" class="tw-p-2 tw-rounded-full hover:tw-bg-white/10"><i data-lucide="x"></i></button>
+                        <button type="button" onclick="app.closeDialog()" method="dialog" class="tw-p-2 tw-rounded-full hover:tw-bg-white/10"><i data-lucide="x"></i></button>
                     </div>
                 </div>
 
                 <!-- Body -->
-                <div class="tw-flex-1 tw-overflow-y-auto tw-px-8 tw-py-2 custom-scrollbar">
+                <div class="tw-flex-1 tw-overflow-y-auto tw-px-4 md:tw-px-8 tw-py-2 custom-scrollbar">
                     
                     <div id="memory-fields">
                         <input type="text" name="title" id="inp-title" placeholder="Title your memory..." 
-                            class="tw-w-full tw-bg-transparent tw-border-none tw-text-3xl tw-font-bold tw-text-white tw-placeholder-gray-700 focus:tw-outline-none tw-mb-6 privacy-blur">
+                            class="tw-w-full tw-bg-transparent tw-border-none tw-text-2xl md:tw-text-3xl tw-font-bold tw-text-white tw-placeholder-gray-700 focus:tw-outline-none tw-mb-4 md:tw-mb-6 privacy-blur">
 
                         <!-- Meta Controls Grid -->
                         <div class="tw-flex tw-flex-wrap tw-gap-3 tw-mb-6 zen-fade">
-                            <div class="liquid-input tw-rounded-xl tw-px-3 tw-py-2 tw-flex tw-items-center tw-gap-2">
+                            <div class="liquid-input tw-rounded-xl tw-px-3 tw-py-2 tw-flex tw-items-center tw-gap-2 tw-w-full sm:tw-w-auto">
                                 <i data-lucide="calendar" class="tw-w-4 tw-h-4 tw-text-gray-400"></i>
-                                <input type="date" name="date" class="tw-bg-transparent tw-border-none tw-text-sm tw-text-white focus:tw-outline-none">
+                                <input type="date" name="date" class="tw-bg-transparent tw-border-none tw-text-sm tw-text-white focus:tw-outline-none tw-flex-1">
                             </div>
                             
-                            <!-- v3 Geo -->
-                            <button type="button" onclick="app.getGeo()" class="liquid-input tw-rounded-xl tw-px-3 tw-py-2 tw-flex tw-items-center tw-gap-2 hover:tw-bg-white/10">
+                            <!-- Geo -->
+                            <button type="button" onclick="app.getGeo()" class="liquid-input tw-rounded-xl tw-px-3 tw-py-2 tw-flex tw-items-center tw-gap-2 hover:tw-bg-white/10 tw-w-full sm:tw-w-auto">
                                 <i data-lucide="map-pin" class="tw-w-4 tw-h-4 tw-text-cyber-accent"></i>
                                 <span id="geo-label" class="tw-text-xs">Location</span>
                                 <input type="hidden" name="location" id="inp-location">
                             </button>
 
-                            <!-- v3 Time Capsule -->
-                            <div class="liquid-input tw-rounded-xl tw-px-3 tw-py-2 tw-flex tw-items-center tw-gap-2">
+                            <!-- Time Capsule -->
+                            <div class="liquid-input tw-rounded-xl tw-px-3 tw-py-2 tw-flex tw-items-center tw-gap-2 tw-w-full sm:tw-w-auto">
                                 <i data-lucide="lock" class="tw-w-4 tw-h-4 tw-text-gray-400"></i>
                                 <input type="date" name="unlockDate" class="tw-bg-transparent tw-border-none tw-text-xs tw-text-white focus:tw-outline-none tw-w-24" title="Unlock Date">
                             </div>
 
-                            <!-- v3 Ephemeral -->
-                            <label class="liquid-input tw-rounded-xl tw-px-3 tw-py-2 tw-flex tw-items-center tw-gap-2 tw-cursor-pointer tw-text-red-400" title="Self-destruct in 24h">
+                            <!-- Ephemeral -->
+                            <label class="liquid-input tw-rounded-xl tw-px-3 tw-py-2 tw-flex tw-items-center tw-gap-2 tw-cursor-pointer tw-text-red-400 tw-w-full sm:tw-w-auto" title="Self-destruct in 24h">
                                 <i data-lucide="bomb" class="tw-w-4 tw-h-4"></i>
                                 <input type="checkbox" name="isEphemeral" class="tw-accent-red-500">
                             </label>
                             
-                            <label class="liquid-input tw-rounded-xl tw-px-3 tw-py-2 tw-flex tw-items-center tw-gap-2 tw-cursor-pointer">
+                            <label class="liquid-input tw-rounded-xl tw-px-3 tw-py-2 tw-flex tw-items-center tw-gap-2 tw-cursor-pointer tw-w-full sm:tw-w-auto">
                                 <input type="checkbox" name="isPinned" class="tw-accent-cyber-neon"> <span class="tw-text-xs">Pin</span>
                             </label>
                         </div>
 
-                        <!-- v3 Audio Recorder & Spotify -->
-                        <div class="zen-fade tw-grid tw-grid-cols-2 tw-gap-3 tw-mb-6">
+                        <!-- Audio Recorder & Spotify -->
+                        <div class="zen-fade tw-grid tw-grid-cols-1 sm:tw-grid-cols-2 tw-gap-3 tw-mb-6">
                             <div class="liquid-input tw-rounded-xl tw-p-3 tw-flex tw-items-center tw-justify-between">
                                 <div class="tw-flex tw-items-center tw-gap-2">
                                     <div id="mic-status" class="tw-w-3 tw-h-3 tw-rounded-full tw-bg-gray-500"></div>
@@ -521,19 +535,24 @@
                         </div>
                     </div>
                     
-                    <!-- v3 Poll Fields -->
+                    <!-- Poll Fields -->
                     <div id="poll-section" class="tw-hidden tw-space-y-3 tw-mb-6">
+                        <div class="liquid-input tw-rounded-3xl tw-p-4 tw-mb-4 tw-relative tw-group focus-within:tw-border-cyber-neon">
+                            <textarea name="poll_notes" rows="2" placeholder="The question for the poll?" class="tw-w-full tw-bg-transparent tw-border-none tw-outline-none tw-text-gray-200 tw-resize-none tw-leading-relaxed privacy-blur"></textarea>
+                        </div>
                         <input type="text" name="opt1" placeholder="Option 1" class="liquid-input tw-w-full tw-rounded-xl tw-px-4 tw-py-3 tw-text-sm">
                         <input type="text" name="opt2" placeholder="Option 2" class="liquid-input tw-w-full tw-rounded-xl tw-px-4 tw-py-3 tw-text-sm">
+                        <input type="text" name="opt3" placeholder="Option 3 (Optional)" class="liquid-input tw-w-full tw-rounded-xl tw-px-4 tw-py-3 tw-text-sm zen-fade">
+                        <input type="text" name="opt4" placeholder="Option 4 (Optional)" class="liquid-input tw-w-full tw-rounded-xl tw-px-4 tw-py-3 tw-text-sm zen-fade">
                     </div>
 
                     <!-- Image Upload -->
-                    <div id="drop-zone" class="zen-fade tw-border-2 tw-border-dashed tw-border-white/10 tw-rounded-3xl tw-p-6 tw-text-center hover:tw-bg-white/5 hover:tw-border-cyber-neon/50 tw-transition-all tw-cursor-pointer" onclick="document.getElementById('img-input').click()">
+                    <div id="drop-zone" class="zen-fade tw-border-2 tw-border-dashed tw-border-white/10 tw-rounded-3xl tw-p-4 md:tw-p-6 tw-text-center hover:tw-bg-white/5 hover:tw-border-cyber-neon/50 tw-transition-all tw-cursor-pointer" onclick="document.getElementById('img-input').click()">
                         <div id="upload-placeholder">
                             <div class="tw-w-10 tw-h-10 tw-rounded-full tw-bg-white/5 tw-flex tw-items-center tw-justify-center tw-mx-auto tw-mb-2">
                                 <i data-lucide="image-plus" class="tw-w-5 tw-h-5 tw-text-gray-400"></i>
                             </div>
-                            <span class="tw-text-xs tw-text-gray-500">Tap to upload visuals</span>
+                            <span class="tw-text-xs tw-text-gray-500">Tap to upload visuals (for memory or flux)</span>
                         </div>
                         <div id="img-preview-box" class="tw-hidden tw-relative tw-inline-block">
                             <img id="img-preview" class="tw-max-h-40 tw-rounded-2xl tw-shadow-lg">
@@ -546,14 +565,14 @@
                 </div>
 
                 <!-- Footer -->
-                <div class="tw-p-6 tw-border-t tw-border-white/5 tw-bg-black/20 tw-backdrop-blur-md">
-                    <button type="button" onclick="app.saveEntry()" class="tw-w-full tw-py-4 tw-rounded-2xl tw-bg-gradient-to-r tw-from-cyber-neon tw-to-blue-600 tw-text-white tw-font-bold tw-text-lg tw-shadow-[0_0_20px_rgba(124,58,237,0.4)] hover:tw-shadow-[0_0_30px_rgba(124,58,237,0.6)] hover:tw-scale-[1.02] tw-transition-all">Crystalize Memory</button>
+                <div class="tw-p-4 md:tw-p-6 tw-border-t tw-border-white/5 tw-bg-black/20 tw-backdrop-blur-md zen-fade">
+                    <button type="button" onclick="app.saveEntry()" class="tw-w-full tw-py-3 md:tw-py-4 tw-rounded-2xl tw-bg-gradient-to-r tw-from-cyber-neon tw-to-blue-600 tw-text-white tw-font-bold tw-text-base md:tw-text-lg tw-shadow-[0_0_20px_rgba(124,58,237,0.4)] hover:tw-shadow-[0_0_30px_rgba(124,58,237,0.6)] hover:tw-scale-[1.02] tw-transition-all">Crystalize Entry</button>
                 </div>
             </form>
         </div>
     </dialog>
 
-    <!-- LIGHTBOX (v3 Comments Support) -->
+    <!-- LIGHTBOX -->
     <div id="lightbox" class="tw-fixed tw-inset-0 tw-z-[150] tw-bg-black/95 tw-backdrop-blur-xl tw-flex tw-flex-col tw-items-center tw-justify-center tw-opacity-0 tw-pointer-events-none tw-transition-all tw-duration-300">
         <div class="tw-relative tw-max-w-4xl tw-w-full tw-flex tw-flex-col tw-items-center">
             <img id="lightbox-img" class="tw-max-w-full tw-max-h-[70vh] tw-rounded-2xl tw-shadow-2xl tw-scale-90 tw-transition-transform">
@@ -562,7 +581,7 @@
                 <div class="tw-h-32 tw-overflow-y-auto custom-scrollbar tw-mb-2 tw-p-2 tw-bg-white/5 tw-rounded-xl" id="lightbox-comments-list"></div>
                 <div class="tw-flex tw-gap-2">
                     <input type="text" id="lightbox-comment-input" placeholder="Reply to flux..." class="tw-flex-1 tw-bg-white/10 tw-border-none tw-rounded-xl tw-px-3 tw-text-white tw-text-sm focus:tw-outline-none">
-                    <button onclick="app.addLightboxComment()" class="tw-text-cyber-neon"><i data-lucide="send" class="tw-w-5 tw-h-5"></i></button>
+                    <button class="tw-text-cyber-neon" id="lightbox-comment-send"><i data-lucide="send" class="tw-w-5 tw-h-5"></i></button>
                 </div>
             </div>
 
@@ -583,12 +602,23 @@
     <!-- LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+        // Import Firestore functions including collectionGroup and getDocs for clearing collections
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, updateDoc, collectionGroup, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
-        const firebaseConfig = { apiKey: "", authDomain: "gatekeep-001.firebaseapp.com", projectId: "gatekeep-001", storageBucket: "gatekeep-001.firebasestorage.app", messagingSenderId: "771094597260", appId: "1:771094597260:web:557a6401ab7fa71f5175a9" };
-        let db; try { db = getFirestore(initializeApp(firebaseConfig)); } catch(e) {}
+        // Firebase Config (Placeholder)
+        const firebaseConfig = { apiKey: "YOUR_API_KEY", authDomain: "gatekeep-001.firebaseapp.com", projectId: "gatekeep-001", storageBucket: "gatekeep-001.firebasestorage.app", messagingSenderId: "771094597260", appId: "1:771094597260:web:557a6401ab7fa71f5175a9" };
+        let db; 
+        try { 
+            db = getFirestore(initializeApp(firebaseConfig)); 
+        } catch(e) { 
+            console.error("Firebase Init Error: Database will not be persistent.", e); 
+        }
 
-        const VALID_PINS = { '1111': { name: 'Chalak Lomdi', uid: 'u_1111' }, '2222': { name: 'Bhondu Bhalu', uid: 'u_2222' } };
+        // Mock User PINs for multi-user context
+        const VALID_PINS = { 
+            '1111': { name: 'Chalak Lomdi', uid: 'u_1111' }, 
+            '2222': { name: 'Bhondu Bhalu', uid: 'u_2222' } 
+        };
         
         const state = {
             currentUser: null,
@@ -609,7 +639,7 @@
             viewingItem: null
         };
 
-        /* --- AUDIO ENGINE (v3 Soundscapes) --- */
+        /* --- AUDIO ENGINE --- */
         class AudioEngine {
             constructor() { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); }
             createNoise(type) { 
@@ -646,7 +676,7 @@
             stop() { state.audioNodes.forEach(n => { n.source.stop(); n.source.disconnect(); }); state.audioNodes = []; }
         }
 
-        /* --- v3 RECORDING ENGINE --- */
+        /* --- RECORDING ENGINE --- */
         const startRec = async () => {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -667,7 +697,7 @@
             } catch(e) { showToast("Mic Access Denied", "error"); }
         };
         const stopRec = () => {
-            if(state.audioRec) state.audioRec.stop();
+            if(state.audioRec && state.audioRec.state !== 'inactive') state.audioRec.stop();
             state.isRecording = false;
             document.getElementById('mic-status').classList.replace('tw-bg-red-500', 'tw-bg-green-500');
             document.getElementById('mic-status').classList.remove('tw-animate-pulse');
@@ -707,7 +737,7 @@
         }
 
         function initExtras() {
-            // v3 Battery
+            // Battery Status
             if(navigator.getBattery) {
                 navigator.getBattery().then(b => {
                     const updateBat = () => {
@@ -718,21 +748,23 @@
                     updateBat(); b.addEventListener('levelchange', updateBat);
                 });
             }
-            // v3 Weather/Time Blobs
+            // Weather/Time Blobs
             const hr = new Date().getHours();
             if(hr < 6 || hr > 20) {
                 document.getElementById('blob-1').style.background = '#4c1d95'; 
                 document.getElementById('blob-2').style.background = '#1e3a8a';
             }
-            // v3 Typing Sim
+            // Typing Sim
             setInterval(() => { if(Math.random() > 0.8) { document.getElementById('typing-indicator').classList.remove('tw-hidden'); setTimeout(() => document.getElementById('typing-indicator').classList.add('tw-hidden'), 3000); } }, 10000);
-            // v3 Live Presence
+            // Live Presence
             if(Math.random() > 0.5) document.getElementById('avatar-glow').classList.add('presence-active');
         }
 
         /* --- DATA --- */
         function initData() {
-            // v3 Todos
+            if (!db) return; // Stop if DB is not initialized
+
+            // Todos
             onSnapshot(collection(db, 'artifacts', 'gatekeep-001', 'public', 'data', 'todos_v4'), s => {
                 const list = document.getElementById('todo-list');
                 list.innerHTML = '';
@@ -752,11 +784,14 @@
                 const now = Date.now();
                 const raw = snap.docs.map(d => ({id:d.id, ...d.data()}));
                 
-                state.data = raw.filter(d => !d.deletedAt && (d.type === 'memory' || d.type === 'poll' || !d.type));
+                // Filter and categorize data
+                state.data = raw.filter(d => !d.deletedAt && (d.type === 'memory' || d.type === 'poll' || d.type === 'status' || !d.type));
                 state.trash = raw.filter(d => d.deletedAt);
                 state.statuses = raw.filter(d => d.type === 'status' && d.expiresAt > now && !d.deletedAt);
                 
+                // Filter ephemeral memories
                 state.data = state.data.filter(d => !d.isEphemeral || (d.createdAt + 86400000 > now));
+
                 render();
             });
         }
@@ -772,14 +807,20 @@
             const container = document.getElementById('stories-container');
             const addBtn = container.firstElementChild;
             container.innerHTML = ''; container.appendChild(addBtn);
-            state.statuses.forEach(status => {
+            
+            // Filter and render only statuses with images (the 'flux' style)
+            const filteredStatuses = state.statuses.filter(s => s.imageData); 
+            
+            filteredStatuses.forEach(status => {
                 const bubble = document.createElement('div');
                 bubble.className = "tw-flex tw-flex-col tw-items-center tw-gap-2 tw-flex-shrink-0 tw-cursor-pointer tw-animate-float";
-                const ring = status.author === 'Chalak Lomdi' ? 'tw-from-cyber-neon tw-to-blue-500' : 'tw-from-pink-500 tw-to-orange-500';
+                const ring = status.author === state.currentUser?.name ? 'tw-from-cyber-neon tw-to-blue-500' : 'tw-from-pink-500 tw-to-orange-500';
                 bubble.innerHTML = `
-                    <div class="tw-w-16 tw-h-16 tw-rounded-full tw-p-[2px] tw-bg-gradient-to-tr ${ring}">
-                        <div class="tw-w-full tw-h-full tw-rounded-full tw-bg-black tw-border-2 tw-border-transparent tw-overflow-hidden">
-                            ${status.imageData ? `<img src="${status.imageData}" class="tw-w-full tw-h-full tw-object-cover">` : `<div class="tw-w-full tw-h-full tw-bg-white/10 flex items-center justify-center">${status.author[0]}</div>`}
+                    <div class="tw-relative">
+                        <div class="tw-w-16 tw-h-16 tw-rounded-full tw-p-[2px] tw-bg-gradient-to-tr ${ring}">
+                            <div class="tw-w-full tw-h-full tw-rounded-full tw-bg-black tw-border-2 tw-border-transparent tw-overflow-hidden">
+                                <img src="${status.imageData}" alt="Flux" class="tw-w-full tw-h-full tw-object-cover">
+                            </div>
                         </div>
                     </div>
                     <span class="tw-text-[10px] tw-text-gray-400 privacy-blur">${status.author.split(' ')[0]}</span>`;
@@ -792,15 +833,35 @@
             const container = document.getElementById('timeline-container');
             const skel = document.getElementById('skeleton-container');
             
-            if(state.data.length || state.trash.length) { skel.style.display = 'none'; container.style.display = state.viewMode === 'grid' ? 'grid' : 'block'; }
+            // Check if there's any data in the main or trash lists.
+            const hasData = state.data.length > 0 || state.trash.length > 0;
+            
+            if(hasData) { 
+                skel.style.display = 'none'; 
+                container.style.display = state.viewMode === 'grid' ? 'grid' : 'block'; 
+            } else {
+                skel.style.display = 'block'; // Show skeleton initially if no data loaded yet
+            }
             
             container.innerHTML = '';
             const source = state.trashMode ? state.trash : state.data;
             const term = document.getElementById('search-input').value.toLowerCase();
-            const filtered = source.filter(d => (d.title||'').toLowerCase().includes(term) || (d.notes||'').toLowerCase().includes(term)).sort((a,b) => (b.isPinned?1:0) - (a.isPinned?1:0));
+            
+            // Filter and sort the source data
+            const filtered = source
+                .filter(d => (d.title||'').toLowerCase().includes(term) || (d.notes||'').toLowerCase().includes(term))
+                .sort((a,b) => (b.isPinned?1:0) - (a.isPinned?1:0));
 
-            if(filtered.length === 0) document.getElementById('empty-state').classList.remove('tw-hidden');
-            else document.getElementById('empty-state').classList.add('tw-hidden');
+            // Hide empty state if there are filtered results or if we are still loading (skeleton is visible)
+            if(filtered.length === 0 && !skel.classList.contains('tw-hidden')) { 
+                document.getElementById('empty-state').classList.remove('tw-hidden');
+            } else {
+                document.getElementById('empty-state').classList.add('tw-hidden');
+            }
+            // Hide the skeleton once content is ready
+            if (filtered.length > 0) {
+                 skel.style.display = 'none'; 
+            }
 
             filtered.forEach((item, idx) => {
                 const isLocked = item.unlockDate && new Date(item.unlockDate) > new Date();
@@ -809,7 +870,7 @@
                 card.className = `liquid-card tw-rounded-3xl tw-p-5 tw-relative tilt-wrapper slide-up ${state.trashMode?'tw-opacity-60':''} ${isLocked ? 'chain-locked' : ''}`;
                 card.style.borderLeft = `3px solid ${moodColor}`;
                 
-                // v2 Tilt
+                // Tilt interaction (for desktop polish)
                 card.onmousemove = (e) => {
                     const rect = card.getBoundingClientRect();
                     const x = e.clientX - rect.left; const y = e.clientY - rect.top;
@@ -817,11 +878,11 @@
                 };
                 card.onmouseleave = () => card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)';
 
-                // v3 Content Logic
+                // Content Logic
                 let content = '';
                 if(item.type === 'poll') {
                     const total = (item.options||[]).reduce((a,b) => a + b.votes.length, 0);
-                    const opts = item.options.map((o, idx) => {
+                    const opts = (item.options||[]).map((o, idx) => {
                         const pct = total ? Math.round((o.votes.length/total)*100) : 0;
                         return `<div class="tw-mb-2 tw-cursor-pointer" onclick="app.vote('${item.id}', ${idx})">
                                     <div class="tw-flex tw-justify-between tw-text-xs tw-mb-1 tw-text-gray-300"><span>${o.text}</span><span>${pct}%</span></div>
@@ -830,9 +891,10 @@
                     }).join('');
                     content = `<h3 class="tw-font-bold tw-text-lg tw-mb-4 tw-text-white">${item.title}</h3>${opts}`;
                 } else {
+                    const isStatus = item.type === 'status';
                     const lockedHtml = isLocked ? `<div class="tw-flex tw-flex-col tw-items-center tw-justify-center tw-py-8 tw-text-gray-500"><i data-lucide="lock" class="tw-mb-2"></i><span>Unlocks ${item.unlockDate}</span></div>` : '';
                     const mediaHtml = !isLocked ? `
-                        ${item.imageData ? `<div class="tw-relative tw-group"><img src="${item.imageData}" class="tw-w-full tw-h-48 tw-object-cover tw-rounded-2xl tw-mb-4 tw-shadow-lg privacy-blur" onclick="app.lightbox('${item.imageData}', null)"></div>` : ''}
+                        ${item.imageData ? `<div class="tw-relative tw-group"><img src="${item.imageData}" alt="${item.title}" class="tw-w-full tw-h-48 tw-object-cover tw-rounded-2xl tw-mb-4 tw-shadow-lg privacy-blur" onclick="app.lightbox('${item.imageData}', '${item.id}')"></div>` : ''}
                         ${item.audioData ? `<audio controls src="${item.audioData}" class="tw-w-full tw-mb-3 custom-audio"></audio>` : ''}
                         ${item.spotifyLink ? `<div class="tw-mb-3"><iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/${item.spotifyLink.split('/').pop().split('?')[0]}" width="100%" height="80" frameBorder="0" allow="encrypted-media"></iframe></div>` : ''}
                         <div class="tw-text-sm tw-text-gray-300 tw-line-clamp-3 tw-mb-4 privacy-blur">${DOMPurify.sanitize(marked.parse(item.notes||''))}</div>
@@ -846,6 +908,7 @@
                                     <span class="tw-text-[10px] tw-text-gray-500">${new Date(item.createdAt).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span>
                                     ${item.location ? '<i data-lucide="map-pin" class="tw-w-3 tw-h-3 tw-text-gray-600"></i>' : ''}
                                     ${item.readBy?.length > 1 ? '<i data-lucide="check-circle" class="tw-w-3 tw-h-3 tw-text-blue-500" title="Read"></i>' : ''}
+                                    ${isStatus ? '<span class="tw-text-[10px] tw-text-purple-400 tw-ml-2">FLUX</span>' : ''}
                                 </div>
                                 <h3 class="tw-font-bold tw-text-lg tw-text-white tw-mt-1 privacy-blur ${isLocked?'tw-blur-sm':''}">${item.title}</h3>
                             </div>
@@ -878,8 +941,8 @@
                     </div>`;
                 container.appendChild(card);
                 
-                // v3 Read Receipt
-                if(!item.readBy?.includes(state.currentUser.uid)) {
+                // Read Receipt
+                if(db && !item.readBy?.includes(state.currentUser?.uid)) {
                     updateDoc(doc(db, 'artifacts', 'gatekeep-001', 'public', 'data', 'shared_timeline_v2', item.id), { readBy: [...(item.readBy||[]), state.currentUser.uid] });
                 }
             });
@@ -888,10 +951,10 @@
 
         function updateStats() {
             document.getElementById('stat-total').innerText = state.data.length;
-            // v3 Sparkline
+            // Sparkline
             const recents = state.data.slice(0, 10).reverse();
             document.getElementById('sparkline').innerHTML = recents.map(d => `<div style="width:6px; height:${(d.mood||3)*20}%; background:${getMoodColor(d.mood||3)}; border-radius:2px;"></div>`).join('');
-            // v2 Pulse
+            // Pulse
             const last5 = state.data.slice(0,5);
             const avgMood = last5.reduce((a,b)=>a+(b.mood||3),0) / (last5.length||1);
             document.getElementById('pulse-heart').style.animationDuration = `${2-((avgMood-1)*0.3)}s`;
@@ -902,11 +965,13 @@
             triggerBiometric: () => { setTimeout(() => { for(let i=0; i<4; i++) handlePin('1'); }, 500); },
             signOut: () => location.reload(),
             
-            // v3 Features
             nudge: () => {
                 document.getElementById('app-body').classList.add('tw-animate-shake');
                 navigator.vibrate?.([200, 100, 200]); showToast("Buzzing Partner...");
                 setTimeout(() => document.getElementById('app-body').classList.remove('tw-animate-shake'), 1000);
+            },
+            requestMood: () => {
+                showToast("Ask them how they're feeling today 💬");
             },
             toggleMusic: () => {
                 const audio = document.getElementById('theme-audio');
@@ -915,23 +980,45 @@
             },
             exportBook: () => {
                 const { jsPDF } = window.jspdf;
-                const doc = new jsPDF(); doc.setFont("courier"); doc.text("DATEKEEP CHRONICLES", 20, 20);
+                const docPdf = new jsPDF(); docPdf.setFont("courier"); docPdf.text("DATEKEEP CHRONICLES", 20, 20);
                 let y = 40;
                 state.data.forEach(item => {
-                    if(y > 270) { doc.addPage(); y = 20; }
-                    doc.setFontSize(10); doc.text(`${new Date(item.createdAt).toLocaleDateString()} - ${item.author}`, 20, y); y+=10;
-                    doc.setFontSize(12); doc.text(item.title || "Untitled", 20, y); y+=10;
-                    const lines = doc.splitTextToSize(item.notes || "", 170);
-                    doc.setFontSize(10); doc.text(lines, 20, y); y += (lines.length * 5) + 20;
+                    if(y > 270) { docPdf.addPage(); y = 20; }
+                    docPdf.setFontSize(10); docPdf.text(`${new Date(item.createdAt).toLocaleDateString()} - ${item.author}`, 20, y); y+=10;
+                    docPdf.setFontSize(12); docPdf.text(item.title || "Untitled", 20, y); y+=10;
+                    const lines = docPdf.splitTextToSize(item.notes || "", 170);
+                    docPdf.setFontSize(10); docPdf.text(lines, 20, y); y += (lines.length * 5) + 20;
                 });
-                doc.save("our_story.pdf"); showToast("Book Generated!");
+                docPdf.save("our_story.pdf"); showToast("Book Generated!");
             },
             addTodo: async () => {
                 const txt = prompt("New shared goal:");
-                if(txt) await addDoc(collection(db, 'artifacts', 'gatekeep-001', 'public', 'data', 'todos_v4'), { text: txt, done: false, createdAt: Date.now() });
+                if(txt && db) await addDoc(collection(db, 'artifacts', 'gatekeep-001', 'public', 'data', 'todos_v4'), { text: txt, done: false, createdAt: Date.now() });
             },
             
-            // v2 Features Integrated
+            // NEW: Function to clear all to-do items
+            clearAllTodos: async () => {
+                if (!db) return showToast("Database not connected.", "error");
+                if (!confirm("Are you sure you want to delete ALL shared goals?")) return;
+
+                try {
+                    const todosRef = collection(db, 'artifacts', 'gatekeep-001', 'public', 'data', 'todos_v4');
+                    const snapshot = await getDocs(todosRef);
+                    const batch = writeBatch(db);
+
+                    snapshot.docs.forEach((d) => {
+                        batch.delete(d.ref);
+                    });
+
+                    await batch.commit();
+                    showToast("All goals cleared!", "info");
+                } catch (error) {
+                    console.error("Error clearing todos:", error);
+                    showToast("Failed to clear goals.", "error");
+                }
+            },
+
+            // Features
             toggleView: () => {
                 state.viewMode = state.viewMode === 'list' ? 'grid' : 'list';
                 document.body.classList.toggle('grid-view', state.viewMode === 'grid');
@@ -966,7 +1053,8 @@
             },
             randomMemory: () => {
                 if(!state.data.length) return;
-                const r = state.data[Math.floor(Math.random() * state.data.length)];
+                const r = state.data.find(d => d.type === 'memory' || !d.type); // Find memory/status but exclude poll
+                if (!r) return showToast("No memories found to shuffle.", "info");
                 app.editEntry(r.id); showToast("Memory Resurfaced");
             },
             toggleTrash: () => {
@@ -977,20 +1065,16 @@
             // Modal & Form
             toggleZen: () => document.getElementById('entry-dialog').classList.toggle('zen-active'),
             openAddModal: (type) => {
-                document.getElementById('entry-form').reset();
+                const form = document.getElementById('entry-form');
+                form.reset();
                 app.clearImage();
                 document.getElementById('entry-id').value = '';
-                app.setEntryType(type === 'status' ? 'memory' : 'memory'); // Default
-                document.getElementById('entry-type').value = type === 'status' ? 'status' : 'memory';
                 
-                if (type === 'status') {
-                    document.getElementById('dialog-title').innerText = "New Flux";
-                    document.getElementById('memory-fields').classList.add('tw-hidden');
-                } else {
-                    document.getElementById('dialog-title').innerText = "New Entry";
-                    document.getElementById('memory-fields').classList.remove('tw-hidden');
-                    document.querySelector('[name=date]').value = new Date().toISOString().split('T')[0];
-                }
+                // Reset to Memory by default
+                app.setEntryType('memory'); 
+                document.getElementById('dialog-title').innerText = "New Entry";
+                document.querySelector('[name=date]').value = new Date().toISOString().split('T')[0];
+                
                 document.getElementById('entry-dialog').showModal();
             },
             setEntryType: (t) => {
@@ -999,43 +1083,72 @@
                 document.getElementById('tab-memory').classList.toggle('tw-text-gray-400', t!=='memory');
                 document.getElementById('tab-poll').classList.toggle('tw-text-cyber-neon', t==='poll');
                 document.getElementById('tab-poll').classList.toggle('tw-text-gray-400', t!=='poll');
-                document.getElementById('poll-section').style.display = t === 'poll' ? 'block' : 'none';
-                document.getElementById('inp-notes').placeholder = t === 'poll' ? "Question?" : "Story details...";
+                
+                document.getElementById('poll-section').classList.toggle('tw-hidden', t !== 'poll');
+                document.getElementById('memory-fields').classList.toggle('tw-hidden', t === 'poll');
+                
+                // Update placeholders and visibility based on type
+                if (t === 'poll') {
+                    document.getElementById('inp-title').classList.add('tw-hidden');
+                    document.getElementById('inp-title').value = ''; // Clear title input for poll
+                    document.getElementById('drop-zone').classList.add('tw-hidden');
+                } else {
+                    document.getElementById('inp-title').classList.remove('tw-hidden');
+                    document.getElementById('drop-zone').classList.remove('tw-hidden');
+                    document.getElementById('inp-notes').placeholder = "Write something...";
+                }
+                app.updateWordCount();
             },
             toggleRecording: () => { if(state.isRecording) stopRec(); else startRec(); },
-            closeDialog: () => document.getElementById('entry-dialog').close(),
+            closeDialog: () => { document.getElementById('entry-dialog').close(); stopRec(); },
             
             saveEntry: async () => {
+                if (!db || !state.currentUser) { showToast("Database not connected or user not logged in.", "error"); return; }
+
                 const form = document.getElementById('entry-form');
                 const formData = new FormData(form);
                 const type = document.getElementById('entry-type').value;
                 const id = document.getElementById('entry-id').value;
                 
                 let data = { type, imageData: document.getElementById('inp-image').value };
+                
+                // Determine if this is a quick "Status" (Flux) entry based on content
+                const isStatus = data.imageData && formData.get('title') === '' && document.getElementById('inp-notes').value.length < 50 && type === 'memory';
+                
+                if(type === 'poll') {
+                    data.type = 'poll';
+                    data.title = form.querySelector('[name=poll_notes]').value;
+                    if(!data.title) return showToast("Question required", "error");
+                    
+                    const options = [];
+                    for (let i = 1; i <= 4; i++) {
+                        const optText = formData.get(`opt${i}`);
+                        if (optText) options.push({text: optText, votes: []});
+                    }
+                    data.options = options;
+                    if(data.options.length < 2) return showToast("Need at least two poll options", "error");
 
-                if (type === 'status') {
-                    if(!data.imageData) return showToast("Image required", "error");
-                    data.expiresAt = Date.now() + 86400000; data.comments = [];
-                } else {
-                    data.title = formData.get('title');
-                    if(type === 'poll') {
-                        data.title = formData.get('notes'); // Question
-                        data.options = [{text:formData.get('opt1'), votes:[]}, {text:formData.get('opt2'), votes:[]}].filter(o=>o.text);
-                    } else {
-                        if(!data.title) return showToast("Title required", "error");
-                        data.date = formData.get('date');
-                        data.notes = document.getElementById('inp-notes').value;
-                        data.mood = parseInt(formData.get('mood'));
-                        data.audioData = document.getElementById('inp-audio').value;
-                        data.spotifyLink = formData.get('spotifyLink');
-                        data.isPinned = formData.get('isPinned') === 'on';
-                        data.isEphemeral = formData.get('isEphemeral') === 'on';
-                        data.location = document.getElementById('inp-location').value;
-                        data.unlockDate = formData.get('unlockDate') || null;
+                } else { // Memory or Status
+                    data.type = isStatus ? 'status' : 'memory';
+                    data.title = formData.get('title') || (isStatus ? 'Image Flux' : '');
+                    if(!isStatus && !data.title) return showToast("Title required for Memory", "error");
+
+                    data.notes = document.getElementById('inp-notes').value;
+                    data.date = formData.get('date');
+                    data.mood = parseInt(formData.get('mood'));
+                    data.audioData = document.getElementById('inp-audio').value;
+                    data.spotifyLink = formData.get('spotifyLink');
+                    data.isPinned = formData.get('isPinned') === 'on';
+                    data.isEphemeral = formData.get('isEphemeral') === 'on';
+                    data.location = document.getElementById('inp-location').value;
+                    data.unlockDate = formData.get('unlockDate') || null;
+                    
+                    if (isStatus) {
+                        data.expiresAt = Date.now() + 86400000; // 24 hours
+                        data.comments = [];
                     }
                 }
 
-                // v3 Confetti
                 confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
 
                 if (!id) {
@@ -1046,25 +1159,44 @@
                 } else {
                     await updateDoc(doc(db, 'artifacts', 'gatekeep-001', 'public', 'data', 'shared_timeline_v2', id), data);
                 }
-                app.closeDialog(); showToast("Saved to Hive");
+                app.closeDialog(); 
+                showToast((isStatus ? "Flux" : "Entry") + " Saved to Hive");
             },
 
-            softDelete: async (id) => { await updateDoc(doc(db, 'artifacts', 'gatekeep-001', 'public', 'data', 'shared_timeline_v2', id), { deletedAt: Date.now() }); showToast("Moved to Trash"); },
-            restoreEntry: async (id) => { await updateDoc(doc(db, 'artifacts', 'gatekeep-001', 'public', 'data', 'shared_timeline_v2', id), { deletedAt: null }); showToast("Restored"); },
-            hardDelete: async (id) => { if(confirm("Permanently shatter?")) { await deleteDoc(doc(db, 'artifacts', 'gatekeep-001', 'public', 'data', 'shared_timeline_v2', id)); showToast("Shattered"); } },
+            softDelete: async (id) => { 
+                if (db) {
+                    await updateDoc(doc(db, 'artifacts', 'gatekeep-001', 'public', 'data', 'shared_timeline_v2', id), { deletedAt: Date.now() }); 
+                    showToast("Moved to Trash"); 
+                }
+            },
+            restoreEntry: async (id) => { 
+                if (db) {
+                    await updateDoc(doc(db, 'artifacts', 'gatekeep-001', 'public', 'data', 'shared_timeline_v2', id), { deletedAt: null }); 
+                    showToast("Restored"); 
+                }
+            },
+            hardDelete: async (id) => { 
+                if(confirm("Permanently shatter?")) { 
+                    if (db) {
+                        await deleteDoc(doc(db, 'artifacts', 'gatekeep-001', 'public', 'data', 'shared_timeline_v2', id)); 
+                        showToast("Shattered"); 
+                    }
+                } 
+            },
             
-            // v3 Reactions
             react: async (id, emoji, e) => {
+                if (!db || !state.currentUser) return;
                 const heart = document.createElement('div'); heart.innerText = emoji; heart.className = 'floating-heart';
                 heart.style.left = e.clientX + 'px'; heart.style.top = e.clientY + 'px';
                 document.body.appendChild(heart); setTimeout(() => heart.remove(), 1500);
 
-                const item = state.data.find(d => d.id === id); if(!item) return;
+                const item = state.data.find(d => d.id === id) || state.trash.find(d => d.id === id); if(!item) return;
                 const r = item.reactions || {}; const u = r[emoji] || [];
                 if(u.includes(state.currentUser.uid)) r[emoji] = u.filter(x => x!==state.currentUser.uid); else r[emoji] = [...u, state.currentUser.uid];
                 await updateDoc(doc(db, 'artifacts', 'gatekeep-001', 'public', 'data', 'shared_timeline_v2', id), { reactions: r });
             },
             vote: async (id, idx) => {
+                if (!db || !state.currentUser) return;
                 const item = state.data.find(d => d.id === id);
                 const opts = item.options;
                 opts.forEach(o => o.votes = o.votes.filter(u => u !== state.currentUser.uid));
@@ -1072,7 +1204,7 @@
                 await updateDoc(doc(db, 'artifacts', 'gatekeep-001', 'public', 'data', 'shared_timeline_v2', id), { options: opts });
             },
 
-            // Media
+            // Media & Utilities
             clearImage: (e) => {
                 if(e) e.stopPropagation();
                 document.getElementById('img-input').value = ''; document.getElementById('inp-image').value = '';
@@ -1084,64 +1216,139 @@
                     navigator.geolocation.getCurrentPosition(p => {
                         const s = `${p.coords.latitude.toFixed(2)}, ${p.coords.longitude.toFixed(2)}`;
                         document.getElementById('inp-location').value = s; document.getElementById('geo-label').innerText = s;
+                        showToast("Location captured!");
+                    }, (err) => {
+                        console.warn(`Geo location error(${err.code}): ${err.message}`);
+                        showToast("Geolocation Denied", "error");
                     });
+                } else {
+                    showToast("Geolocation not supported by your browser", "error");
                 }
             },
-            viewStatus: (item) => app.lightbox(item.imageData, item),
-            lightbox: (src, item) => {
-                state.viewingItem = item;
+            viewStatus: (item) => app.lightbox(item.imageData, item.id), // pass ID for lookup
+            lightbox: (src, id) => {
+                const item = state.data.find(d => d.id === id) || state.trash.find(d => d.id === id) || state.statuses.find(d => d.id === id);
+                state.viewingItem = item || null;
+
                 document.getElementById('lightbox-img').src = src;
                 document.getElementById('lightbox').classList.remove('tw-opacity-0', 'tw-pointer-events-none');
                 document.getElementById('lightbox-img').classList.replace('tw-scale-90','tw-scale-100');
-                if(item && item.type === 'status') {
-                    document.getElementById('lightbox-comments-section').classList.remove('tw-hidden');
+
+                const commentsSection = document.getElementById('lightbox-comments-section');
+                const delBtn = document.getElementById('lightbox-delete-btn');
+
+                if(item?.type === 'status') {
+                    commentsSection.classList.remove('tw-hidden');
                     const list = document.getElementById('lightbox-comments-list');
                     list.innerHTML = (item.comments||[]).map(c=>`<div class="tw-text-xs tw-mb-1"><span class="tw-font-bold tw-text-cyber-accent">${c.author}</span>: ${c.text}</div>`).join('');
-                } else document.getElementById('lightbox-comments-section').classList.add('tw-hidden');
+                } else {
+                    commentsSection.classList.add('tw-hidden');
+                }
+
+                if (item && state.currentUser && item.author === state.currentUser.name) {
+                    delBtn.classList.remove('tw-hidden');
+                } else {
+                    delBtn.classList.add('tw-hidden');
+                }
             },
             addLightboxComment: async () => {
+                if (!db || !state.viewingItem) return;
                 const txt = document.getElementById('lightbox-comment-input').value;
                 if(!txt) return;
                 const c = {author:state.currentUser.name, text:txt, time:Date.now()};
                 const nc = [...(state.viewingItem.comments||[]), c];
+                
                 await updateDoc(doc(db, 'artifacts', 'gatekeep-001', 'public', 'data', 'shared_timeline_v2', state.viewingItem.id), { comments: nc });
-                state.viewingItem.comments = nc; app.lightbox(state.viewingItem.imageData, state.viewingItem);
+                
+                // Update local state and UI to reflect change immediately
+                state.viewingItem.comments = nc; 
                 document.getElementById('lightbox-comment-input').value = '';
+                app.lightbox(state.viewingItem.imageData, state.viewingItem.id); 
+            },
+            deleteViewingItem: async () => {
+                if (!db || !state.viewingItem) return;
+                const item = state.viewingItem;
+                const isStatus = item.type === 'status';
+                const msg = isStatus ? "Delete this flux for both of you?" : "Move this memory to trash?";
+                
+                if (!confirm(msg)) return;
+                
+                if (isStatus) {
+                    await deleteDoc(doc(db,'artifacts','gatekeep-001','public','data','shared_timeline_v2', item.id));
+                    showToast("Flux deleted");
+                } else {
+                    await updateDoc(doc(db,'artifacts','gatekeep-001','public','data','shared_timeline_v2', item.id), {
+                        deletedAt: Date.now()
+                    });
+                    showToast("Moved to Trash");
+                }
+                app.closeLightbox();
             },
             closeLightbox: () => {
                 document.getElementById('lightbox').classList.add('tw-opacity-0', 'tw-pointer-events-none');
                 document.getElementById('lightbox-img').classList.replace('tw-scale-100','tw-scale-90');
+                state.viewingItem = null;
             },
             downloadImage: () => { const a = document.createElement('a'); a.href = document.getElementById('lightbox-img').src; a.download = 'memory.png'; a.click(); },
             captureCard: (el) => {
                 showToast("Capturing...");
-                html2canvas(el, {backgroundColor:'#16161a'}).then(c => { const a = document.createElement('a'); a.href = c.toDataURL(); a.download='card.png'; a.click(); });
+                html2canvas(el, {backgroundColor:'#0f0f12'}).then(c => { const a = document.createElement('a'); a.href = c.toDataURL(); a.download='card.png'; a.click(); });
             },
             editEntry: (id) => {
-                const item = state.data.find(d => d.id === id); if(!item) return;
+                const item = state.data.find(d => d.id === id) || state.trash.find(d => d.id === id); 
+                if(!item || item.type === 'status') return; // Cannot edit ephemeral status entries through this flow
+
                 const form = document.getElementById('entry-form');
                 document.getElementById('entry-id').value = id;
+                document.getElementById('dialog-title').innerText = "Edit Entry";
+                
                 app.setEntryType(item.type || 'memory');
+                
                 if(item.type === 'poll') {
-                    document.getElementById('inp-notes').value = item.title;
-                    if(item.options[0]) form.querySelector('[name=opt1]').value = item.options[0].text;
-                    if(item.options[1]) form.querySelector('[name=opt2]').value = item.options[1].text;
+                    form.querySelector('[name=poll_notes]').value = item.title;
+                    (item.options||[]).forEach((opt, i) => form.querySelector(`[name=opt${i+1}]`).value = opt.text);
                 } else {
                     form.querySelector('[name=title]').value = item.title;
                     form.querySelector('[name=date]').value = item.date;
                     document.getElementById('inp-notes').value = item.notes;
                     document.getElementById('inp-audio').value = item.audioData || '';
+                    
                     if(item.imageData) {
                         document.getElementById('inp-image').value = item.imageData;
                         document.getElementById('img-preview').src = item.imageData;
                         document.getElementById('img-preview-box').classList.remove('tw-hidden');
                         document.getElementById('upload-placeholder').classList.add('tw-hidden');
+                    } else {
+                        app.clearImage();
                     }
+
+                    form.querySelector('[name=mood]').value = item.mood || 3;
+                    form.querySelector('[name=spotifyLink]').value = item.spotifyLink || '';
+                    form.querySelector('[name=isPinned]').checked = !!item.isPinned;
+                    form.querySelector('[name=isEphemeral]').checked = !!item.isEphemeral;
+                    form.querySelector('[name=unlockDate]').value = item.unlockDate || '';
+                    document.getElementById('inp-location').value = item.location || '';
+                    document.getElementById('geo-label').innerText = item.location || 'Location';
                 }
-                document.getElementById('dialog-title').innerText = "Edit Memory";
+                
+                app.updateWordCount();
                 document.getElementById('entry-dialog').showModal();
             },
-            updateWordCount: () => document.getElementById('word-count').innerText = (document.getElementById('inp-notes').value.split(/\s+/).length || 0) + " words"
+            updateWordCount: () => {
+                const text = document.getElementById('inp-notes').value.trim();
+                const count = text ? text.split(/\s+/).length : 0;
+                document.getElementById('word-count').innerText = count + " words";
+            },
+
+            // Search history stubs
+            showSearchHistory: () => {
+                const box = document.getElementById('search-history');
+                box.classList.add('tw-hidden'); 
+            },
+            hideSearchHistory: () => {
+                const box = document.getElementById('search-history');
+                box.classList.add('tw-hidden');
+            }
         };
 
         /* --- UTILS --- */
@@ -1163,19 +1370,20 @@
             document.getElementById('toast-container').appendChild(t); lucide.createIcons(); setTimeout(() => t.remove(), 3000);
         }
         window.createRipple = (e) => {
-            if(state.viewMode === 'list' && !e.target.closest('.liquid-card')) {
+            // Only trigger ripple if not on a button, input, or inside a fluid-card (to prevent click interference)
+            if(state.viewMode === 'list' && !e.target.closest('.liquid-card') && !e.target.closest('button') && !e.target.closest('input') && !e.target.closest('a')) {
                 const r = document.createElement('div'); r.className = 'ripple'; r.style.left = e.clientX + 'px'; r.style.top = e.clientY + 'px';
                 document.body.appendChild(r); setTimeout(() => r.remove(), 600);
             }
         };
-        // Init
+
+        // Event wiring
+        document.getElementById('lightbox-comment-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') { e.preventDefault(); app.addLightboxComment(); } });
+        document.getElementById('lightbox-comment-send').addEventListener('click', () => app.addLightboxComment());
+        document.getElementById('lightbox-delete-btn').addEventListener('click', () => app.deleteViewingItem());
+
+        // Init on load
         app.toggleCountdown(); setInterval(app.toggleCountdown, 60000);
     </script>
-    <style>
-        .slide-in-toast { animation: slideIn 0.3s ease-out forwards; }
-        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        .slide-up { animation: slideUp 0.5s ease-out forwards; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    </style>
 </body>
 </html>
