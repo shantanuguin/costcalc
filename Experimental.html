@@ -65,7 +65,11 @@
                         },
                         shimmer: { '0%': { transform: 'translateX(-100%)' }, '100%': { transform: 'translateX(100%)' } },
                         shake: { '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' }, '20%, 80%': { transform: 'translate3d(2px, 0, 0)' }, '30%, 50%, 70%': { transform: 'translate3d(-4px, 0, 0)' }, '40%, 60%': { transform: 'translate3d(4px, 0, 0)' } },
-                        floatUp: { '0%': { transform: 'translateY(0) scale(1)', opacity: 1 }, '100%': { transform: 'translateY(-100px) scale(1.5)', opacity: 0 } },
+                        // FIX: Corrected floatUp keyframe syntax
+                        floatUp: { 
+                            '0%': { transform: 'translateY(0) scale(1)', opacity: 1 }, 
+                            '100%': { transform: 'translateY(-100px) scale(1.5)', opacity: 0 } 
+                        },
                         'sound-wave': {
                             '0%, 100%': { height: '20%' },
                             '50%': { height: '100%' }
@@ -189,7 +193,11 @@
 
         /* Reaction Trails (v3) */
         .floating-heart { position: fixed; pointer-events: none; font-size: 24px; animation: floatUp 1.5s ease-out forwards; z-index: 1000; }
-        @keyframes floatUp { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-100px) scale(1.5)', opacity: 0 } }
+        /* FIX: Corrected floatUp keyframe syntax */
+        @keyframes floatUp { 
+            0% { transform: translateY(0) scale(1); opacity: 1; } 
+            100% { transform: translateY(-100px) scale(1.5); opacity: 0; } 
+        }
 
         /* Live Presence Glow (v3) */
         .presence-active { box-shadow: 0 0 15px var(--neon-primary), inset 0 0 10px var(--neon-primary); border-color: var(--neon-primary); }
@@ -228,7 +236,16 @@
         .slide-in-toast { animation: slideIn 0.3s ease-out forwards; }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         .slide-up { animation: slideUp 0.5s ease-out forwards; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { transform: translateY(0); } }
+
+        /* Mobile Action Bar */
+        .fixed-action-bar {
+            background: rgba(2, 2, 4, 0.8);
+            backdrop-filter: blur(12px); 
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.5);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
     </style>
 </head>
 <body id="app-body" onclick="createRipple(event)">
@@ -339,11 +356,16 @@
                     <i data-lucide="waves" class="tw-w-5 tw-h-5 tw-text-gray-400" id="sound-icon"></i>
                 </button>
                 <button onclick="app.exportBook()" class="tw-p-2 tw-rounded-full hover:tw-bg-white/10" title="Export PDF"><i data-lucide="book-open" class="tw-w-5 tw-h-5 tw-text-white/60"></i></button>
+                <!-- NEW: Logout Button -->
+                <button onclick="app.signOut()" class="tw-p-2 tw-rounded-full tw-bg-red-500/10 hover:tw-bg-red-500/20" title="Logout/Switch User">
+                    <i data-lucide="log-out" class="tw-w-5 tw-h-5 tw-text-red-400"></i>
+                </button>
             </div>
         </header>
 
         <!-- Main Content -->
-        <main class="tw-flex-1 tw-overflow-y-auto tw-pt-24 tw-pb-24 tw-px-3 md:tw-px-4 custom-scrollbar privacy-blur" id="main-scroll">
+        <!-- Adjusted pt and pb to account for header (pt-24) and new fixed mobile footer (pb-32) -->
+        <main class="tw-flex-1 tw-overflow-y-auto tw-pt-24 tw-pb-24 sm:tw-pb-8 tw-px-3 md:tw-px-4 custom-scrollbar privacy-blur" id="main-scroll">
             <div class="tw-max-w-3xl tw-mx-auto">
                 
                 <!-- To-Do Widget -->
@@ -352,7 +374,7 @@
                         <h3 class="tw-text-xs tw-text-cyber-accent tw-uppercase tw-font-bold tw-tracking-widest">Shared Goals</h3>
                         <div class="tw-flex tw-gap-3">
                             <button onclick="app.addTodo()" class="tw-text-xs tw-text-gray-400 hover:tw-text-white">+ Add</button>
-                            <!-- NEW: Clear All To-Dos Button -->
+                            <!-- Clear All To-Dos Button -->
                             <button onclick="app.clearAllTodos()" class="tw-text-xs tw-text-red-400 hover:tw-text-red-500" title="Clear All Goals">Clear All</button>
                         </div>
                     </div>
@@ -399,7 +421,14 @@
                         <span class="tw-text-[10px] tw-text-gray-400 tw-uppercase">Shuffle</span>
                     </button>
 
-                    <div class="liquid-card tw-p-4 tw-rounded-3xl tw-flex tw-items-end tw-justify-between tw-px-4" id="sparkline"></div>
+                    <!-- UPDATED: Birthday Countdown Block -->
+                    <div class="liquid-card tw-p-4 tw-rounded-3xl tw-flex tw-flex-col tw-justify-center tw-relative tw-overflow-hidden">
+                        <div id="birthday-countdown-display">
+                            <div class="tw-text-[10px] tw-uppercase tw-tracking-wider tw-text-gray-400 tw-mb-1">Next Birthday</div>
+                            <div id="next-bday-name" class="tw-font-bold tw-text-lg tw-text-white"></div>
+                            <div id="next-bday-days" class="tw-text-sm tw-text-cyber-neon"></div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Search -->
@@ -422,8 +451,6 @@
                         <div class="liquid-card tw-h-40 tw-rounded-3xl skeleton"></div>
                     </div>
                     <div id="timeline-container" class="tw-space-y-8 tw-perspective-1000 tw-hidden"></div>
-                    <!-- Back To Top -->
-                    <button id="back-to-top" onclick="document.getElementById('main-scroll').scrollTo({top:0, behavior:'smooth'})" class="tw-fixed tw-bottom-24 tw-left-6 tw-p-3 tw-bg-white/10 tw-rounded-full tw-backdrop-blur tw-hidden tw-z-30"><i data-lucide="arrow-up" class="tw-w-5 tw-h-5 text-white"></i></button>
                     
                     <div id="empty-state" class="tw-hidden tw-text-center tw-py-20">
                         <div class="liquid-blob tw-relative tw-mx-auto tw-w-32 tw-h-32 tw-bg-white/5 tw-rounded-full tw-flex tw-items-center tw-justify-center tw-mb-4">
@@ -432,11 +459,28 @@
                         <p class="tw-text-gray-500">The hive is silent.</p>
                     </div>
                 </div>
+                
+                <!-- Extra space for mobile footer -->
+                <div class="tw-h-24 sm:tw-hidden"></div>
             </div>
         </main>
+        
+        <!-- Fixed Mobile Action Bar (for zoom/small screens) -->
+        <footer class="fixed-action-bar tw-fixed tw-bottom-0 tw-left-0 tw-w-full tw-z-50 tw-p-4 tw-flex tw-justify-center sm:tw-hidden">
+            <!-- Back to Top Button (moved here for mobile accessibility) -->
+            <button id="back-to-top" onclick="document.getElementById('main-scroll').scrollTo({top:0, behavior:'smooth'})" class="tw-p-3 tw-bg-white/10 tw-rounded-full tw-backdrop-blur tw-hidden tw-text-white tw-mr-10">
+                <i data-lucide="arrow-up" class="tw-w-5 tw-h-5"></i>
+            </button>
+            
+            <!-- Morphing FAB (Repositioned into the fixed footer) -->
+            <button onclick="app.openAddModal('memory')" class="tw-w-16 tw-h-16 tw-bg-gradient-to-tr tw-from-cyber-neon tw-to-blue-600 tw-rounded-[1.5rem] tw-flex tw-items-center tw-justify-center tw-shadow-[0_0_30px_rgba(124,58,237,0.5)] hover:tw-shadow-[0_0_50px_rgba(124,58,237,0.8)] hover:tw-scale-110 hover:tw-rotate-90 tw-transition-all tw-duration-300">
+                <i data-lucide="plus" class="tw-w-8 tw-h-8 tw-text-white"></i>
+            </button>
+        </footer>
 
-        <!-- Morphing FAB -->
-        <button onclick="app.openAddModal('memory')" class="tw-fixed tw-bottom-8 tw-right-6 tw-w-16 tw-h-16 tw-bg-gradient-to-tr tw-from-cyber-neon tw-to-blue-600 tw-rounded-[1.5rem] tw-flex tw-items-center tw-justify-center tw-shadow-[0_0_30px_rgba(124,58,237,0.5)] hover:tw-shadow-[0_0_50px_rgba(124,58,237,0.8)] hover:tw-scale-110 hover:tw-rotate-90 tw-transition-all tw-duration-300 tw-z-50 group">
+        <!-- Desktop/Tablet FAB -->
+        <!-- Adjusted from tw-bottom-8 to tw-bottom-4 for slightly lower positioning against zoom/toolbars -->
+        <button onclick="app.openAddModal('memory')" class="tw-fixed tw-bottom-4 tw-right-4 tw-w-16 tw-h-16 tw-bg-gradient-to-tr tw-from-cyber-neon tw-to-blue-600 tw-rounded-[1.5rem] tw-flex tw-items-center tw-justify-center tw-shadow-[0_0_30px_rgba(124,58,237,0.5)] hover:tw-shadow-[0_0_50px_rgba(124,58,237,0.8)] hover:tw-scale-110 hover:tw-rotate-90 tw-transition-all tw-duration-300 tw-z-50 group tw-hidden sm:tw-flex">
             <i data-lucide="plus" class="tw-w-8 tw-h-8 tw-text-white"></i>
         </button>
     </div>
@@ -445,7 +489,7 @@
     <dialog id="entry-dialog" class="tw-bg-transparent tw-w-full md:tw-max-w-2xl tw-fixed tw-bottom-0 md:tw-top-1/2 md:tw-left-1/2 md:tw--translate-x-1/2 md:tw--translate-y-1/2 tw-m-0">
         <div class="liquid-card tw-rounded-t-[2.5rem] md:tw-rounded-[2.5rem] tw-w-full tw-h-[90vh] md:tw-h-auto md:tw-max-h-[85vh] tw-flex tw-flex-col tw-overflow-hidden tw-border-b-0">
             
-            <!-- Tabs - zen-fade removed to keep controls accessible in zen mode -->
+            <!-- Tabs -->
             <div class="tw-flex tw-border-b tw-border-white/5 tw-py-1 tw-px-4 md:tw-px-8 zen-fade">
                 <button onclick="app.setEntryType('memory')" class="tw-flex-1 tw-py-3 md:tw-py-4 tw-text-xs md:tw-text-sm tw-font-bold tw-text-cyber-neon type-tab" id="tab-memory">Memory</button>
                 <button onclick="app.setEntryType('poll')" class="tw-flex-1 tw-py-3 md:tw-py-4 tw-text-xs md:tw-text-sm tw-text-gray-400 type-tab" id="tab-poll">Poll</button>
@@ -456,18 +500,31 @@
                 <input type="hidden" name="type" id="entry-type" value="memory">
                 
                 <!-- Header -->
-                <div class="tw-px-4 md:tw-px-8 tw-pt-4 md:tw-pt-6 tw-pb-3 md:tw-pb-4 tw-flex tw-justify-between tw-items-center">
+                <!-- UPDATED: Submit button and Back button styling/placement -->
+                <div class="tw-px-4 md:tw-px-8 tw-pt-4 md:tw-pt-6 tw-pb-3 md:tw-pb-4 tw-flex tw-justify-between tw-items-center tw-bg-black/20 tw-backdrop-blur-md tw-border-b tw-border-white/5">
                     <div>
                         <h2 class="tw-text-xl md:tw-text-2xl tw-font-bold tw-text-white" id="dialog-title">New Entry</h2>
                         <div class="tw-text-[11px] tw-text-gray-400 zen-fade" id="word-count">0 words</div>
                     </div>
-                    <div class="tw-flex tw-gap-2">
+                    <div class="tw-flex tw-gap-2 tw-items-center">
+                        <!-- Submit Button (Changed text to Submit) -->
+                        <button type="button" onclick="app.saveEntry()" 
+                            class="tw-py-2 tw-px-4 tw-rounded-xl tw-bg-gradient-to-r tw-from-cyber-neon tw-to-blue-600 tw-text-white tw-font-bold tw-text-xs md:tw-text-sm tw-shadow-md hover:tw-scale-[1.05] tw-transition-all zen-fade">
+                            Submit
+                        </button>
+                        
                         <button type="button" onclick="app.toggleZen()" class="tw-p-2 tw-rounded-full hover:tw-bg-white/10" title="Zen Mode"><i data-lucide="align-justify" class="tw-w-5 tw-h-5"></i></button>
-                        <button type="button" onclick="app.closeDialog()" method="dialog" class="tw-p-2 tw-rounded-full hover:tw-bg-white/10"><i data-lucide="x"></i></button>
+                        
+                        <!-- Back Button (Red hotseat background) -->
+                        <button type="button" onclick="app.closeDialog()" method="dialog" 
+                            class="tw-p-2 tw-rounded-full tw-bg-red-500/30 hover:tw-bg-red-500/50 hover:tw-text-white tw-transition-colors">
+                            <i data-lucide="chevron-left"></i>
+                        </button>
                     </div>
                 </div>
 
                 <!-- Body -->
+                <!-- Removed fixed footer padding since submit button is now in the header -->
                 <div class="tw-flex-1 tw-overflow-y-auto tw-px-4 md:tw-px-8 tw-py-2 custom-scrollbar">
                     
                     <div id="memory-fields">
@@ -564,10 +621,12 @@
 
                 </div>
 
-                <!-- Footer -->
+                <!-- REMOVED: Old button footer -->
+                <!-- 
                 <div class="tw-p-4 md:tw-p-6 tw-border-t tw-border-white/5 tw-bg-black/20 tw-backdrop-blur-md zen-fade">
                     <button type="button" onclick="app.saveEntry()" class="tw-w-full tw-py-3 md:tw-py-4 tw-rounded-2xl tw-bg-gradient-to-r tw-from-cyber-neon tw-to-blue-600 tw-text-white tw-font-bold tw-text-base md:tw-text-lg tw-shadow-[0_0_20px_rgba(124,58,237,0.4)] hover:tw-shadow-[0_0_30px_rgba(124,58,237,0.6)] hover:tw-scale-[1.02] tw-transition-all">Crystalize Entry</button>
                 </div>
+                -->
             </form>
         </div>
     </dialog>
@@ -594,8 +653,9 @@
                 </button>
             </div>
         </div>
+        <!-- CHANGE: Replaced X icon with chevron-left for "Back" -->
         <button onclick="app.closeLightbox()" class="tw-absolute tw-top-10 tw-right-10 tw-p-4 tw-text-white/50 hover:tw-text-white">
-            <i data-lucide="x" class="tw-w-8 tw-h-8"></i>
+            <i data-lucide="chevron-left" class="tw-w-8 tw-h-8"></i>
         </button>
     </div>
 
@@ -638,6 +698,13 @@
             searchHistory: JSON.parse(localStorage.getItem('dk_search_hist') || '[]'),
             viewingItem: null
         };
+        
+        // NEW: Birthday definitions
+        const BIRTHDAYS = [
+            { name: 'Bhondu', month: 8, day: 20 }, // August 20th
+            { name: 'Chalak', month: 12, day: 28 } // December 28th
+        ];
+
 
         /* --- AUDIO ENGINE --- */
         class AudioEngine {
@@ -758,6 +825,10 @@
             setInterval(() => { if(Math.random() > 0.8) { document.getElementById('typing-indicator').classList.remove('tw-hidden'); setTimeout(() => document.getElementById('typing-indicator').classList.add('tw-hidden'), 3000); } }, 10000);
             // Live Presence
             if(Math.random() > 0.5) document.getElementById('avatar-glow').classList.add('presence-active');
+            
+            // Birthday Countdown Init
+            updateBirthdayCountdown();
+            setInterval(updateBirthdayCountdown, 60000); // Update every minute
         }
 
         /* --- DATA --- */
@@ -951,14 +1022,67 @@
 
         function updateStats() {
             document.getElementById('stat-total').innerText = state.data.length;
-            // Sparkline
-            const recents = state.data.slice(0, 10).reverse();
-            document.getElementById('sparkline').innerHTML = recents.map(d => `<div style="width:6px; height:${(d.mood||3)*20}%; background:${getMoodColor(d.mood||3)}; border-radius:2px;"></div>`).join('');
-            // Pulse
-            const last5 = state.data.slice(0,5);
-            const avgMood = last5.reduce((a,b)=>a+(b.mood||3),0) / (last5.length||1);
-            document.getElementById('pulse-heart').style.animationDuration = `${2-((avgMood-1)*0.3)}s`;
+            // The mood trend block is now replaced by the birthday countdown logic in initExtras.
+            // We just ensure the elements are rendered, though updateStats won't populate sparkline-bars anymore.
         }
+        
+        // NEW: Birthday Countdown Logic
+        function updateBirthdayCountdown() {
+            const now = new Date();
+            const currentYear = now.getFullYear();
+            const todayDayOfYear = (now - new Date(currentYear, 0, 0)) / 86400000;
+            
+            let nextBirthday = null;
+            let minDays = Infinity;
+            
+            BIRTHDAYS.forEach(bday => {
+                // Month is 1-indexed in the constant, but 0-indexed in Date()
+                let dateThisYear = new Date(currentYear, bday.month - 1, bday.day);
+                let dateNextYear = new Date(currentYear + 1, bday.month - 1, bday.day);
+                
+                let targetDate = (dateThisYear < now) ? dateNextYear : dateThisYear;
+                
+                const diffTime = targetDate - now;
+                const diffDays = Math.ceil(diffTime / 86400000);
+
+                if (diffDays < minDays) {
+                    minDays = diffDays;
+                    nextBirthday = { name: bday.name, days: diffDays };
+                }
+            });
+
+            const nameEl = document.getElementById('next-bday-name');
+            const daysEl = document.getElementById('next-bday-days');
+
+            if (nextBirthday) {
+                nameEl.innerText = nextBirthday.name;
+                daysEl.innerText = `${nextBirthday.days} days`;
+                
+                if (nextBirthday.days === 0) {
+                    daysEl.innerText = "HAPPY BIRTHDAY!";
+                    daysEl.classList.replace('tw-text-cyber-neon', 'tw-text-yellow-400');
+                    // Trigger confetti if it's the actual day
+                    confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } });
+                } else {
+                    daysEl.classList.replace('tw-text-yellow-400', 'tw-text-cyber-neon');
+                }
+            } else {
+                nameEl.innerText = "Error";
+                daysEl.innerText = "N/A";
+            }
+        }
+        
+        // Function to check scroll position and toggle Back to Top button
+        const checkScroll = () => {
+            const mainScroll = document.getElementById('main-scroll');
+            const backToTopBtn = document.getElementById('back-to-top');
+            
+            if (mainScroll.scrollTop > 300) {
+                backToTopBtn.classList.remove('tw-hidden');
+            } else {
+                backToTopBtn.classList.add('tw-hidden');
+            }
+        };
 
         /* --- ACTIONS --- */
         window.app = {
@@ -996,7 +1120,6 @@
                 if(txt && db) await addDoc(collection(db, 'artifacts', 'gatekeep-001', 'public', 'data', 'todos_v4'), { text: txt, done: false, createdAt: Date.now() });
             },
             
-            // NEW: Function to clear all to-do items
             clearAllTodos: async () => {
                 if (!db) return showToast("Database not connected.", "error");
                 if (!confirm("Are you sure you want to delete ALL shared goals?")) return;
@@ -1053,8 +1176,10 @@
             },
             randomMemory: () => {
                 if(!state.data.length) return;
-                const r = state.data.find(d => d.type === 'memory' || !d.type); // Find memory/status but exclude poll
-                if (!r) return showToast("No memories found to shuffle.", "info");
+                const memories = state.data.filter(d => d.type === 'memory' || !d.type);
+                if (memories.length === 0) return showToast("No memories found to shuffle.", "info");
+                
+                const r = memories[Math.floor(Math.random() * memories.length)];
                 app.editEntry(r.id); showToast("Memory Resurfaced");
             },
             toggleTrash: () => {
@@ -1381,9 +1506,16 @@
         document.getElementById('lightbox-comment-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') { e.preventDefault(); app.addLightboxComment(); } });
         document.getElementById('lightbox-comment-send').addEventListener('click', () => app.addLightboxComment());
         document.getElementById('lightbox-delete-btn').addEventListener('click', () => app.deleteViewingItem());
+        
+        // Wire up scroll listener for the Back to Top button
+        document.getElementById('main-scroll').addEventListener('scroll', checkScroll);
+
 
         // Init on load
-        app.toggleCountdown(); setInterval(app.toggleCountdown, 60000);
+        app.toggleCountdown(); 
+        updateBirthdayCountdown(); // Initial call
+        setInterval(updateBirthdayCountdown, 60000); // Update every minute
+        setInterval(app.toggleCountdown, 60000);
     </script>
 </body>
 </html>
