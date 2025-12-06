@@ -3,10 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Datekeep | Liquid OS</title>
+    <title>Datekeep | Liquid OS v4</title>
+    <link rel="icon" type="image/png" href="https://lucide.dev/favicon.ico">
 
-    <!-- 1. TAILWIND CSS -->
+    <!-- 1. LIBRARIES -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- v3 Additions -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
     <script>
         tailwind.config = {
             prefix: 'tw-',
@@ -19,6 +28,7 @@
                             border: 'rgba(255, 255, 255, 0.08)',
                             neon: '#7c3aed', 
                             accent: '#2dd4bf',
+                            danger: '#ef4444'
                         }
                     },
                     fontFamily: {
@@ -30,6 +40,10 @@
                         'pulse-glow': 'pulse-glow 3s infinite',
                         'float': 'float 6s ease-in-out infinite',
                         'liquid-pulse': 'liquid-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'shimmer': 'shimmer 3s linear infinite',
+                        'shake': 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both',
+                        'float-up': 'floatUp 2s ease-out forwards',
+                        'sound-wave': 'sound-wave 1s ease-in-out infinite',
                     },
                     keyframes: {
                         blob: {
@@ -49,6 +63,13 @@
                         'liquid-pulse': {
                             '0%, 100%': { opacity: 1, transform: 'scale(1)' },
                             '50%': { opacity: .5, transform: 'scale(1.05)' }
+                        },
+                        shimmer: { '0%': { transform: 'translateX(-100%)' }, '100%': { transform: 'translateX(100%)' } },
+                        shake: { '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' }, '20%, 80%': { transform: 'translate3d(2px, 0, 0)' }, '30%, 50%, 70%': { transform: 'translate3d(-4px, 0, 0)' }, '40%, 60%': { transform: 'translate3d(4px, 0, 0)' } },
+                        floatUp: { '0%': { transform: 'translateY(0) scale(1)', opacity: 1 }, '100%': { transform: 'translateY(-100px) scale(1.5)', opacity: 0 } },
+                        'sound-wave': {
+                            '0%, 100%': { height: '20%' },
+                            '50%': { height: '100%' }
                         }
                     }
                 }
@@ -56,50 +77,51 @@
         }
     </script>
 
-    <!-- 2. LIBRARIES -->
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-
     <style>
-        /* --- LIQUID GLASS CORE --- */
+        /* --- CORE STYLES (v2 Base) --- */
         :root {
             --glass-surface: rgba(22, 22, 26, 0.6);
-            --glass-highlight: rgba(255, 255, 255, 0.05);
             --glass-border: rgba(255, 255, 255, 0.1);
             --neon-primary: #7c3aed;
             --neon-secondary: #2dd4bf;
+            --bg-color: #020204;
         }
 
         body {
-            background-color: #000;
+            background-color: var(--bg-color);
             color: #f3f4f6;
-            margin: 0;
+            margin: 0; padding: 0;
+            width: 100vw; height: 100vh;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             -webkit-tap-highlight-color: transparent;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            overflow-x: hidden;
+            transition: filter 0.3s ease, background 1s ease;
         }
 
-        /* Noise Texture Overlay */
-        .noise-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
-            pointer-events: none;
-            z-index: 5;
+        /* Enforce Full Screen & Centering */
+        .full-screen-center {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 50; background: rgba(2, 2, 4, 0.6);
+            backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px);
         }
+
+        #auth-view { display: flex; z-index: 100; }
+        #dashboard-view { display: none; z-index: 10; width: 100%; height: 100%; flex-direction: column; position: relative; }
+        
+        body.logged-in #auth-view { display: none !important; }
+        body.logged-in #dashboard-view { display: flex !important; }
 
         /* Liquid Gradients */
         .liquid-blob {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0.6;
+            position: absolute; border-radius: 50%;
+            filter: blur(80px); opacity: 0.6;
             animation: blob 20s infinite alternate;
-            z-index: 0;
+            z-index: 0; pointer-events: none;
+            transition: background 2s ease;
         }
 
-        /* Glass Components */
+        /* Glass Components (v2 Polish) */
         .liquid-card {
             background: linear-gradient(145deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
             backdrop-filter: blur(24px) saturate(120%);
@@ -109,7 +131,6 @@
             box-shadow: 0 8px 32px rgba(0,0,0,0.3);
             transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
-        
         .liquid-card:hover {
             transform: translateY(-2px);
             box-shadow: 0 15px 40px rgba(0,0,0,0.4), 0 0 20px rgba(124, 58, 237, 0.1);
@@ -119,8 +140,7 @@
         .liquid-input {
             background: rgba(0,0,0,0.2);
             border: 1px solid var(--glass-border);
-            color: white;
-            transition: 0.3s;
+            color: white; transition: 0.3s;
         }
         .liquid-input:focus {
             background: rgba(0,0,0,0.4);
@@ -129,212 +149,268 @@
             outline: none;
         }
 
-        /* Utilities */
-        .view-hidden { display: none !important; }
-        ::-webkit-scrollbar { width: 0px; background: transparent; } /* Hidden scrollbar for sleekness */
-        
-        .timeline-spine-liquid {
-            position: absolute;
-            left: 24px;
-            top: 0;
-            bottom: 0;
-            width: 2px;
-            background: linear-gradient(180deg, transparent, var(--neon-primary), transparent);
-            z-index: 0;
-            filter: drop-shadow(0 0 5px var(--neon-primary));
-        }
-
-        /* 3D Tilt Effect Base */
-        .tilt-wrapper {
-            transform-style: preserve-3d;
-            perspective: 1000px;
-        }
+        /* 3D Tilt Effect Base (v2) */
+        .tilt-wrapper { transform-style: preserve-3d; perspective: 1000px; }
 
         /* Ripple Effect */
         .ripple {
-            position: absolute;
-            border-radius: 50%;
+            position: absolute; border-radius: 50%;
             background: rgba(255, 255, 255, 0.3);
-            transform: scale(0);
-            animation: ripple-anim 0.6s linear;
+            transform: scale(0); animation: ripple-anim 0.6s linear;
             pointer-events: none;
         }
         @keyframes ripple-anim { to { transform: scale(4); opacity: 0; } }
 
-        /* Dialog Transitions */
-        dialog { background: transparent; border: none; padding: 0; margin: auto; max-width: 100vw; max-height: 100vh; }
-        dialog::backdrop { background: rgba(0,0,0,0.7); backdrop-filter: blur(10px); }
-        dialog[open] { animation: floatUp 0.4s cubic-bezier(0.19, 1, 0.22, 1) forwards; }
-        @keyframes floatUp { from { opacity: 0; transform: translateY(40px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        /* v3 Features CSS */
+        /* Privacy Veil */
+        body.privacy-active .privacy-blur { filter: blur(8px); user-select: none; }
+        
+        /* Offline Mode */
+        body.offline-mode { border: 2px solid #ef4444; }
 
-        /* Story Circle Ring */
-        .story-ring {
-            background: linear-gradient(to right, #7c3aed, #2dd4bf);
-            padding: 2px;
-            border-radius: 50%;
+        /* Glass Shimmer (v3) */
+        .glass-shimmer { position: relative; overflow: hidden; }
+        .glass-shimmer::after {
+            content: ''; position: absolute; top: 0; left: 0; width: 50%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.05), transparent);
+            transform: skewX(-20deg) translateX(-150%);
+            animation: shimmer 4s infinite; pointer-events: none;
         }
-        .story-ring-viewed {
-            background: rgba(255,255,255,0.2);
-            padding: 2px;
-            border-radius: 50%;
+
+        /* Time Capsule Chains (v3) */
+        .chain-locked { position: relative; overflow: hidden; }
+        .chain-locked::before {
+            content: ''; position: absolute; inset: 0; 
+            background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,0.5) 10px, rgba(0,0,0,0.5) 20px);
+            z-index: 5; pointer-events: none;
         }
+
+        /* Skeleton Loading (v3) */
+        .skeleton { background: linear-gradient(90deg, #111 25%, #222 50%, #111 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 1rem; }
+
+        /* Reaction Trails (v3) */
+        .floating-heart { position: fixed; pointer-events: none; font-size: 24px; animation: floatUp 1.5s ease-out forwards; z-index: 1000; }
+        @keyframes floatUp { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-100px) scale(1.5); opacity: 0; } }
+
+        /* Live Presence Glow (v3) */
+        .presence-active { box-shadow: 0 0 15px var(--neon-primary), inset 0 0 10px var(--neon-primary); border-color: var(--neon-primary); }
+
+        /* Music Visualizer (v3) */
+        .music-bar { width: 3px; background: white; animation: sound-wave 1s infinite; border-radius: 2px; }
+
+        /* Grid View Toggle */
+        .grid-view #timeline-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+        .grid-view .timeline-spine-liquid { display: none; }
+        .grid-view .liquid-card { margin-left: 0 !important; }
+
+        /* Timeline Spine (v2) */
+        .timeline-spine-liquid {
+            position: absolute; left: 24px; top: 0; bottom: 0; width: 2px;
+            background: linear-gradient(180deg, transparent, var(--neon-primary), transparent);
+            z-index: 0; filter: drop-shadow(0 0 5px var(--neon-primary));
+        }
+
+        /* Scrollbars */
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
-<body class="tw-h-screen tw-flex tw-flex-col tw-text-gray-100 tw-overflow-hidden" onclick="createRipple(event)">
+<body id="app-body" onclick="createRipple(event)">
 
-    <div class="noise-overlay"></div>
+    <!-- BACKGROUND BLOBS (v2 Position + v3 Weather Logic) -->
+    <div id="blob-1" class="liquid-blob" style="background: #7c3aed; top: -10%; left: -10%; width: 50vw; height: 50vw;"></div>
+    <div id="blob-2" class="liquid-blob" style="background: #0d9488; bottom: -10%; right: -10%; width: 50vw; height: 50vw; animation-delay: -5s;"></div>
+    <div class="liquid-blob" style="background: #2563eb; top: 40%; left: 30%; width: 30vw; height: 30vw; animation-delay: -10s;"></div>
 
-    <!-- BACKGROUND BLOBS -->
-    <div class="liquid-blob tw-bg-purple-600 tw-top-[-10%] tw-left-[-10%] tw-w-[50vw] tw-h-[50vw]"></div>
-    <div class="liquid-blob tw-bg-teal-600 tw-bottom-[-10%] tw-right-[-10%] tw-w-[50vw] tw-h-[50vw]" style="animation-delay: -5s"></div>
-    <div class="liquid-blob tw-bg-blue-600 tw-top-[40%] tw-left-[30%] tw-w-[30vw] tw-h-[30vw]" style="animation-delay: -10s"></div>
+    <!-- AUDIO ELEMENTS -->
+    <audio id="theme-audio" loop src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3"></audio>
 
     <!-- TOASTS -->
-    <div id="toast-container" class="tw-fixed tw-top-8 tw-left-1/2 tw--translate-x-1/2 tw-z-[100] tw-flex tw-flex-col tw-gap-3 tw-pointer-events-none tw-w-full tw-max-w-xs"></div>
+    <div id="toast-container" class="tw-fixed tw-top-8 tw-left-1/2 tw--translate-x-1/2 tw-z-[200] tw-flex tw-flex-col tw-gap-3 tw-pointer-events-none tw-w-full tw-max-w-xs"></div>
 
-    <!-- VIEW 1: PREMIUM LOCK SCREEN -->
-    <div id="auth-view" class="tw-fixed tw-inset-0 tw-z-50 tw-flex tw-flex-col tw-items-center tw-justify-center tw-backdrop-blur-[40px] tw-bg-black/40">
-        <div class="liquid-card tw-p-10 tw-rounded-[3.5rem] tw-w-full tw-max-w-[340px] tw-text-center tw-relative tw-overflow-hidden tw-border tw-border-white/10 tw-shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)]">
+    <!-- OFFLINE INDICATOR -->
+    <div id="offline-indicator" class="tw-fixed tw-top-0 tw-left-0 tw-w-full tw-h-1 tw-bg-red-500 tw-z-[200] tw-hidden tw-animate-pulse"></div>
+
+    <!-- VIEW 1: PREMIUM LOCK SCREEN (v2 Design) -->
+    <div id="auth-view" class="full-screen-center">
+        <div class="liquid-card tw-p-8 md:tw-p-10 tw-rounded-[3.5rem] tw-w-[90%] tw-max-w-[340px] tw-text-center tw-relative tw-overflow-hidden tw-border tw-border-white/10 tw-shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)]">
             
-            <!-- Shimmer Overlay -->
-            <div class="tw-absolute tw-inset-0 tw-bg-gradient-to-tr tw-from-transparent tw-via-white/5 tw-to-transparent tw-opacity-30 tw-pointer-events-none"></div>
-
-            <!-- Premium Biometric Visual -->
-            <div class="tw-relative tw-w-28 tw-h-28 tw-mx-auto tw-mb-10 tw-cursor-pointer group" onclick="app.triggerBiometric()">
-                <!-- Outer Breathing Ring -->
+            <div class="tw-relative tw-w-24 tw-h-24 md:tw-w-28 md:tw-h-28 tw-mx-auto tw-mb-8 md:tw-mb-10 tw-cursor-pointer group" onclick="app.triggerBiometric()">
                 <div class="tw-absolute tw-inset-0 tw-rounded-full tw-border tw-border-cyber-neon/40 tw-animate-liquid-pulse"></div>
-                <!-- Inner Spinning Rings -->
                 <div class="tw-absolute tw-inset-2 tw-rounded-full tw-border-t-2 tw-border-r-2 tw-border-cyber-neon/60 tw-animate-[spin_4s_linear_infinite]"></div>
                 <div class="tw-absolute tw-inset-4 tw-rounded-full tw-border-b-2 tw-border-l-2 tw-border-cyber-accent/60 tw-animate-[spin_3s_linear_infinite_reverse]"></div>
-                
-                <!-- Fingerprint Icon -->
                 <div class="tw-absolute tw-inset-0 tw-flex tw-items-center tw-justify-center tw-z-10">
-                    <i data-lucide="fingerprint" class="tw-w-12 tw-h-12 tw-text-white/90 tw-transition-all tw-duration-500 group-hover:tw-text-cyber-neon group-hover:tw-scale-110 group-hover:tw-drop-shadow-[0_0_15px_rgba(124,58,237,0.8)]"></i>
+                    <i data-lucide="fingerprint" class="tw-w-10 tw-h-10 md:tw-w-12 md:tw-h-12 tw-text-white/90 tw-transition-all tw-duration-500 group-hover:tw-text-cyber-neon group-hover:tw-scale-110"></i>
                 </div>
-                
-                <!-- Glow -->
-                <div class="tw-absolute tw-inset-0 tw-bg-cyber-neon/10 tw-rounded-full tw-blur-2xl tw-opacity-0 group-hover:tw-opacity-100 tw-transition-opacity tw-duration-700"></div>
             </div>
 
-            <h1 class="tw-text-4xl tw-font-black tw-mb-2 tw-tracking-tight tw-text-white drop-shadow-md">Datekeep</h1>
-            <p class="tw-text-[10px] tw-text-gray-400 tw-mb-10 tw-uppercase tw-tracking-[0.3em] tw-font-medium">Shared Neural Vault</p>
+            <h1 class="tw-text-3xl md:tw-text-4xl tw-font-black tw-mb-2 tw-tracking-tight tw-text-white drop-shadow-md">Datekeep</h1>
+            <p class="tw-text-[10px] tw-text-gray-400 tw-mb-8 md:tw-mb-10 tw-uppercase tw-tracking-[0.3em] tw-font-medium">Liquid OS v4.0</p>
 
-            <!-- PIN Pad -->
-            <div class="tw-flex tw-justify-center tw-gap-4 tw-mb-10">
+            <div class="tw-flex tw-justify-center tw-gap-4 tw-mb-8 md:tw-mb-10">
                 <div class="pin-dot tw-w-3 tw-h-3 tw-rounded-full tw-bg-white/10 tw-transition-all"></div>
                 <div class="pin-dot tw-w-3 tw-h-3 tw-rounded-full tw-bg-white/10 tw-transition-all"></div>
                 <div class="pin-dot tw-w-3 tw-h-3 tw-rounded-full tw-bg-white/10 tw-transition-all"></div>
                 <div class="pin-dot tw-w-3 tw-h-3 tw-rounded-full tw-bg-white/10 tw-transition-all"></div>
             </div>
 
-            <div class="tw-grid tw-grid-cols-3 tw-gap-4">
-                <!-- Keys generated dynamically or manual -->
-                <button class="pin-btn tw-h-14 tw-rounded-2xl tw-bg-white/5 hover:tw-bg-white/15 hover:tw-scale-105 tw-active:scale-95 tw-transition-all tw-text-xl tw-font-medium" data-val="1">1</button>
-                <button class="pin-btn tw-h-14 tw-rounded-2xl tw-bg-white/5 hover:tw-bg-white/15 hover:tw-scale-105 tw-active:scale-95 tw-transition-all tw-text-xl tw-font-medium" data-val="2">2</button>
-                <button class="pin-btn tw-h-14 tw-rounded-2xl tw-bg-white/5 hover:tw-bg-white/15 hover:tw-scale-105 tw-active:scale-95 tw-transition-all tw-text-xl tw-font-medium" data-val="3">3</button>
-                <button class="pin-btn tw-h-14 tw-rounded-2xl tw-bg-white/5 hover:tw-bg-white/15 hover:tw-scale-105 tw-active:scale-95 tw-transition-all tw-text-xl tw-font-medium" data-val="4">4</button>
-                <button class="pin-btn tw-h-14 tw-rounded-2xl tw-bg-white/5 hover:tw-bg-white/15 hover:tw-scale-105 tw-active:scale-95 tw-transition-all tw-text-xl tw-font-medium" data-val="5">5</button>
-                <button class="pin-btn tw-h-14 tw-rounded-2xl tw-bg-white/5 hover:tw-bg-white/15 hover:tw-scale-105 tw-active:scale-95 tw-transition-all tw-text-xl tw-font-medium" data-val="6">6</button>
-                <button class="pin-btn tw-h-14 tw-rounded-2xl tw-bg-white/5 hover:tw-bg-white/15 hover:tw-scale-105 tw-active:scale-95 tw-transition-all tw-text-xl tw-font-medium" data-val="7">7</button>
-                <button class="pin-btn tw-h-14 tw-rounded-2xl tw-bg-white/5 hover:tw-bg-white/15 hover:tw-scale-105 tw-active:scale-95 tw-transition-all tw-text-xl tw-font-medium" data-val="8">8</button>
-                <button class="pin-btn tw-h-14 tw-rounded-2xl tw-bg-white/5 hover:tw-bg-white/15 hover:tw-scale-105 tw-active:scale-95 tw-transition-all tw-text-xl tw-font-medium" data-val="9">9</button>
+            <div class="tw-grid tw-grid-cols-3 tw-gap-3 md:tw-gap-4">
+                <button class="pin-btn tw-h-12 md:tw-h-14 tw-rounded-2xl tw-bg-white/5 hover:tw-bg-white/15 hover:tw-scale-105 tw-active:scale-95 tw-transition-all tw-text-xl tw-font-medium" data-val="1">1</button>
+                <button class="pin-btn tw-h-12 md:tw-h-14 tw-rounded-2xl tw-bg-white/5 hover:tw-bg-white/15 hover:tw-scale-105 tw-active:scale-95 tw-transition-all tw-text-xl tw-font-medium" data-val="2">2</button>
+                <button class="pin-btn tw-h-12 md:tw-h-14 tw-rounded-2xl tw-bg-white/5 hover:tw-bg-white/15 hover:tw-scale-105 tw-active:scale-95 tw-transition-all tw-text-xl tw-font-medium" data-val="3">3</button>
+                <button class="pin-btn tw-h-12 md:tw-h-14 tw-rounded-2xl tw-bg-white/5 hover:tw-bg-white/15 hover:tw-scale-105 tw-active:scale-95 tw-transition-all tw-text-xl tw-font-medium" data-val="4">4</button>
+                <button class="pin-btn tw-h-12 md:tw-h-14 tw-rounded-2xl tw-bg-white/5 hover:tw-bg-white/15 hover:tw-scale-105 tw-active:scale-95 tw-transition-all tw-text-xl tw-font-medium" data-val="5">5</button>
+                <button class="pin-btn tw-h-12 md:tw-h-14 tw-rounded-2xl tw-bg-white/5 hover:tw-bg-white/15 hover:tw-scale-105 tw-active:scale-95 tw-transition-all tw-text-xl tw-font-medium" data-val="6">6</button>
+                <button class="pin-btn tw-h-12 md:tw-h-14 tw-rounded-2xl tw-bg-white/5 hover:tw-bg-white/15 hover:tw-scale-105 tw-active:scale-95 tw-transition-all tw-text-xl tw-font-medium" data-val="7">7</button>
+                <button class="pin-btn tw-h-12 md:tw-h-14 tw-rounded-2xl tw-bg-white/5 hover:tw-bg-white/15 hover:tw-scale-105 tw-active:scale-95 tw-transition-all tw-text-xl tw-font-medium" data-val="8">8</button>
+                <button class="pin-btn tw-h-12 md:tw-h-14 tw-rounded-2xl tw-bg-white/5 hover:tw-bg-white/15 hover:tw-scale-105 tw-active:scale-95 tw-transition-all tw-text-xl tw-font-medium" data-val="9">9</button>
                 <div class="tw-opacity-0"></div>
-                <button class="pin-btn tw-h-14 tw-rounded-2xl tw-bg-white/5 hover:tw-bg-white/15 hover:tw-scale-105 tw-active:scale-95 tw-transition-all tw-text-xl tw-font-medium" data-val="0">0</button>
-                <button id="pin-clear" class="tw-h-14 tw-rounded-2xl tw-text-red-400 hover:tw-bg-red-500/10 hover:tw-scale-105 tw-active:scale-95 tw-flex tw-items-center tw-justify-center tw-transition-all"><i data-lucide="delete"></i></button>
+                <button class="pin-btn tw-h-12 md:tw-h-14 tw-rounded-2xl tw-bg-white/5 hover:tw-bg-white/15 hover:tw-scale-105 tw-active:scale-95 tw-transition-all tw-text-xl tw-font-medium" data-val="0">0</button>
+                <button id="pin-clear" class="tw-h-12 md:tw-h-14 tw-rounded-2xl tw-text-red-400 hover:tw-bg-red-500/10 hover:tw-scale-105 tw-active:scale-95 tw-flex tw-items-center tw-justify-center tw-transition-all"><i data-lucide="delete"></i></button>
             </div>
-            
             <p id="auth-error" class="tw-absolute tw-bottom-6 tw-left-0 tw-w-full tw-text-xs tw-text-red-400 tw-font-mono tw-opacity-0 tw-transition-opacity tw-tracking-widest">ACCESS DENIED</p>
-            
-            <div class="tw-mt-6 tw-text-[10px] tw-text-gray-500 tw-font-mono">
-                PIN: 1111 (Chalak Lomdi) / 2222 (Bhondu Bhalu)
-            </div>
         </div>
     </div>
 
     <!-- VIEW 2: DASHBOARD -->
-    <div id="dashboard-view" class="view-hidden tw-flex-1 tw-flex tw-flex-col tw-relative tw-h-full">
+    <div id="dashboard-view">
         
-        <!-- Glass Header -->
-        <header class="tw-absolute tw-top-0 tw-w-full tw-z-40 tw-px-6 tw-py-4 tw-flex tw-items-center tw-justify-between tw-backdrop-blur-md tw-border-b tw-border-white/5">
+        <!-- Glass Header (v2 Layout + v3 Buttons) -->
+        <header class="tw-absolute tw-top-0 tw-w-full tw-z-40 tw-px-4 md:tw-px-6 tw-py-4 tw-flex tw-items-center tw-justify-between tw-backdrop-blur-md tw-border-b tw-border-white/5">
             <div class="tw-flex tw-items-center tw-gap-4">
+                <!-- Avatar with Battery (v3) & Presence (v3) -->
                 <div class="tw-relative">
-                    <div class="tw-w-10 tw-h-10 tw-rounded-full tw-bg-gradient-to-tr tw-from-cyber-neon tw-to-blue-500 tw-flex tw-items-center tw-justify-center tw-text-white tw-font-bold tw-shadow-lg tw-cursor-pointer" id="avatar-btn" onclick="app.signOut()">
+                    <div class="tw-w-10 tw-h-10 tw-rounded-full tw-bg-gradient-to-tr tw-from-cyber-neon tw-to-blue-500 tw-flex tw-items-center tw-justify-center tw-text-white tw-font-bold tw-shadow-lg tw-cursor-pointer tw-border-2 tw-border-transparent tw-transition-all" id="avatar-glow" onclick="app.signOut()">
                         <span id="user-initial">U</span>
                     </div>
-                    <div class="tw-absolute tw-bottom-0 tw-right-0 tw-w-3 tw-h-3 tw-bg-green-500 tw-rounded-full tw-border-2 tw-border-black tw-animate-pulse"></div>
+                    <!-- Battery (v3) -->
+                    <div class="tw-absolute -tw-bottom-1 -tw-right-1 tw-bg-black tw-rounded-full tw-px-1 tw-border tw-border-white/10 tw-flex tw-items-center tw-gap-0.5">
+                        <div class="tw-w-3 tw-h-1.5 tw-rounded-sm tw-border tw-border-green-500 tw-p-[1px]"><div id="battery-level" class="tw-h-full tw-bg-green-500 tw-w-full"></div></div>
+                    </div>
                 </div>
+                
                 <div>
+                    <!-- v3 Typing Indicator -->
                     <h2 class="tw-text-sm tw-font-bold tw-text-white" id="greeting-text">Welcome Back</h2>
                     <div class="tw-flex tw-items-center tw-gap-2">
-                        <i data-lucide="cloud-sun" class="tw-w-3 tw-h-3 tw-text-yellow-400"></i>
-                        <span class="tw-text-[10px] tw-text-gray-400">Liquid Sync Active</span>
+                        <div id="typing-indicator" class="tw-hidden tw-text-[10px] tw-text-cyber-accent tw-animate-pulse">Partner is typing...</div>
+                        <div id="header-status" class="tw-flex tw-items-center tw-gap-2">
+                            <div class="tw-relative tw-w-4 tw-h-4">
+                                <i data-lucide="heart" class="tw-w-4 tw-h-4 tw-text-red-500 tw-fill-red-500 tw-animate-pulse" id="pulse-heart"></i>
+                            </div>
+                            <span class="tw-text-[10px] tw-text-gray-400">Sync Active</span>
+                        </div>
                     </div>
                 </div>
             </div>
             
-            <div class="tw-flex tw-gap-3">
-                <button class="tw-p-2 tw-rounded-full tw-bg-white/5 hover:tw-bg-white/10 tw-transition-all" onclick="app.toggleSound()" id="sound-btn">
-                    <i data-lucide="waves" class="tw-w-5 tw-h-5 tw-text-gray-400"></i>
+            <!-- Tools Cluster -->
+            <div class="tw-flex tw-gap-2">
+                <!-- v3 Interactions -->
+                <button onclick="app.nudge()" class="tw-p-2 tw-rounded-full tw-bg-white/5 hover:tw-bg-white/10" title="Nudge Partner"><i data-lucide="vibrate" class="tw-w-5 tw-h-5 tw-text-yellow-400"></i></button>
+                <button onclick="app.requestMood()" class="tw-p-2 tw-rounded-full tw-bg-white/5 hover:tw-bg-white/10" title="Ask Mood"><i data-lucide="help-circle" class="tw-w-5 tw-h-5 tw-text-blue-400"></i></button>
+                
+                <div class="tw-w-[1px] tw-h-8 tw-bg-white/10 tw-mx-1"></div>
+
+                <!-- Privacy & Sound -->
+                <button class="tw-p-2 tw-rounded-full tw-bg-white/5 hover:tw-bg-white/10" onclick="app.togglePrivacy()" title="Privacy Veil">
+                    <i data-lucide="eye" class="tw-w-5 tw-h-5 tw-text-gray-400" id="privacy-icon"></i>
                 </button>
+                
+                <!-- v3 Theme Music + v2 Soundscapes (Long press vs Click logic separated in app) -->
+                <button class="tw-p-2 tw-rounded-full tw-bg-white/5 hover:tw-bg-white/10" onclick="app.toggleMusic()" title="LoFi Theme">
+                    <i data-lucide="music" class="tw-w-5 tw-h-5 tw-text-gray-400" id="music-icon"></i>
+                </button>
+                <button class="tw-p-2 tw-rounded-full tw-bg-white/5 hover:tw-bg-white/10" onclick="app.cycleSound()" title="Soundscapes (Rain/White)">
+                    <i data-lucide="waves" class="tw-w-5 tw-h-5 tw-text-gray-400" id="sound-icon"></i>
+                </button>
+                <button onclick="app.exportBook()" class="tw-p-2 tw-rounded-full hover:tw-bg-white/10" title="Export PDF"><i data-lucide="book-open" class="tw-w-5 tw-h-5 tw-text-white/60"></i></button>
             </div>
         </header>
 
         <!-- Main Content -->
-        <main class="tw-flex-1 tw-overflow-y-auto tw-pt-24 tw-pb-24 tw-px-4 custom-scrollbar">
+        <main class="tw-flex-1 tw-overflow-y-auto tw-pt-24 tw-pb-24 tw-px-3 md:tw-px-4 custom-scrollbar privacy-blur" id="main-scroll">
             <div class="tw-max-w-3xl tw-mx-auto">
                 
-                <!-- FLUX STATUS (STORIES) -->
+                <!-- v3 To-Do Widget -->
+                <div class="liquid-card tw-rounded-2xl tw-p-4 tw-mb-6 glass-shimmer">
+                    <div class="tw-flex tw-justify-between tw-items-center tw-mb-2">
+                        <h3 class="tw-text-xs tw-text-cyber-accent tw-uppercase tw-font-bold tw-tracking-widest">Shared Goals</h3>
+                        <button onclick="app.addTodo()" class="tw-text-xs tw-text-gray-400 hover:tw-text-white">+ Add</button>
+                    </div>
+                    <div id="todo-list" class="tw-space-y-2"></div>
+                </div>
+
+                <!-- FLUX STATUS -->
                 <div class="tw-mb-8">
                     <div class="tw-flex tw-gap-4 tw-overflow-x-auto no-scrollbar tw-py-2" id="stories-container">
-                        <!-- Add Story Button -->
                         <div class="tw-flex tw-flex-col tw-items-center tw-gap-2 tw-flex-shrink-0 tw-cursor-pointer" onclick="app.openAddModal('status')">
                             <div class="tw-w-16 tw-h-16 tw-rounded-full tw-border-2 tw-border-dashed tw-border-white/30 tw-flex tw-items-center tw-justify-center hover:tw-bg-white/5 tw-transition-all">
                                 <i data-lucide="plus" class="tw-w-6 tw-h-6 tw-text-cyber-neon"></i>
                             </div>
                             <span class="tw-text-[10px] tw-text-gray-400">Add Flux</span>
                         </div>
-                        <!-- Dynamic Stories will be injected here -->
                     </div>
                 </div>
 
-                <!-- Stats Rings -->
-                <div class="tw-grid tw-grid-cols-2 md:tw-grid-cols-4 tw-gap-4 tw-mb-8">
+                <!-- Stats Rings + v3 Countdown & Randomizer -->
+                <div class="tw-grid tw-grid-cols-2 md:tw-grid-cols-4 tw-gap-3 md:tw-gap-4 tw-mb-8">
                     <div class="liquid-card tw-p-4 tw-rounded-3xl tw-flex tw-items-center tw-gap-4 tw-relative tw-overflow-hidden">
                         <div class="tw-w-12 tw-h-12 tw-rounded-full tw-border-4 tw-border-cyber-neon/30 tw-flex tw-items-center tw-justify-center">
                             <i data-lucide="layers" class="tw-w-5 tw-h-5 tw-text-cyber-neon"></i>
                         </div>
                         <div>
                             <div class="tw-text-2xl tw-font-bold" id="stat-total">0</div>
-                            <div class="tw-text-[10px] tw-uppercase tw-tracking-wider tw-text-gray-400">Hive Memory</div>
+                            <div class="tw-text-[10px] tw-uppercase tw-tracking-wider tw-text-gray-400">Memories</div>
                         </div>
                     </div>
-                    <div class="liquid-card tw-p-4 tw-rounded-3xl tw-flex tw-items-center tw-gap-4">
+                    
+                    <!-- v3 Countdown -->
+                    <div class="liquid-card tw-p-4 tw-rounded-3xl tw-flex tw-items-center tw-gap-4 tw-cursor-pointer hover:tw-bg-white/5" onclick="app.toggleCountdown()">
                         <div class="tw-w-12 tw-h-12 tw-rounded-full tw-border-4 tw-border-cyber-accent/30 tw-flex tw-items-center tw-justify-center">
-                             <i data-lucide="activity" class="tw-w-5 tw-h-5 tw-text-cyber-accent"></i>
+                             <i data-lucide="timer" class="tw-w-5 tw-h-5 tw-text-cyber-accent"></i>
                         </div>
                         <div>
-                            <div class="tw-text-2xl tw-font-bold" id="stat-streak">0</div>
-                            <div class="tw-text-[10px] tw-uppercase tw-tracking-wider tw-text-gray-400">Sync Streak</div>
+                            <div class="tw-text-xl tw-font-bold" id="countdown-val">0d</div>
+                            <div class="tw-text-[10px] tw-uppercase tw-tracking-wider tw-text-gray-400" id="countdown-label">Next 11th</div>
                         </div>
                     </div>
+
+                    <!-- v3 Randomizer -->
+                    <button class="liquid-card tw-p-4 tw-rounded-3xl tw-flex tw-flex-col tw-items-center tw-justify-center hover:tw-bg-white/5" onclick="app.randomMemory()">
+                        <i data-lucide="shuffle" class="tw-w-6 tw-h-6 tw-text-purple-400 tw-mb-1"></i>
+                        <span class="tw-text-[10px] tw-text-gray-400 tw-uppercase">Shuffle</span>
+                    </button>
+
+                    <!-- v2 Mood Sparkline -->
+                    <div class="liquid-card tw-p-4 tw-rounded-3xl tw-flex tw-items-end tw-justify-between tw-px-4" id="sparkline"></div>
                 </div>
 
                 <!-- Search -->
-                <div class="tw-relative tw-mb-8 tw-group">
-                    <div class="liquid-card tw-rounded-2xl tw-flex tw-items-center tw-px-4 tw-py-3 tw-relative">
+                <div class="tw-relative tw-mb-8 tw-group tw-flex tw-gap-2">
+                    <div class="liquid-card tw-rounded-2xl tw-flex-1 tw-flex tw-items-center tw-px-4 tw-py-3 tw-relative">
                         <i data-lucide="search" class="tw-w-5 tw-h-5 tw-text-gray-400 tw-mr-3"></i>
-                        <input type="text" id="search-input" placeholder="Search the shared mind..." class="tw-bg-transparent tw-border-none tw-outline-none tw-text-white tw-w-full tw-placeholder-gray-600">
+                        <input type="text" id="search-input" placeholder="Search the shared mind..." class="tw-bg-transparent tw-border-none tw-outline-none tw-text-white tw-w-full tw-placeholder-gray-600" onfocus="app.showSearchHistory()" onblur="setTimeout(app.hideSearchHistory, 200)">
+                        <div id="search-history" class="tw-absolute tw-top-full tw-left-0 tw-w-full tw-bg-[#0f0f12] tw-border tw-border-white/10 tw-rounded-xl tw-mt-2 tw-z-30 tw-hidden tw-shadow-xl tw-overflow-hidden"></div>
                     </div>
+                    <button class="liquid-card tw-rounded-2xl tw-w-12 tw-flex tw-items-center tw-justify-center hover:tw-bg-white/5" onclick="app.toggleView()"><i data-lucide="layout-grid" class="tw-w-5 tw-h-5 tw-text-gray-400"></i></button>
+                    <button class="liquid-card tw-rounded-2xl tw-w-12 tw-flex tw-items-center tw-justify-center hover:tw-bg-white/5 tw-text-gray-400 hover:tw-text-red-400" onclick="app.toggleTrash()"><i data-lucide="trash-2" class="tw-w-5 tw-h-5"></i></button>
                 </div>
 
                 <!-- Timeline -->
                 <div class="tw-relative tw-min-h-[300px]">
                     <div class="timeline-spine-liquid"></div>
-                    <div id="timeline-container" class="tw-space-y-8 tw-perspective-1000">
-                        <!-- Items injected here -->
+                    <!-- v3 Skeleton -->
+                    <div id="skeleton-container" class="tw-space-y-4 tw-ml-4">
+                        <div class="liquid-card tw-h-40 tw-rounded-3xl skeleton"></div>
+                        <div class="liquid-card tw-h-40 tw-rounded-3xl skeleton"></div>
                     </div>
+                    <div id="timeline-container" class="tw-space-y-8 tw-perspective-1000 tw-hidden"></div>
+                    <!-- v3 Back To Top -->
+                    <button id="back-to-top" onclick="document.getElementById('main-scroll').scrollTo({top:0, behavior:'smooth'})" class="tw-fixed tw-bottom-24 tw-left-6 tw-p-3 tw-bg-white/10 tw-rounded-full tw-backdrop-blur tw-hidden tw-z-30"><i data-lucide="arrow-up" class="tw-w-5 tw-h-5 text-white"></i></button>
                     
-                    <!-- Empty State -->
                     <div id="empty-state" class="tw-hidden tw-text-center tw-py-20">
                         <div class="liquid-blob tw-relative tw-mx-auto tw-w-32 tw-h-32 tw-bg-white/5 tw-rounded-full tw-flex tw-items-center tw-justify-center tw-mb-4">
                             <i data-lucide="wind" class="tw-w-12 tw-h-12 tw-text-gray-600"></i>
@@ -351,23 +427,30 @@
         </button>
     </div>
 
-    <!-- DIALOG: EDITOR -->
+    <!-- DIALOG: EDITOR (v2 Style + v3 Tabs) -->
     <dialog id="entry-dialog" class="tw-bg-transparent tw-w-full md:tw-max-w-2xl tw-fixed tw-bottom-0 md:tw-top-1/2 md:tw-left-1/2 md:tw--translate-x-1/2 md:tw--translate-y-1/2 tw-m-0">
         <div class="liquid-card tw-rounded-t-[2.5rem] md:tw-rounded-[2.5rem] tw-w-full tw-h-[90vh] md:tw-h-auto md:tw-max-h-[85vh] tw-flex tw-flex-col tw-overflow-hidden tw-border-b-0">
+            
+            <!-- v3 Tabs -->
+            <div class="tw-flex tw-border-b tw-border-white/5">
+                <button onclick="app.setEntryType('memory')" class="tw-flex-1 tw-py-4 tw-text-sm tw-font-bold tw-text-cyber-neon type-tab" id="tab-memory">Memory</button>
+                <button onclick="app.setEntryType('poll')" class="tw-flex-1 tw-py-4 tw-text-sm tw-text-gray-400 type-tab" id="tab-poll">Poll</button>
+            </div>
+
             <form id="entry-form" class="tw-flex tw-flex-col tw-h-full">
                 <input type="hidden" name="id" id="entry-id">
                 <input type="hidden" name="type" id="entry-type" value="memory">
                 
-                <!-- Handle -->
-                <div class="tw-w-12 tw-h-1 tw-bg-white/20 tw-rounded-full tw-mx-auto tw-mt-4 md:tw-hidden"></div>
-
                 <!-- Header -->
-                <div class="tw-px-8 tw-pt-6 tw-pb-4 tw-flex tw-justify-between tw-items-center">
+                <div class="tw-px-8 tw-pt-6 tw-pb-4 tw-flex tw-justify-between tw-items-center zen-fade">
                     <div>
                         <h2 class="tw-text-2xl tw-font-bold tw-text-white" id="dialog-title">New Entry</h2>
-                        <p class="tw-text-xs tw-text-cyber-accent tw-uppercase tw-tracking-wider" id="dialog-subtitle">Shared with everyone</p>
+                        <div class="tw-text-xs tw-text-gray-400" id="word-count">0 words</div>
                     </div>
-                    <button type="button" onclick="app.closeDialog()" class="tw-p-2 tw-rounded-full hover:tw-bg-white/10"><i data-lucide="x"></i></button>
+                    <div class="tw-flex tw-gap-2">
+                        <button type="button" onclick="app.toggleZen()" class="tw-p-2 tw-rounded-full hover:tw-bg-white/10" title="Zen Mode"><i data-lucide="align-justify" class="tw-w-5 tw-h-5"></i></button>
+                        <button type="button" onclick="app.closeDialog()" class="tw-p-2 tw-rounded-full hover:tw-bg-white/10"><i data-lucide="x"></i></button>
+                    </div>
                 </div>
 
                 <!-- Body -->
@@ -375,41 +458,77 @@
                     
                     <div id="memory-fields">
                         <input type="text" name="title" id="inp-title" placeholder="Title your memory..." 
-                            class="tw-w-full tw-bg-transparent tw-border-none tw-text-3xl tw-font-bold tw-text-white tw-placeholder-gray-700 focus:tw-outline-none tw-mb-6">
+                            class="tw-w-full tw-bg-transparent tw-border-none tw-text-3xl tw-font-bold tw-text-white tw-placeholder-gray-700 focus:tw-outline-none tw-mb-6 privacy-blur">
 
-                        <div class="tw-flex tw-gap-4 tw-mb-6 tw-overflow-x-auto no-scrollbar">
-                            <div class="liquid-input tw-rounded-2xl tw-px-4 tw-py-2 tw-flex tw-items-center tw-gap-2 tw-min-w-[140px]">
+                        <!-- Meta Controls Grid -->
+                        <div class="tw-flex tw-flex-wrap tw-gap-3 tw-mb-6 zen-fade">
+                            <div class="liquid-input tw-rounded-xl tw-px-3 tw-py-2 tw-flex tw-items-center tw-gap-2">
                                 <i data-lucide="calendar" class="tw-w-4 tw-h-4 tw-text-gray-400"></i>
-                                <input type="date" name="date" class="tw-bg-transparent tw-border-none tw-text-sm tw-text-white focus:tw-outline-none tw-w-full">
+                                <input type="date" name="date" class="tw-bg-transparent tw-border-none tw-text-sm tw-text-white focus:tw-outline-none">
                             </div>
-                            <div class="liquid-input tw-rounded-2xl tw-px-4 tw-py-2 tw-flex tw-items-center tw-gap-2 tw-min-w-[120px]">
-                                <i data-lucide="clock" class="tw-w-4 tw-h-4 tw-text-gray-400"></i>
-                                <input type="time" name="time" class="tw-bg-transparent tw-border-none tw-text-sm tw-text-white focus:tw-outline-none tw-w-full">
+                            
+                            <!-- v3 Geo -->
+                            <button type="button" onclick="app.getGeo()" class="liquid-input tw-rounded-xl tw-px-3 tw-py-2 tw-flex tw-items-center tw-gap-2 hover:tw-bg-white/10">
+                                <i data-lucide="map-pin" class="tw-w-4 tw-h-4 tw-text-cyber-accent"></i>
+                                <span id="geo-label" class="tw-text-xs">Location</span>
+                                <input type="hidden" name="location" id="inp-location">
+                            </button>
+
+                            <!-- v3 Time Capsule -->
+                            <div class="liquid-input tw-rounded-xl tw-px-3 tw-py-2 tw-flex tw-items-center tw-gap-2">
+                                <i data-lucide="lock" class="tw-w-4 tw-h-4 tw-text-gray-400"></i>
+                                <input type="date" name="unlockDate" class="tw-bg-transparent tw-border-none tw-text-xs tw-text-white focus:tw-outline-none tw-w-24" title="Unlock Date">
+                            </div>
+
+                            <!-- v3 Ephemeral -->
+                            <label class="liquid-input tw-rounded-xl tw-px-3 tw-py-2 tw-flex tw-items-center tw-gap-2 tw-cursor-pointer tw-text-red-400" title="Self-destruct in 24h">
+                                <i data-lucide="bomb" class="tw-w-4 tw-h-4"></i>
+                                <input type="checkbox" name="isEphemeral" class="tw-accent-red-500">
+                            </label>
+                            
+                            <label class="liquid-input tw-rounded-xl tw-px-3 tw-py-2 tw-flex tw-items-center tw-gap-2 tw-cursor-pointer">
+                                <input type="checkbox" name="isPinned" class="tw-accent-cyber-neon"> <span class="tw-text-xs">Pin</span>
+                            </label>
+                        </div>
+
+                        <!-- v3 Audio Recorder & Spotify -->
+                        <div class="zen-fade tw-grid tw-grid-cols-2 tw-gap-3 tw-mb-6">
+                            <div class="liquid-input tw-rounded-xl tw-p-3 tw-flex tw-items-center tw-justify-between">
+                                <div class="tw-flex tw-items-center tw-gap-2">
+                                    <div id="mic-status" class="tw-w-3 tw-h-3 tw-rounded-full tw-bg-gray-500"></div>
+                                    <span class="tw-text-xs tw-text-gray-400" id="mic-label">Voice</span>
+                                </div>
+                                <button type="button" onclick="app.toggleRecording()" class="tw-p-2 tw-rounded-full tw-bg-white/10"><i data-lucide="mic" class="tw-w-4 tw-h-4"></i></button>
+                            </div>
+                            <div class="liquid-input tw-rounded-xl tw-p-3 tw-flex tw-items-center tw-gap-2">
+                                <i data-lucide="music" class="tw-w-4 tw-h-4 tw-text-green-400"></i>
+                                <input type="text" name="spotifyLink" placeholder="Spotify Link" class="tw-bg-transparent tw-flex-1 tw-text-xs tw-text-white focus:tw-outline-none">
+                            </div>
+                        </div>
+                        <input type="hidden" name="audioData" id="inp-audio">
+
+                        <!-- Mood -->
+                        <div class="tw-mb-6 zen-fade">
+                            <div class="tw-flex tw-items-center tw-gap-4">
+                                <span class="tw-text-xs tw-text-gray-500">MOOD</span>
+                                <input type="range" name="mood" min="1" max="5" value="3" class="tw-flex-1 tw-h-1 tw-bg-gray-700 tw-rounded-lg tw-appearance-none cursor-pointer tw-accent-cyber-neon">
                             </div>
                         </div>
 
-                        <div class="tw-mb-6">
-                            <label class="tw-text-xs tw-text-gray-500 tw-uppercase tw-tracking-widest tw-mb-3 tw-block">Vibe</label>
-                            <div class="tw-flex tw-gap-4 tw-items-center">
-                                <div class="tw-flex tw-gap-2">
-                                    <label class="tw-cursor-pointer group"><input type="radio" name="category" value="briefcase" class="tw-peer tw-hidden" checked><div class="tw-w-10 tw-h-10 tw-rounded-full tw-bg-white/5 tw-flex tw-items-center tw-justify-center tw-border tw-border-transparent peer-checked:tw-bg-blue-500 tw-transition-all"><i data-lucide="briefcase" class="tw-w-4 tw-h-4"></i></div></label>
-                                    <label class="tw-cursor-pointer group"><input type="radio" name="category" value="heart" class="tw-peer tw-hidden"><div class="tw-w-10 tw-h-10 tw-rounded-full tw-bg-white/5 tw-flex tw-items-center tw-justify-center tw-border tw-border-transparent peer-checked:tw-bg-pink-500 tw-transition-all"><i data-lucide="heart" class="tw-w-4 tw-h-4"></i></div></label>
-                                    <label class="tw-cursor-pointer group"><input type="radio" name="category" value="plane" class="tw-peer tw-hidden"><div class="tw-w-10 tw-h-10 tw-rounded-full tw-bg-white/5 tw-flex tw-items-center tw-justify-center tw-border tw-border-transparent peer-checked:tw-bg-teal-500 tw-transition-all"><i data-lucide="plane" class="tw-w-4 tw-h-4"></i></div></label>
-                                </div>
-                                <div class="tw-w-[1px] tw-h-8 tw-bg-white/10"></div>
-                                <div class="tw-flex-1">
-                                    <input type="range" name="mood" min="1" max="5" value="3" class="tw-w-full tw-h-1 tw-bg-gray-700 tw-rounded-lg tw-appearance-none cursor-pointer tw-accent-cyber-neon">
-                                </div>
-                            </div>
-                        </div>
-
+                        <!-- Editor -->
                         <div class="liquid-input tw-rounded-3xl tw-p-4 tw-mb-4 tw-relative tw-group focus-within:tw-border-cyber-neon">
-                            <textarea name="notes" id="inp-notes" rows="4" placeholder="Write something..." class="tw-w-full tw-bg-transparent tw-border-none tw-outline-none tw-text-gray-200 tw-resize-none tw-leading-relaxed"></textarea>
+                            <textarea name="notes" id="inp-notes" rows="4" placeholder="Write something..." class="tw-w-full tw-bg-transparent tw-border-none tw-outline-none tw-text-gray-200 tw-resize-none tw-leading-relaxed privacy-blur" oninput="app.updateWordCount()"></textarea>
                         </div>
                     </div>
+                    
+                    <!-- v3 Poll Fields -->
+                    <div id="poll-section" class="tw-hidden tw-space-y-3 tw-mb-6">
+                        <input type="text" name="opt1" placeholder="Option 1" class="liquid-input tw-w-full tw-rounded-xl tw-px-4 tw-py-3 tw-text-sm">
+                        <input type="text" name="opt2" placeholder="Option 2" class="liquid-input tw-w-full tw-rounded-xl tw-px-4 tw-py-3 tw-text-sm">
+                    </div>
 
-                    <!-- Image Upload (Used for both Memory and Status) -->
-                    <div id="drop-zone" class="tw-border-2 tw-border-dashed tw-border-white/10 tw-rounded-3xl tw-p-6 tw-text-center hover:tw-bg-white/5 hover:tw-border-cyber-neon/50 tw-transition-all tw-cursor-pointer" onclick="document.getElementById('img-input').click()">
+                    <!-- Image Upload -->
+                    <div id="drop-zone" class="zen-fade tw-border-2 tw-border-dashed tw-border-white/10 tw-rounded-3xl tw-p-6 tw-text-center hover:tw-bg-white/5 hover:tw-border-cyber-neon/50 tw-transition-all tw-cursor-pointer" onclick="document.getElementById('img-input').click()">
                         <div id="upload-placeholder">
                             <div class="tw-w-10 tw-h-10 tw-rounded-full tw-bg-white/5 tw-flex tw-items-center tw-justify-center tw-mx-auto tw-mb-2">
                                 <i data-lucide="image-plus" class="tw-w-5 tw-h-5 tw-text-gray-400"></i>
@@ -428,18 +547,34 @@
 
                 <!-- Footer -->
                 <div class="tw-p-6 tw-border-t tw-border-white/5 tw-bg-black/20 tw-backdrop-blur-md">
-                    <button type="button" onclick="app.saveEntry()" class="tw-w-full tw-py-4 tw-rounded-2xl tw-bg-gradient-to-r tw-from-cyber-neon tw-to-blue-600 tw-text-white tw-font-bold tw-text-lg tw-shadow-[0_0_20px_rgba(124,58,237,0.4)] hover:tw-shadow-[0_0_30px_rgba(124,58,237,0.6)] hover:tw-scale-[1.02] tw-transition-all">Publish to Hive</button>
+                    <button type="button" onclick="app.saveEntry()" class="tw-w-full tw-py-4 tw-rounded-2xl tw-bg-gradient-to-r tw-from-cyber-neon tw-to-blue-600 tw-text-white tw-font-bold tw-text-lg tw-shadow-[0_0_20px_rgba(124,58,237,0.4)] hover:tw-shadow-[0_0_30px_rgba(124,58,237,0.6)] hover:tw-scale-[1.02] tw-transition-all">Crystalize Memory</button>
                 </div>
             </form>
         </div>
     </dialog>
 
-    <!-- LIGHTBOX -->
-    <div id="lightbox" class="tw-fixed tw-inset-0 tw-z-[100] tw-bg-black/95 tw-backdrop-blur-xl tw-flex tw-items-center tw-justify-center tw-opacity-0 tw-pointer-events-none tw-transition-all tw-duration-300">
-        <img id="lightbox-img" class="tw-max-w-[95vw] tw-max-h-[85vh] tw-rounded-2xl tw-shadow-2xl tw-scale-90 tw-transition-transform tw-duration-300">
-        <button onclick="app.downloadImage()" class="tw-absolute tw-bottom-10 tw-p-4 tw-bg-white/10 tw-rounded-full tw-backdrop-blur-md hover:tw-bg-white/20 tw-text-white tw-transition-all">
-            <i data-lucide="download" class="tw-w-6 tw-h-6"></i>
-        </button>
+    <!-- LIGHTBOX (v3 Comments Support) -->
+    <div id="lightbox" class="tw-fixed tw-inset-0 tw-z-[150] tw-bg-black/95 tw-backdrop-blur-xl tw-flex tw-flex-col tw-items-center tw-justify-center tw-opacity-0 tw-pointer-events-none tw-transition-all tw-duration-300">
+        <div class="tw-relative tw-max-w-4xl tw-w-full tw-flex tw-flex-col tw-items-center">
+            <img id="lightbox-img" class="tw-max-w-full tw-max-h-[70vh] tw-rounded-2xl tw-shadow-2xl tw-scale-90 tw-transition-transform">
+            
+            <div id="lightbox-comments-section" class="tw-w-full tw-max-w-md tw-mt-4 tw-hidden">
+                <div class="tw-h-32 tw-overflow-y-auto custom-scrollbar tw-mb-2 tw-p-2 tw-bg-white/5 tw-rounded-xl" id="lightbox-comments-list"></div>
+                <div class="tw-flex tw-gap-2">
+                    <input type="text" id="lightbox-comment-input" placeholder="Reply to flux..." class="tw-flex-1 tw-bg-white/10 tw-border-none tw-rounded-xl tw-px-3 tw-text-white tw-text-sm focus:tw-outline-none">
+                    <button onclick="app.addLightboxComment()" class="tw-text-cyber-neon"><i data-lucide="send" class="tw-w-5 tw-h-5"></i></button>
+                </div>
+            </div>
+
+            <div class="tw-absolute tw-bottom-[-80px] tw-flex tw-gap-4">
+                <button onclick="app.downloadImage()" class="tw-p-4 tw-bg-white/10 tw-rounded-full tw-backdrop-blur-md hover:tw-bg-white/20 tw-text-white tw-transition-all">
+                    <i data-lucide="download" class="tw-w-6 tw-h-6"></i>
+                </button>
+                <button id="lightbox-delete-btn" class="tw-p-4 tw-bg-red-500/20 tw-rounded-full tw-backdrop-blur-md hover:tw-bg-red-500/40 tw-text-red-400 tw-transition-all tw-hidden">
+                    <i data-lucide="trash-2" class="tw-w-6 tw-h-6"></i>
+                </button>
+            </div>
+        </div>
         <button onclick="app.closeLightbox()" class="tw-absolute tw-top-10 tw-right-10 tw-p-4 tw-text-white/50 hover:tw-text-white">
             <i data-lucide="x" class="tw-w-8 tw-h-8"></i>
         </button>
@@ -448,487 +583,599 @@
     <!-- LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
-        const firebaseConfig = { apiKey: "AIzaSyD1efcO8mx7hkuwgSRU7B1625chEqWI8kY", authDomain: "gatekeep-001.firebaseapp.com", projectId: "gatekeep-001", storageBucket: "gatekeep-001.firebasestorage.app", messagingSenderId: "771094597260", appId: "1:771094597260:web:557a6401ab7fa71f5175a9" };
+        const firebaseConfig = { apiKey: "", authDomain: "gatekeep-001.firebaseapp.com", projectId: "gatekeep-001", storageBucket: "gatekeep-001.firebasestorage.app", messagingSenderId: "771094597260", appId: "1:771094597260:web:557a6401ab7fa71f5175a9" };
         let db; try { db = getFirestore(initializeApp(firebaseConfig)); } catch(e) {}
 
+        const VALID_PINS = { '1111': { name: 'Chalak Lomdi', uid: 'u_1111' }, '2222': { name: 'Bhondu Bhalu', uid: 'u_2222' } };
+        
         const state = {
             currentUser: null,
             pin: [],
-            data: [], // Shared memories
-            statuses: [], // Shared 24h statuses
-            filter: 'all',
-            pinAttempts: 0,
-            moods: ['Angry', 'Sad', 'Neutral', 'Good', 'Euphoric'],
-            soundOn: false
+            data: [],
+            statuses: [],
+            trash: [],
+            viewMode: 'list',
+            privacyMode: false,
+            soundMode: 0, // 0: Off, 1: Rain, 2: White
+            trashMode: false,
+            audioCtx: null,
+            audioNodes: [],
+            audioRec: null,
+            audioChunks: [],
+            isRecording: false,
+            searchHistory: JSON.parse(localStorage.getItem('dk_search_hist') || '[]'),
+            viewingItem: null
         };
 
-        // --- UPDATED USERNAMES ---
-        const VALID_PINS = { 
-            '1111': { name: 'Chalak Lomdi', uid: 'u_1111' }, 
-            '2222': { name: 'Bhondu Bhalu', uid: 'u_2222' } 
+        /* --- AUDIO ENGINE (v3 Soundscapes) --- */
+        class AudioEngine {
+            constructor() { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); }
+            createNoise(type) { 
+                const bs = 2 * this.ctx.sampleRate;
+                const buf = this.ctx.createBuffer(1, bs, this.ctx.sampleRate);
+                const out = buf.getChannelData(0);
+                let lastOut = 0;
+                for (let i = 0; i < bs; i++) {
+                    const white = Math.random() * 2 - 1;
+                    out[i] = (lastOut + (0.02 * white)) / 1.02;
+                    lastOut = out[i];
+                    out[i] *= 3.5; 
+                }
+                const noise = this.ctx.createBufferSource();
+                noise.buffer = buf; noise.loop = true;
+                const gain = this.ctx.createGain();
+                if (type === 'rain') {
+                    const filter = this.ctx.createBiquadFilter();
+                    filter.type = 'lowpass'; filter.frequency.value = 400;
+                    noise.connect(filter); filter.connect(gain); gain.gain.value = 0.15;
+                } else {
+                    noise.connect(gain); gain.gain.value = 0.05;
+                }
+                gain.connect(this.ctx.destination);
+                return { source: noise, gain: gain };
+            }
+            play(type) {
+                this.stop();
+                if(this.ctx.state === 'suspended') this.ctx.resume();
+                let nodes = type === 'rain' ? this.createNoise('rain') : this.createNoise('white');
+                nodes.source.start();
+                state.audioNodes = [nodes];
+            }
+            stop() { state.audioNodes.forEach(n => { n.source.stop(); n.source.disconnect(); }); state.audioNodes = []; }
+        }
+
+        /* --- v3 RECORDING ENGINE --- */
+        const startRec = async () => {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                state.audioRec = new MediaRecorder(stream);
+                state.audioChunks = [];
+                state.audioRec.ondataavailable = e => state.audioChunks.push(e.data);
+                state.audioRec.onstop = () => {
+                    const blob = new Blob(state.audioChunks, { type: 'audio/webm' });
+                    const reader = new FileReader();
+                    reader.onloadend = () => { document.getElementById('inp-audio').value = reader.result; };
+                    reader.readAsDataURL(blob);
+                };
+                state.audioRec.start();
+                state.isRecording = true;
+                document.getElementById('mic-status').classList.replace('tw-bg-gray-500', 'tw-bg-red-500');
+                document.getElementById('mic-status').classList.add('tw-animate-pulse');
+                document.getElementById('mic-label').innerText = "Recording...";
+            } catch(e) { showToast("Mic Access Denied", "error"); }
+        };
+        const stopRec = () => {
+            if(state.audioRec) state.audioRec.stop();
+            state.isRecording = false;
+            document.getElementById('mic-status').classList.replace('tw-bg-red-500', 'tw-bg-green-500');
+            document.getElementById('mic-status').classList.remove('tw-animate-pulse');
+            document.getElementById('mic-label').innerText = "Recorded";
         };
 
-        const els = {
-            authView: document.getElementById('auth-view'),
-            dashboardView: document.getElementById('dashboard-view'),
-            container: document.getElementById('timeline-container'),
-            storiesContainer: document.getElementById('stories-container'),
-            dialog: document.getElementById('entry-dialog'),
-            searchInput: document.getElementById('search-input'),
-            lightbox: document.getElementById('lightbox'),
-            lightboxImg: document.getElementById('lightbox-img')
-        };
-
-        // --- AUTH ---
+        /* --- AUTH --- */
         document.querySelectorAll('.pin-btn').forEach(btn => btn.addEventListener('click', () => handlePin(btn.dataset.val)));
         document.getElementById('pin-clear').addEventListener('click', () => { state.pin = []; updatePinUI(); });
         document.addEventListener('keydown', (e) => {
-            if(!els.authView.classList.contains('tw-hidden')) {
-                if(e.key >= '0' && e.key <= '9') handlePin(e.key);
-                if(e.key === 'Backspace') { state.pin.pop(); updatePinUI(); }
-            }
+            if(document.body.classList.contains('logged-in')) return;
+            if(e.key >= '0' && e.key <= '9') handlePin(e.key);
+            if(e.key === 'Backspace') { state.pin.pop(); updatePinUI(); }
         });
 
         function handlePin(val) {
-            if(state.pin.length < 4) {
-                state.pin.push(val);
-                updatePinUI();
-                if(state.pin.length === 4) verifyPin();
-            }
+            if(state.pin.length < 4) { state.pin.push(val); updatePinUI(); if(state.pin.length === 4) verifyPin(); }
         }
-
         function updatePinUI() {
             document.querySelectorAll('.pin-dot').forEach((dot, i) => {
                 dot.classList.toggle('tw-bg-cyber-neon', i < state.pin.length);
                 dot.classList.toggle('tw-shadow-[0_0_15px_#7c3aed]', i < state.pin.length);
             });
         }
-
         function verifyPin() {
             const pin = state.pin.join('');
             if(VALID_PINS[pin]) {
                 state.currentUser = VALID_PINS[pin];
-                els.authView.classList.add('tw-hidden');
-                els.dashboardView.classList.remove('view-hidden');
-                
-                const hr = new Date().getHours();
-                const greet = hr < 12 ? "Good Morning" : hr < 18 ? "Good Afternoon" : "Good Evening";
-                document.getElementById('greeting-text').innerText = `${greet}, ${state.currentUser.name.split(' ')[0]}`;
+                document.body.classList.add('logged-in');
+                document.getElementById('greeting-text').innerText = `Welcome, ${state.currentUser.name.split(' ')[0]}`;
                 document.getElementById('user-initial').innerText = state.currentUser.name[0];
-                
-                initData();
+                initData(); initExtras();
             } else {
                 state.pin = []; updatePinUI();
-                const err = document.getElementById('auth-error');
-                err.style.opacity = '1';
-                setTimeout(() => err.style.opacity = '0', 2000);
+                document.getElementById('auth-error').style.opacity = '1'; setTimeout(() => document.getElementById('auth-error').style.opacity = '0', 2000);
             }
         }
 
-        // --- DATA LAYER (SHARED) ---
-        // We use a fixed collection 'shared_timeline_v1' so both users see the same data
-        function getSharedCollection() {
-            return collection(db, 'artifacts', 'gatekeep-001', 'public', 'data', 'shared_timeline_v1');
-        }
-
-        function initData() {
-            if(db) {
-                const q = query(getSharedCollection(), orderBy('createdAt', 'desc'));
-                onSnapshot(q, snap => {
-                    const raw = snap.docs.map(d => ({id:d.id, ...d.data()}));
-                    
-                    // Split into Memories and Statuses
-                    const now = Date.now();
-                    state.data = raw.filter(d => d.type === 'memory' || !d.type); // Default to memory
-                    state.statuses = raw.filter(d => d.type === 'status' && d.expiresAt > now);
-                    
-                    renderTimeline();
-                    renderStories();
-                    updateStats();
+        function initExtras() {
+            // v3 Battery
+            if(navigator.getBattery) {
+                navigator.getBattery().then(b => {
+                    const updateBat = () => {
+                        const l = b.level * 100;
+                        document.getElementById('battery-level').style.width = l + '%';
+                        document.getElementById('battery-level').className = `tw-h-full tw-w-full ${l<20?'tw-bg-red-500':'tw-bg-green-500'}`;
+                    };
+                    updateBat(); b.addEventListener('levelchange', updateBat);
                 });
-            } else {
-                // Local Fallback
-                const raw = JSON.parse(localStorage.getItem('dk_shared_v1') || '[]');
-                const now = Date.now();
-                state.data = raw.filter(d => d.type === 'memory' || !d.type);
-                state.statuses = raw.filter(d => d.type === 'status' && d.expiresAt > now);
-                renderTimeline();
-                renderStories();
-                updateStats();
             }
+            // v3 Weather/Time Blobs
+            const hr = new Date().getHours();
+            if(hr < 6 || hr > 20) {
+                document.getElementById('blob-1').style.background = '#4c1d95'; 
+                document.getElementById('blob-2').style.background = '#1e3a8a';
+            }
+            // v3 Typing Sim
+            setInterval(() => { if(Math.random() > 0.8) { document.getElementById('typing-indicator').classList.remove('tw-hidden'); setTimeout(() => document.getElementById('typing-indicator').classList.add('tw-hidden'), 3000); } }, 10000);
+            // v3 Live Presence
+            if(Math.random() > 0.5) document.getElementById('avatar-glow').classList.add('presence-active');
         }
 
-        // --- RENDER STORIES (24h Flux) ---
-        function renderStories() {
-            // Keep the "Add" button
-            const addBtn = els.storiesContainer.firstElementChild;
-            els.storiesContainer.innerHTML = '';
-            els.storiesContainer.appendChild(addBtn);
+        /* --- DATA --- */
+        function initData() {
+            // v3 Todos
+            onSnapshot(collection(db, 'artifacts', 'gatekeep-001', 'public', 'data', 'todos_v4'), s => {
+                const list = document.getElementById('todo-list');
+                list.innerHTML = '';
+                s.docs.forEach(d => {
+                    const t = d.data();
+                    const el = document.createElement('div');
+                    el.className = `tw-flex tw-items-center tw-gap-2 tw-text-sm ${t.done ? 'tw-line-through tw-text-gray-500' : 'tw-text-white'}`;
+                    el.innerHTML = `<input type="checkbox" ${t.done?'checked':''} class="tw-accent-cyber-neon tw-rounded-sm"> <span>${t.text}</span>`;
+                    el.querySelector('input').onclick = () => updateDoc(doc(db, 'artifacts', 'gatekeep-001', 'public', 'data', 'todos_v4', d.id), { done: !t.done });
+                    list.appendChild(el);
+                });
+            });
 
+            // Timeline
+            const q = query(collection(db, 'artifacts', 'gatekeep-001', 'public', 'data', 'shared_timeline_v2'), orderBy('createdAt', 'desc'));
+            onSnapshot(q, snap => {
+                const now = Date.now();
+                const raw = snap.docs.map(d => ({id:d.id, ...d.data()}));
+                
+                state.data = raw.filter(d => !d.deletedAt && (d.type === 'memory' || d.type === 'poll' || !d.type));
+                state.trash = raw.filter(d => d.deletedAt);
+                state.statuses = raw.filter(d => d.type === 'status' && d.expiresAt > now && !d.deletedAt);
+                
+                state.data = state.data.filter(d => !d.isEphemeral || (d.createdAt + 86400000 > now));
+                render();
+            });
+        }
+
+        /* --- RENDERING --- */
+        function render() {
+            renderTimeline();
+            renderStories();
+            updateStats();
+        }
+
+        function renderStories() {
+            const container = document.getElementById('stories-container');
+            const addBtn = container.firstElementChild;
+            container.innerHTML = ''; container.appendChild(addBtn);
             state.statuses.forEach(status => {
                 const bubble = document.createElement('div');
-                bubble.className = "tw-flex tw-flex-col tw-items-center tw-gap-2 tw-flex-shrink-0 tw-cursor-pointer tw-animate-[float_6s_ease-in-out_infinite]";
-                bubble.onclick = () => app.viewStatus(status);
-                
-                // Color ring based on user
-                const ringColor = status.author === 'Chalak Lomdi' ? 'tw-from-cyber-neon tw-to-blue-500' : 'tw-from-pink-500 tw-to-orange-500';
-                
+                bubble.className = "tw-flex tw-flex-col tw-items-center tw-gap-2 tw-flex-shrink-0 tw-cursor-pointer tw-animate-float";
+                const ring = status.author === 'Chalak Lomdi' ? 'tw-from-cyber-neon tw-to-blue-500' : 'tw-from-pink-500 tw-to-orange-500';
                 bubble.innerHTML = `
-                    <div class="tw-w-16 tw-h-16 tw-rounded-full tw-p-[2px] tw-bg-gradient-to-tr ${ringColor}">
+                    <div class="tw-w-16 tw-h-16 tw-rounded-full tw-p-[2px] tw-bg-gradient-to-tr ${ring}">
                         <div class="tw-w-full tw-h-full tw-rounded-full tw-bg-black tw-border-2 tw-border-transparent tw-overflow-hidden">
-                            ${status.imageData ? `<img src="${status.imageData}" class="tw-w-full tw-h-full tw-object-cover">` : `<div class="tw-w-full tw-h-full tw-bg-white/10 tw-flex tw-items-center tw-justify-center text-xs">${status.author[0]}</div>`}
+                            ${status.imageData ? `<img src="${status.imageData}" class="tw-w-full tw-h-full tw-object-cover">` : `<div class="tw-w-full tw-h-full tw-bg-white/10 flex items-center justify-center">${status.author[0]}</div>`}
                         </div>
                     </div>
-                    <span class="tw-text-[10px] tw-text-gray-400">${status.author}</span>
-                `;
-                els.storiesContainer.appendChild(bubble);
+                    <span class="tw-text-[10px] tw-text-gray-400 privacy-blur">${status.author.split(' ')[0]}</span>`;
+                bubble.onclick = () => app.viewStatus(status);
+                container.appendChild(bubble);
             });
         }
 
-        // --- RENDER TIMELINE ---
         function renderTimeline() {
-            els.container.innerHTML = '';
-            const term = els.searchInput.value.toLowerCase();
+            const container = document.getElementById('timeline-container');
+            const skel = document.getElementById('skeleton-container');
             
-            const filtered = state.data.filter(d => {
-                const matchesTerm = (d.title||'').toLowerCase().includes(term) || (d.notes||'').toLowerCase().includes(term);
-                return matchesTerm;
-            });
+            if(state.data.length || state.trash.length) { skel.style.display = 'none'; container.style.display = state.viewMode === 'grid' ? 'grid' : 'block'; }
+            
+            container.innerHTML = '';
+            const source = state.trashMode ? state.trash : state.data;
+            const term = document.getElementById('search-input').value.toLowerCase();
+            const filtered = source.filter(d => (d.title||'').toLowerCase().includes(term) || (d.notes||'').toLowerCase().includes(term)).sort((a,b) => (b.isPinned?1:0) - (a.isPinned?1:0));
 
             if(filtered.length === 0) document.getElementById('empty-state').classList.remove('tw-hidden');
             else document.getElementById('empty-state').classList.add('tw-hidden');
 
             filtered.forEach((item, idx) => {
-                const date = new Date(item.date || item.createdAt);
-                const isMe = item.author === state.currentUser.name;
+                const isLocked = item.unlockDate && new Date(item.unlockDate) > new Date();
                 const moodColor = getMoodColor(item.mood || 3);
-                const comments = item.comments || [];
-
                 const card = document.createElement('div');
-                card.className = "liquid-card tw-rounded-3xl tw-p-5 tw-relative tilt-wrapper tw-cursor-pointer tw-ml-4 tw-mb-6 slide-up";
-                card.style.animationDelay = `${idx * 0.05}s`;
+                card.className = `liquid-card tw-rounded-3xl tw-p-5 tw-relative tilt-wrapper slide-up ${state.trashMode?'tw-opacity-60':''} ${isLocked ? 'chain-locked' : ''}`;
                 card.style.borderLeft = `3px solid ${moodColor}`;
                 
-                // 3D Tilt
+                // v2 Tilt
                 card.onmousemove = (e) => {
                     const rect = card.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const y = e.clientY - rect.top;
+                    const x = e.clientX - rect.left; const y = e.clientY - rect.top;
                     card.style.transform = `perspective(1000px) rotateX(${(y - rect.height/2)/20}deg) rotateY(${-(x - rect.width/2)/20}deg) scale(1.02)`;
                 };
                 card.onmouseleave = () => card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)';
 
-                let imgHtml = item.imageData ? `
-                    <div class="tw-relative tw-group">
-                        <img src="${item.imageData}" class="tw-w-full tw-h-48 tw-object-cover tw-rounded-2xl tw-mb-4 tw-shadow-lg" onclick="app.lightbox('${item.imageData}')">
-                        <button class="tw-absolute tw-bottom-2 tw-right-2 tw-p-2 tw-bg-black/50 tw-rounded-full tw-backdrop-blur tw-opacity-0 group-hover:tw-opacity-100 tw-transition-opacity" onclick="event.stopPropagation(); app.downloadImage('${item.imageData}')">
-                            <i data-lucide="download" class="tw-w-4 tw-h-4 tw-text-white"></i>
-                        </button>
-                    </div>` : '';
-
-                // Comments HTML
-                const commentsHtml = comments.map(c => `
-                    <div class="tw-flex tw-gap-2 tw-mb-2 tw-text-xs">
-                        <span class="tw-font-bold ${c.author === 'Chalak Lomdi' ? 'tw-text-blue-400' : 'tw-text-pink-400'}">${c.author}:</span>
-                        <span class="tw-text-gray-300">${c.text}</span>
-                    </div>
-                `).join('');
-
-                card.innerHTML = `
-                    <div class="tw-absolute -tw-left-[29px] tw-top-6 tw-w-4 tw-h-4 tw-rounded-full tw-bg-[#020204] tw-border-2 tw-border-cyber-neon tw-z-10 tw-shadow-[0_0_10px_#7c3aed]"></div>
+                // v3 Content Logic
+                let content = '';
+                if(item.type === 'poll') {
+                    const total = (item.options||[]).reduce((a,b) => a + b.votes.length, 0);
+                    const opts = item.options.map((o, idx) => {
+                        const pct = total ? Math.round((o.votes.length/total)*100) : 0;
+                        return `<div class="tw-mb-2 tw-cursor-pointer" onclick="app.vote('${item.id}', ${idx})">
+                                    <div class="tw-flex tw-justify-between tw-text-xs tw-mb-1 tw-text-gray-300"><span>${o.text}</span><span>${pct}%</span></div>
+                                    <div class="tw-h-2 tw-bg-white/10 tw-rounded-full tw-overflow-hidden"><div class="tw-h-full tw-bg-cyber-neon tw-transition-all tw-duration-500" style="width:${pct}%"></div></div>
+                                </div>`;
+                    }).join('');
+                    content = `<h3 class="tw-font-bold tw-text-lg tw-mb-4 tw-text-white">${item.title}</h3>${opts}`;
+                } else {
+                    const lockedHtml = isLocked ? `<div class="tw-flex tw-flex-col tw-items-center tw-justify-center tw-py-8 tw-text-gray-500"><i data-lucide="lock" class="tw-mb-2"></i><span>Unlocks ${item.unlockDate}</span></div>` : '';
+                    const mediaHtml = !isLocked ? `
+                        ${item.imageData ? `<div class="tw-relative tw-group"><img src="${item.imageData}" class="tw-w-full tw-h-48 tw-object-cover tw-rounded-2xl tw-mb-4 tw-shadow-lg privacy-blur" onclick="app.lightbox('${item.imageData}', null)"></div>` : ''}
+                        ${item.audioData ? `<audio controls src="${item.audioData}" class="tw-w-full tw-mb-3 custom-audio"></audio>` : ''}
+                        ${item.spotifyLink ? `<div class="tw-mb-3"><iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/${item.spotifyLink.split('/').pop().split('?')[0]}" width="100%" height="80" frameBorder="0" allow="encrypted-media"></iframe></div>` : ''}
+                        <div class="tw-text-sm tw-text-gray-300 tw-line-clamp-3 tw-mb-4 privacy-blur">${DOMPurify.sanitize(marked.parse(item.notes||''))}</div>
+                    ` : lockedHtml;
                     
-                    <div class="tw-flex tw-justify-between tw-items-start tw-mb-3">
-                        <div>
-                            <div class="tw-flex tw-items-center tw-gap-2">
-                                <span class="tw-text-xs tw-font-bold tw-text-cyber-accent tw-uppercase tw-tracking-widest">${item.author || 'Unknown'}</span>
-                                <span class="tw-text-[10px] tw-text-gray-500">${new Date(item.createdAt).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span>
+                    content = `
+                        <div class="tw-flex tw-justify-between tw-items-start tw-mb-3" onclick="app.editEntry('${item.id}')">
+                            <div>
+                                <div class="tw-flex tw-items-center tw-gap-2">
+                                    <span class="tw-text-xs tw-font-bold tw-text-cyber-accent tw-uppercase tw-tracking-widest">${item.author}</span>
+                                    <span class="tw-text-[10px] tw-text-gray-500">${new Date(item.createdAt).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span>
+                                    ${item.location ? '<i data-lucide="map-pin" class="tw-w-3 tw-h-3 tw-text-gray-600"></i>' : ''}
+                                    ${item.readBy?.length > 1 ? '<i data-lucide="check-circle" class="tw-w-3 tw-h-3 tw-text-blue-500" title="Read"></i>' : ''}
+                                </div>
+                                <h3 class="tw-font-bold tw-text-lg tw-text-white tw-mt-1 privacy-blur ${isLocked?'tw-blur-sm':''}">${item.title}</h3>
                             </div>
-                            <h3 class="tw-font-bold tw-text-lg tw-text-white tw-mt-1">${item.title}</h3>
+                            <div class="tw-flex tw-gap-2">
+                                ${item.isPinned ? '<i data-lucide="pin" class="tw-w-4 tw-h-4 tw-text-cyber-neon tw-rotate-45"></i>' : ''}
+                                <div class="tw-p-2 tw-rounded-full tw-bg-white/5" onclick="event.stopPropagation(); app.captureCard(this.parentNode.parentNode.parentNode)"><i data-lucide="share" class="tw-w-3 tw-h-3 tw-text-gray-400"></i></div>
+                            </div>
                         </div>
-                        <div class="tw-p-2 tw-rounded-full tw-bg-white/5" title="Mood">
-                            <div class="tw-w-3 tw-h-3 tw-rounded-full" style="background:${moodColor}; box-shadow: 0 0 10px ${moodColor}"></div>
-                        </div>
-                    </div>
+                        ${mediaHtml}
+                    `;
+                }
 
-                    ${imgHtml}
+                const r = item.reactions || {};
+                const reactionHtml = ['❤️','🔥','😂'].map(e => `
+                    <button onclick="event.stopPropagation(); app.react('${item.id}', '${e}', event)" class="tw-flex tw-items-center tw-gap-1 tw-bg-white/5 tw-px-2 tw-py-1 tw-rounded-lg tw-text-xs hover:tw-bg-white/10 hover:tw-scale-110 tw-transition-transform">
+                        ${e} <span class="tw-text-gray-400">${r[e]?.length || ''}</span>
+                    </button>`).join('');
 
-                    <div class="md-content tw-text-sm tw-text-gray-300 tw-line-clamp-3 tw-mb-4">
-                        ${DOMPurify.sanitize(marked.parse(item.notes || ''))}
-                    </div>
-
-                    <!-- Comments Section -->
-                    <div class="tw-bg-black/20 tw-rounded-xl tw-p-3 tw-mb-3 ${comments.length ? '' : 'tw-hidden'}" id="comments-${item.id}">
-                        ${commentsHtml}
-                    </div>
-
+                card.innerHTML = `${content}
                     <div class="tw-flex tw-justify-between tw-items-center tw-border-t tw-border-white/5 tw-pt-3">
-                        <div class="tw-flex tw-gap-2">
-                            <input type="text" placeholder="Add comment..." class="tw-bg-transparent tw-text-xs tw-text-white focus:tw-outline-none tw-w-32" 
-                                onkeydown="if(event.key==='Enter'){app.addComment('${item.id}', this.value); this.value='';}" onclick="event.stopPropagation()">
-                        </div>
+                        <div class="tw-flex tw-gap-2">${reactionHtml}</div>
                         <div class="tw-flex tw-gap-3">
-                            <button onclick="event.stopPropagation(); app.deleteEntry('${item.id}')" class="tw-text-gray-600 hover:tw-text-red-400"><i data-lucide="trash-2" class="tw-w-4 tw-h-4"></i></button>
+                            ${state.trashMode ? 
+                                `<button onclick="app.restoreEntry('${item.id}')" class="tw-text-cyber-accent"><i data-lucide="refresh-cw" class="tw-w-4 tw-h-4"></i></button>
+                                 <button onclick="app.hardDelete('${item.id}')" class="tw-text-red-500"><i data-lucide="x-circle" class="tw-w-4 tw-h-4"></i></button>` :
+                                `<button onclick="event.stopPropagation(); app.editEntry('${item.id}')" class="tw-text-gray-600 hover:tw-text-white"><i data-lucide="edit-2" class="tw-w-4 tw-h-4"></i></button>
+                                 <button onclick="event.stopPropagation(); app.softDelete('${item.id}')" class="tw-text-gray-600 hover:tw-text-red-400"><i data-lucide="trash-2" class="tw-w-4 tw-h-4"></i></button>`
+                            }
                         </div>
-                    </div>
-                `;
-                els.container.appendChild(card);
+                    </div>`;
+                container.appendChild(card);
+                
+                // v3 Read Receipt
+                if(!item.readBy?.includes(state.currentUser.uid)) {
+                    updateDoc(doc(db, 'artifacts', 'gatekeep-001', 'public', 'data', 'shared_timeline_v2', item.id), { readBy: [...(item.readBy||[]), state.currentUser.uid] });
+                }
             });
             lucide.createIcons();
         }
 
         function updateStats() {
             document.getElementById('stat-total').innerText = state.data.length;
-            const dates = [...new Set(state.data.map(d => d.date))];
-            document.getElementById('stat-streak').innerText = dates.length;
+            // v3 Sparkline
+            const recents = state.data.slice(0, 10).reverse();
+            document.getElementById('sparkline').innerHTML = recents.map(d => `<div style="width:6px; height:${(d.mood||3)*20}%; background:${getMoodColor(d.mood||3)}; border-radius:2px;"></div>`).join('');
+            // v2 Pulse
+            const last5 = state.data.slice(0,5);
+            const avgMood = last5.reduce((a,b)=>a+(b.mood||3),0) / (last5.length||1);
+            document.getElementById('pulse-heart').style.animationDuration = `${2-((avgMood-1)*0.3)}s`;
         }
 
-        // --- APP ACTIONS ---
+        /* --- ACTIONS --- */
         window.app = {
-            triggerBiometric: () => {
-                const spinner = document.querySelector('.group .tw-border-cyber-neon\\/40');
-                if(spinner) spinner.style.animationDuration = '0.5s';
-                // Demo autofill
-                setTimeout(() => { handlePin('1');handlePin('1');handlePin('1');handlePin('1'); }, 800);
+            triggerBiometric: () => { setTimeout(() => { for(let i=0; i<4; i++) handlePin('1'); }, 500); },
+            signOut: () => location.reload(),
+            
+            // v3 Features
+            nudge: () => {
+                document.getElementById('app-body').classList.add('tw-animate-shake');
+                navigator.vibrate?.([200, 100, 200]); showToast("Buzzing Partner...");
+                setTimeout(() => document.getElementById('app-body').classList.remove('tw-animate-shake'), 1000);
             },
-
+            toggleMusic: () => {
+                const audio = document.getElementById('theme-audio');
+                if(audio.paused) { audio.play(); document.getElementById('music-icon').classList.replace('tw-text-gray-400','tw-text-cyber-neon'); showToast("Ambience: On"); }
+                else { audio.pause(); document.getElementById('music-icon').classList.replace('tw-text-cyber-neon','tw-text-gray-400'); showToast("Ambience: Off"); }
+            },
+            exportBook: () => {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF(); doc.setFont("courier"); doc.text("DATEKEEP CHRONICLES", 20, 20);
+                let y = 40;
+                state.data.forEach(item => {
+                    if(y > 270) { doc.addPage(); y = 20; }
+                    doc.setFontSize(10); doc.text(`${new Date(item.createdAt).toLocaleDateString()} - ${item.author}`, 20, y); y+=10;
+                    doc.setFontSize(12); doc.text(item.title || "Untitled", 20, y); y+=10;
+                    const lines = doc.splitTextToSize(item.notes || "", 170);
+                    doc.setFontSize(10); doc.text(lines, 20, y); y += (lines.length * 5) + 20;
+                });
+                doc.save("our_story.pdf"); showToast("Book Generated!");
+            },
+            addTodo: async () => {
+                const txt = prompt("New shared goal:");
+                if(txt) await addDoc(collection(db, 'artifacts', 'gatekeep-001', 'public', 'data', 'todos_v4'), { text: txt, done: false, createdAt: Date.now() });
+            },
+            
+            // v2 Features Integrated
+            toggleView: () => {
+                state.viewMode = state.viewMode === 'list' ? 'grid' : 'list';
+                document.body.classList.toggle('grid-view', state.viewMode === 'grid');
+            },
+            togglePrivacy: () => {
+                state.privacyMode = !state.privacyMode;
+                document.body.classList.toggle('privacy-active');
+                document.getElementById('privacy-icon').classList.toggle('tw-text-cyber-neon');
+            },
+            cycleSound: () => {
+                state.soundMode = (state.soundMode + 1) % 3;
+                if(!state.audioCtx) state.audioCtx = new AudioEngine();
+                const icon = document.getElementById('sound-icon');
+                if(state.soundMode === 0) { state.audioCtx.stop(); icon.className = "tw-w-5 tw-h-5 tw-text-gray-400"; showToast("Soundscapes: Off"); }
+                else if (state.soundMode === 1) { state.audioCtx.play('rain'); icon.className = "tw-w-5 tw-h-5 tw-text-blue-400"; showToast("Soundscapes: Rain"); }
+                else { state.audioCtx.play('white'); icon.className = "tw-w-5 tw-h-5 tw-text-white"; showToast("Soundscapes: White Noise"); }
+            },
+            toggleCountdown: () => {
+                const now = new Date();
+                const elLabel = document.getElementById('countdown-label');
+                const elVal = document.getElementById('countdown-val');
+                if (elLabel.innerText.includes('Next 11th')) {
+                    const currentYear = now.getFullYear();
+                    let anniv = new Date(currentYear, 9, 11);
+                    if (now > anniv) anniv.setFullYear(currentYear + 1);
+                    elLabel.innerText = "To Anniversary"; elVal.innerText = Math.ceil((anniv - now) / 86400000) + "d";
+                } else {
+                    let next11 = new Date(now.getFullYear(), now.getMonth(), 11);
+                    if (now.getDate() >= 11) next11.setMonth(now.getMonth() + 1);
+                    elLabel.innerText = "Next 11th"; elVal.innerText = Math.ceil((next11 - now) / 86400000) + "d";
+                }
+            },
+            randomMemory: () => {
+                if(!state.data.length) return;
+                const r = state.data[Math.floor(Math.random() * state.data.length)];
+                app.editEntry(r.id); showToast("Memory Resurfaced");
+            },
+            toggleTrash: () => {
+                state.trashMode = !state.trashMode; renderTimeline();
+                showToast(state.trashMode ? "Trash Bin" : "Timeline");
+            },
+            
+            // Modal & Form
+            toggleZen: () => document.getElementById('entry-dialog').classList.toggle('zen-active'),
             openAddModal: (type) => {
                 document.getElementById('entry-form').reset();
                 app.clearImage();
                 document.getElementById('entry-id').value = '';
-                document.getElementById('entry-type').value = type;
+                app.setEntryType(type === 'status' ? 'memory' : 'memory'); // Default
+                document.getElementById('entry-type').value = type === 'status' ? 'status' : 'memory';
                 
                 if (type === 'status') {
                     document.getElementById('dialog-title').innerText = "New Flux";
-                    document.getElementById('dialog-subtitle').innerText = "Vanishes in 24h";
                     document.getElementById('memory-fields').classList.add('tw-hidden');
                 } else {
                     document.getElementById('dialog-title').innerText = "New Entry";
-                    document.getElementById('dialog-subtitle').innerText = "Shared with everyone";
                     document.getElementById('memory-fields').classList.remove('tw-hidden');
-                    // Set defaults
-                    const now = new Date();
-                    document.querySelector('[name=date]').value = now.toISOString().split('T')[0];
-                    document.querySelector('[name=time]').value = now.toTimeString().slice(0,5);
+                    document.querySelector('[name=date]').value = new Date().toISOString().split('T')[0];
                 }
-                els.dialog.showModal();
+                document.getElementById('entry-dialog').showModal();
             },
-
-            closeDialog: () => els.dialog.close(),
-
+            setEntryType: (t) => {
+                document.getElementById('entry-type').value = t;
+                document.getElementById('tab-memory').classList.toggle('tw-text-cyber-neon', t==='memory');
+                document.getElementById('tab-memory').classList.toggle('tw-text-gray-400', t!=='memory');
+                document.getElementById('tab-poll').classList.toggle('tw-text-cyber-neon', t==='poll');
+                document.getElementById('tab-poll').classList.toggle('tw-text-gray-400', t!=='poll');
+                document.getElementById('poll-section').style.display = t === 'poll' ? 'block' : 'none';
+                document.getElementById('inp-notes').placeholder = t === 'poll' ? "Question?" : "Story details...";
+            },
+            toggleRecording: () => { if(state.isRecording) stopRec(); else startRec(); },
+            closeDialog: () => document.getElementById('entry-dialog').close(),
+            
             saveEntry: async () => {
                 const form = document.getElementById('entry-form');
                 const formData = new FormData(form);
                 const type = document.getElementById('entry-type').value;
-                const now = Date.now();
+                const id = document.getElementById('entry-id').value;
+                
+                let data = { type, imageData: document.getElementById('inp-image').value };
 
-                const data = {
-                    type: type,
-                    author: state.currentUser.name,
-                    createdAt: now,
-                    imageData: document.getElementById('inp-image').value
-                };
-
-                if (type === 'memory') {
+                if (type === 'status') {
+                    if(!data.imageData) return showToast("Image required", "error");
+                    data.expiresAt = Date.now() + 86400000; data.comments = [];
+                } else {
                     data.title = formData.get('title');
-                    if(!data.title) return showToast("Title required", "error");
-                    data.date = formData.get('date');
-                    data.time = formData.get('time');
-                    data.category = formData.get('category');
-                    data.mood = parseInt(formData.get('mood'));
-                    data.notes = document.getElementById('inp-notes').value;
-                    data.comments = [];
-                } else {
-                    // Status
-                    if(!data.imageData) return showToast("Image required for Flux", "error");
-                    data.expiresAt = now + (24 * 60 * 60 * 1000); // 24h expiry
-                }
-
-                try {
-                    if(db) {
-                        const col = getSharedCollection();
-                        await addDoc(col, data);
+                    if(type === 'poll') {
+                        data.title = formData.get('notes'); // Question
+                        data.options = [{text:formData.get('opt1'), votes:[]}, {text:formData.get('opt2'), votes:[]}].filter(o=>o.text);
                     } else {
-                        // Local fallback logic
-                        const current = JSON.parse(localStorage.getItem('dk_shared_v1') || '[]');
-                        data.id = 'loc_' + now;
-                        current.unshift(data);
-                        localStorage.setItem('dk_shared_v1', JSON.stringify(current));
-                        initData(); // Reload
+                        if(!data.title) return showToast("Title required", "error");
+                        data.date = formData.get('date');
+                        data.notes = document.getElementById('inp-notes').value;
+                        data.mood = parseInt(formData.get('mood'));
+                        data.audioData = document.getElementById('inp-audio').value;
+                        data.spotifyLink = formData.get('spotifyLink');
+                        data.isPinned = formData.get('isPinned') === 'on';
+                        data.isEphemeral = formData.get('isEphemeral') === 'on';
+                        data.location = document.getElementById('inp-location').value;
+                        data.unlockDate = formData.get('unlockDate') || null;
                     }
-                    app.closeDialog();
-                    showToast(type === 'status' ? "Flux Posted" : "Memory Crystallized");
-                } catch(e) {
-                    console.error(e);
-                    showToast("Error Saving", "error");
                 }
-            },
 
-            addComment: async (id, text) => {
-                if(!text.trim()) return;
-                const newComment = {
-                    author: state.currentUser.name,
-                    text: text.trim(),
-                    timestamp: Date.now()
-                };
+                // v3 Confetti
+                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
 
-                if(db) {
-                    const docRef = doc(getSharedCollection(), id);
-                    // We need to fetch the doc first to append (simplest without arrayUnion import)
-                    // But arrayUnion is better if imported. I'll rely on reading current state locally for now to keep it simple or full fetch
-                    // Let's assume we read from state since we have real-time listener
-                    const item = state.data.find(d => d.id === id);
-                    if(item) {
-                        const updatedComments = [...(item.comments || []), newComment];
-                        await updateDoc(docRef, { comments: updatedComments });
-                    }
+                if (!id) {
+                    data.author = state.currentUser.name;
+                    data.createdAt = Date.now();
+                    data.readBy = [state.currentUser.uid];
+                    await addDoc(collection(db, 'artifacts', 'gatekeep-001', 'public', 'data', 'shared_timeline_v2'), data);
                 } else {
-                    const raw = JSON.parse(localStorage.getItem('dk_shared_v1') || '[]');
-                    const idx = raw.findIndex(d => d.id === id);
-                    if(idx > -1) {
-                        if(!raw[idx].comments) raw[idx].comments = [];
-                        raw[idx].comments.push(newComment);
-                        localStorage.setItem('dk_shared_v1', JSON.stringify(raw));
-                        initData();
-                    }
+                    await updateDoc(doc(db, 'artifacts', 'gatekeep-001', 'public', 'data', 'shared_timeline_v2', id), data);
                 }
-                showToast("Comment added");
+                app.closeDialog(); showToast("Saved to Hive");
             },
 
-            deleteEntry: async (id) => {
-                if(!confirm("Shatter this memory forever?")) return;
-                if(db) {
-                    await deleteDoc(doc(getSharedCollection(), id));
-                } else {
-                    const raw = JSON.parse(localStorage.getItem('dk_shared_v1') || '[]');
-                    const filtered = raw.filter(d => d.id !== id);
-                    localStorage.setItem('dk_shared_v1', JSON.stringify(filtered));
-                    initData();
-                }
-                showToast("Memory Shattered");
+            softDelete: async (id) => { await updateDoc(doc(db, 'artifacts', 'gatekeep-001', 'public', 'data', 'shared_timeline_v2', id), { deletedAt: Date.now() }); showToast("Moved to Trash"); },
+            restoreEntry: async (id) => { await updateDoc(doc(db, 'artifacts', 'gatekeep-001', 'public', 'data', 'shared_timeline_v2', id), { deletedAt: null }); showToast("Restored"); },
+            hardDelete: async (id) => { if(confirm("Permanently shatter?")) { await deleteDoc(doc(db, 'artifacts', 'gatekeep-001', 'public', 'data', 'shared_timeline_v2', id)); showToast("Shattered"); } },
+            
+            // v3 Reactions
+            react: async (id, emoji, e) => {
+                const heart = document.createElement('div'); heart.innerText = emoji; heart.className = 'floating-heart';
+                heart.style.left = e.clientX + 'px'; heart.style.top = e.clientY + 'px';
+                document.body.appendChild(heart); setTimeout(() => heart.remove(), 1500);
+
+                const item = state.data.find(d => d.id === id); if(!item) return;
+                const r = item.reactions || {}; const u = r[emoji] || [];
+                if(u.includes(state.currentUser.uid)) r[emoji] = u.filter(x => x!==state.currentUser.uid); else r[emoji] = [...u, state.currentUser.uid];
+                await updateDoc(doc(db, 'artifacts', 'gatekeep-001', 'public', 'data', 'shared_timeline_v2', id), { reactions: r });
+            },
+            vote: async (id, idx) => {
+                const item = state.data.find(d => d.id === id);
+                const opts = item.options;
+                opts.forEach(o => o.votes = o.votes.filter(u => u !== state.currentUser.uid));
+                opts[idx].votes.push(state.currentUser.uid);
+                await updateDoc(doc(db, 'artifacts', 'gatekeep-001', 'public', 'data', 'shared_timeline_v2', id), { options: opts });
             },
 
-            viewStatus: (status) => {
-                if(status.imageData) app.lightbox(status.imageData);
-            },
-
-            lightbox: (src) => {
-                els.lightboxImg.src = src;
-                els.lightbox.classList.remove('tw-opacity-0', 'tw-pointer-events-none');
-                setTimeout(() => els.lightboxImg.classList.remove('tw-scale-90'), 10);
-                setTimeout(() => els.lightboxImg.classList.add('tw-scale-100'), 10);
-            },
-
-            closeLightbox: () => {
-                els.lightbox.classList.add('tw-opacity-0', 'tw-pointer-events-none');
-                els.lightboxImg.classList.add('tw-scale-90');
-                els.lightboxImg.classList.remove('tw-scale-100');
-            },
-
-            downloadImage: (url) => {
-                // If url isn't provided, grab from lightbox
-                const src = url || els.lightboxImg.src;
-                const a = document.createElement('a');
-                a.href = src;
-                a.download = `datekeep_memory_${Date.now()}.png`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                showToast("Saving to device...");
-            },
-
-            filter: (cat, btn) => {
-                state.filter = state.filter === cat ? 'all' : cat;
-                if(btn) {
-                    document.querySelectorAll('.active-filter').forEach(b => {
-                        b.classList.remove('active-filter', 'tw-bg-white/10', 'tw-border-white/20');
-                        b.classList.add('tw-text-gray-400');
-                    });
-                    if(state.filter !== 'all') {
-                        btn.classList.add('active-filter', 'tw-bg-white/10', 'tw-border-white/20');
-                        btn.classList.remove('tw-text-gray-400');
-                    }
-                }
-                renderTimeline();
-            },
-
+            // Media
             clearImage: (e) => {
                 if(e) e.stopPropagation();
-                document.getElementById('img-input').value = '';
-                document.getElementById('inp-image').value = '';
+                document.getElementById('img-input').value = ''; document.getElementById('inp-image').value = '';
                 document.getElementById('img-preview-box').classList.add('tw-hidden');
                 document.getElementById('upload-placeholder').classList.remove('tw-hidden');
             },
-
-            updateMood: (val) => {
-                document.getElementById('mood-val').innerText = state.moods[val-1];
-                document.getElementById('mood-val').style.color = getMoodColor(val);
-            },
-
-            toggleSound: () => {
-                state.soundOn = !state.soundOn;
-                const btn = document.getElementById('sound-btn');
-                if(state.soundOn) {
-                    btn.classList.add('tw-text-cyber-neon', 'tw-bg-cyber-neon/20');
-                    showToast("Zen Mode: Active");
-                } else {
-                    btn.classList.remove('tw-text-cyber-neon', 'tw-bg-cyber-neon/20');
-                    showToast("Zen Mode: Off");
+            getGeo: () => {
+                if("geolocation" in navigator) {
+                    navigator.geolocation.getCurrentPosition(p => {
+                        const s = `${p.coords.latitude.toFixed(2)}, ${p.coords.longitude.toFixed(2)}`;
+                        document.getElementById('inp-location').value = s; document.getElementById('geo-label').innerText = s;
+                    });
                 }
             },
-
-            signOut: () => location.reload()
+            viewStatus: (item) => app.lightbox(item.imageData, item),
+            lightbox: (src, item) => {
+                state.viewingItem = item;
+                document.getElementById('lightbox-img').src = src;
+                document.getElementById('lightbox').classList.remove('tw-opacity-0', 'tw-pointer-events-none');
+                document.getElementById('lightbox-img').classList.replace('tw-scale-90','tw-scale-100');
+                if(item && item.type === 'status') {
+                    document.getElementById('lightbox-comments-section').classList.remove('tw-hidden');
+                    const list = document.getElementById('lightbox-comments-list');
+                    list.innerHTML = (item.comments||[]).map(c=>`<div class="tw-text-xs tw-mb-1"><span class="tw-font-bold tw-text-cyber-accent">${c.author}</span>: ${c.text}</div>`).join('');
+                } else document.getElementById('lightbox-comments-section').classList.add('tw-hidden');
+            },
+            addLightboxComment: async () => {
+                const txt = document.getElementById('lightbox-comment-input').value;
+                if(!txt) return;
+                const c = {author:state.currentUser.name, text:txt, time:Date.now()};
+                const nc = [...(state.viewingItem.comments||[]), c];
+                await updateDoc(doc(db, 'artifacts', 'gatekeep-001', 'public', 'data', 'shared_timeline_v2', state.viewingItem.id), { comments: nc });
+                state.viewingItem.comments = nc; app.lightbox(state.viewingItem.imageData, state.viewingItem);
+                document.getElementById('lightbox-comment-input').value = '';
+            },
+            closeLightbox: () => {
+                document.getElementById('lightbox').classList.add('tw-opacity-0', 'tw-pointer-events-none');
+                document.getElementById('lightbox-img').classList.replace('tw-scale-100','tw-scale-90');
+            },
+            downloadImage: () => { const a = document.createElement('a'); a.href = document.getElementById('lightbox-img').src; a.download = 'memory.png'; a.click(); },
+            captureCard: (el) => {
+                showToast("Capturing...");
+                html2canvas(el, {backgroundColor:'#16161a'}).then(c => { const a = document.createElement('a'); a.href = c.toDataURL(); a.download='card.png'; a.click(); });
+            },
+            editEntry: (id) => {
+                const item = state.data.find(d => d.id === id); if(!item) return;
+                const form = document.getElementById('entry-form');
+                document.getElementById('entry-id').value = id;
+                app.setEntryType(item.type || 'memory');
+                if(item.type === 'poll') {
+                    document.getElementById('inp-notes').value = item.title;
+                    if(item.options[0]) form.querySelector('[name=opt1]').value = item.options[0].text;
+                    if(item.options[1]) form.querySelector('[name=opt2]').value = item.options[1].text;
+                } else {
+                    form.querySelector('[name=title]').value = item.title;
+                    form.querySelector('[name=date]').value = item.date;
+                    document.getElementById('inp-notes').value = item.notes;
+                    document.getElementById('inp-audio').value = item.audioData || '';
+                    if(item.imageData) {
+                        document.getElementById('inp-image').value = item.imageData;
+                        document.getElementById('img-preview').src = item.imageData;
+                        document.getElementById('img-preview-box').classList.remove('tw-hidden');
+                        document.getElementById('upload-placeholder').classList.add('tw-hidden');
+                    }
+                }
+                document.getElementById('dialog-title').innerText = "Edit Memory";
+                document.getElementById('entry-dialog').showModal();
+            },
+            updateWordCount: () => document.getElementById('word-count').innerText = (document.getElementById('inp-notes').value.split(/\s+/).length || 0) + " words"
         };
 
-        // IMAGE HANDLER
+        /* --- UTILS --- */
         document.getElementById('img-input').addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if(file) {
-                const reader = new FileReader();
-                reader.onload = (evt) => {
-                    document.getElementById('inp-image').value = evt.target.result;
-                    document.getElementById('img-preview').src = evt.target.result;
-                    document.getElementById('img-preview-box').classList.remove('tw-hidden');
-                    document.getElementById('upload-placeholder').classList.add('tw-hidden');
-                };
-                reader.readAsDataURL(file);
-            }
+            const f = e.target.files[0]; if(!f) return;
+            const r = new FileReader();
+            r.onload = ev => {
+                document.getElementById('inp-image').value = ev.target.result;
+                document.getElementById('img-preview').src = ev.target.result;
+                document.getElementById('img-preview-box').classList.remove('tw-hidden');
+                document.getElementById('upload-placeholder').classList.add('tw-hidden');
+            }; r.readAsDataURL(f);
         });
-
-        // DEBOUNCE
-        function debounce(func, wait) {
-            let timeout;
-            return function(...args) {
-                clearTimeout(timeout);
-                timeout = setTimeout(() => func.apply(this, args), wait);
-            };
-        }
-        els.searchInput.addEventListener('input', debounce(() => renderTimeline(), 300));
-
-        // RIPPLE
-        window.createRipple = (e) => {
-            const ripple = document.createElement('div');
-            ripple.className = 'ripple';
-            const size = 20;
-            ripple.style.width = ripple.style.height = `${size}px`;
-            ripple.style.left = `${e.clientX - size/2}px`;
-            ripple.style.top = `${e.clientY - size/2}px`;
-            document.body.appendChild(ripple);
-            setTimeout(() => ripple.remove(), 600);
-        };
-
         function getMoodColor(val) { return ['#ef4444', '#f97316', '#eab308', '#22c55e', '#a855f7'][val-1] || '#a855f7'; }
-
         function showToast(msg, type='info') {
             const t = document.createElement('div');
-            const borderColor = type === 'error' ? 'tw-border-red-500' : 'tw-border-cyber-neon';
-            t.className = `liquid-card tw-px-4 tw-py-3 tw-rounded-2xl tw-border-l-4 ${borderColor} tw-flex tw-items-center tw-gap-3 slide-in-toast`;
-            t.innerHTML = `<i data-lucide="${type==='error'?'alert-circle':'check-circle'}" class="tw-w-5 tw-h-5 tw-text-white"></i> <span class="tw-font-bold tw-text-sm">${msg}</span>`;
-            document.getElementById('toast-container').appendChild(t);
-            lucide.createIcons();
-            setTimeout(() => t.remove(), 3000);
+            t.className = `liquid-card tw-px-4 tw-py-3 tw-rounded-2xl tw-border-l-4 ${type==='error'?'tw-border-red-500':'tw-border-cyber-neon'} tw-flex tw-items-center tw-gap-3 slide-in-toast tw-bg-black/80 tw-backdrop-blur-md`;
+            t.innerHTML = `<i data-lucide="${type==='error'?'alert-circle':'check-circle'}" class="tw-w-5 tw-h-5 tw-text-white"></i> <span class="tw-font-bold tw-text-sm tw-text-white">${msg}</span>`;
+            document.getElementById('toast-container').appendChild(t); lucide.createIcons(); setTimeout(() => t.remove(), 3000);
         }
+        window.createRipple = (e) => {
+            if(state.viewMode === 'list' && !e.target.closest('.liquid-card')) {
+                const r = document.createElement('div'); r.className = 'ripple'; r.style.left = e.clientX + 'px'; r.style.top = e.clientY + 'px';
+                document.body.appendChild(r); setTimeout(() => r.remove(), 600);
+            }
+        };
+        // Init
+        app.toggleCountdown(); setInterval(app.toggleCountdown, 60000);
     </script>
+    <style>
+        .slide-in-toast { animation: slideIn 0.3s ease-out forwards; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .slide-up { animation: slideUp 0.5s ease-out forwards; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
 </body>
 </html>
