@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Good Morning & Best of Luck</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Playfair+Display:ital,wght@1,700&display=swap');
+
+        body {
+            overflow: hidden;
+            background-color: #87CEEB; /* Sky Blue fallback */
+            margin: 0;
+            padding: 0;
+        }
+
+        /* --- Sky & Cloud Animations --- */
+        .sky-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, #4facfe 0%, #00f2fe 100%);
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .cloud {
+            position: absolute;
+            background: #fff;
+            border-radius: 100px;
+            opacity: 0.8;
+            filter: blur(5px);
+            animation: floatClouds linear infinite;
+        }
+
+        .cloud::after, .cloud::before {
+            content: '';
+            position: absolute;
+            background: #fff;
+            border-radius: 50%;
+        }
+
+        /* Cloud Variations */
+        .c1 { width: 120px; height: 40px; top: 10%; left: 110%; animation-duration: 25s; }
+        .c1::after { width: 50px; height: 50px; top: -25px; left: 20px; }
+        .c1::before { width: 40px; height: 40px; top: -15px; left: 60px; }
+
+        .c2 { width: 180px; height: 60px; top: 30%; left: 110%; animation-duration: 35s; animation-delay: -5s; opacity: 0.6; transform: scale(0.8); }
+        .c2::after { width: 70px; height: 70px; top: -35px; left: 30px; }
+        .c2::before { width: 60px; height: 60px; top: -25px; left: 90px; }
+
+        .c3 { width: 90px; height: 30px; top: 60%; left: 110%; animation-duration: 18s; animation-delay: -2s; opacity: 0.9; }
+        .c3::after { width: 35px; height: 35px; top: -18px; left: 15px; }
+
+        .c4 { width: 250px; height: 80px; top: 75%; left: 110%; animation-duration: 40s; animation-delay: -10s; filter: blur(8px); opacity: 0.5; }
+        .c4::after { width: 100px; height: 100px; top: -50px; left: 40px; }
+        .c4::before { width: 80px; height: 80px; top: -30px; left: 120px; }
+
+        @keyframes floatClouds {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-150vw); }
+        }
+
+        /* --- Plane Animation --- */
+        .plane-container {
+            position: absolute;
+            top: 40%;
+            left: -500px; /* Start off screen */
+            z-index: 10;
+            filter: drop-shadow(10px 10px 20px rgba(0,0,0,0.2));
+            /* Animation will be applied via JS classes for better control */
+        }
+
+        .fly-animation {
+            animation: flyAcross 6s cubic-bezier(0.45, 0, 0.55, 1) forwards;
+        }
+
+        @keyframes flyAcross {
+            0% { left: -500px; transform: translateY(50px) rotate(5deg) scale(0.8); }
+            40% { transform: translateY(-20px) rotate(-2deg) scale(1); }
+            60% { transform: translateY(10px) rotate(0deg) scale(1); }
+            100% { left: 120%; transform: translateY(-100px) rotate(-5deg) scale(1.1); }
+        }
+
+        /* Plane Engine Spin */
+        .turbine {
+            transform-origin: center;
+            animation: spin 0.5s linear infinite;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* Contrails */
+        .contrail {
+            position: absolute;
+            top: 55%;
+            left: 20px;
+            height: 4px;
+            background: rgba(255,255,255,0.6);
+            width: 0;
+            filter: blur(4px);
+            z-index: 9;
+            transform-origin: left;
+        }
+
+        /* --- Text Animations --- */
+        .message-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            text-align: center;
+            z-index: 20;
+            pointer-events: none; /* Let clicks pass through */
+        }
+
+        .text-line {
+            display: block;
+            opacity: 0;
+        }
+
+        /* Scene 1: Good Morning */
+        .gm-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 4rem;
+            color: #fff;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            background: linear-gradient(45deg, #FFD700, #FFF, #FFD700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+            animation: shine 3s linear infinite;
+        }
+        
+        @keyframes shine {
+            to { background-position: 200% center; }
+        }
+
+        /* Scene 2: Court Message */
+        .court-text {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 3rem;
+            font-weight: 900;
+            color: #002D63; /* Kuwait Blue */
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            line-height: 1.2;
+            text-shadow: 2px 2px 0px rgba(255,255,255,0.8);
+        }
+
+        .sub-text {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.5rem;
+            color: #333;
+            margin-top: 1rem;
+            font-weight: 400;
+        }
+
+        /* Animation Classes */
+        .fade-in-up {
+            animation: fadeInUp 1.5s ease-out forwards;
+        }
+        .fade-out-up {
+            animation: fadeOutUp 1s ease-in forwards;
+        }
+        .scale-in-bounce {
+            animation: scaleInBounce 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeOutUp {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(-40px); }
+        }
+        @keyframes scaleInBounce {
+            0% { opacity: 0; transform: scale(0.5); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        /* Confetti */
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            animation: fall linear forwards;
+        }
+        @keyframes fall {
+            to { transform: translateY(100vh) rotate(720deg); }
+        }
+
+        @media (max-width: 768px) {
+            .gm-text { font-size: 2.5rem; }
+            .court-text { font-size: 1.8rem; }
+            .sub-text { font-size: 1rem; }
+            .plane-container svg { width: 300px; height: auto; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sky Background -->
+    <div class="sky-container">
+        <div class="cloud c1"></div>
+        <div class="cloud c2"></div>
+        <div class="cloud c3"></div>
+        <div class="cloud c4"></div>
+    </div>
+
+    <!-- The Plane -->
+    <div id="plane" class="plane-container">
+        <!-- SVG Plane -->
+        <svg width="600" height="250" viewBox="0 0 600 250" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="fuselageGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#f0f4f8;stop-opacity:1" />
+                </linearGradient>
+            </defs>
+            
+            <!-- Left Wing (Back) -->
+            <path d="M 280 130 L 150 180 L 220 140 Z" fill="#d1d5db" />
+
+            <!-- Main Body -->
+            <path d="M 50 120 Q 30 140 50 160 L 500 150 Q 580 140 500 110 L 50 120 Z" fill="url(#fuselageGrad)" stroke="#e5e7eb" stroke-width="1"/>
+            
+            <!-- Tail -->
+            <path d="M 60 120 L 20 50 L 100 115 Z" fill="#002D63" /> <!-- Kuwait Blue Tail -->
+            <!-- Logo hint on tail -->
+            <circle cx="50" cy="90" r="10" fill="white" opacity="0.8"/>
+            <path d="M 45 90 L 55 90 M 50 85 L 50 95" stroke="#002D63" stroke-width="2"/>
+
+            <!-- Cockpit -->
+            <path d="M 500 120 Q 530 125 530 135 L 500 138 Z" fill="#333" />
+
+            <!-- Text on Body -->
+            <text x="150" y="135" font-family="Montserrat" font-weight="bold" font-size="18" fill="#002D63" letter-spacing="1">KUWAIT AIRWAYS</text>
+            <rect x="140" y="140" width="250" height="2" fill="#002D63" />
+
+            <!-- Right Wing (Front) -->
+            <path d="M 280 140 L 400 210 L 320 150 Z" fill="#e5e7eb" stroke="#d1d5db" stroke-width="1" />
+
+            <!-- Engine -->
+            <g transform="translate(290, 155)">
+                <path d="M 0 0 L 40 0 Q 45 10 40 20 L 0 20 Q -5 10 0 0" fill="#9ca3af" />
+                <path d="M 0 0 Q -5 10 0 20" fill="#333" />
+                <!-- Spinning Turbine Blade inside -->
+                <g class="turbine" transform="translate(0, 10)">
+                    <line x1="0" y1="-8" x2="0" y2="8" stroke="#ccc" stroke-width="1" />
+                    <line x1="-8" y1="0" x2="8" y2="0" stroke="#ccc" stroke-width="1" />
+                </g>
+            </g>
+        </svg>
+        <div class="contrail" id="contrail"></div>
+    </div>
+
+    <!-- Messages -->
+    <div class="message-container">
+        <div id="msg1" class="text-line gm-text hidden">Good Morning</div>
+        <div id="msg2" class="hidden">
+            <div class="text-line court-text">Best of Luck</div>
+            <div class="text-line sub-text">For The Court</div>
+        </div>
+    </div>
+
+    <!-- Replay Button -->
+    <button id="replayBtn" class="fixed bottom-10 right-10 bg-white text-blue-900 px-6 py-2 rounded-full font-bold shadow-lg transform translate-y-24 transition-all duration-500 hover:scale-110 focus:outline-none z-50">
+        Replay Animation
+    </button>
+
+    <script>
+        const plane = document.getElementById('plane');
+        const msg1 = document.getElementById('msg1');
+        const msg2 = document.getElementById('msg2');
+        const replayBtn = document.getElementById('replayBtn');
+
+        function startSequence() {
+            // Reset states
+            plane.classList.remove('fly-animation');
+            void plane.offsetWidth; // Trigger reflow
+            plane.classList.add('fly-animation');
+
+            msg1.className = 'text-line gm-text hidden';
+            msg2.className = 'hidden';
+            replayBtn.classList.add('translate-y-24');
+
+            // Timeline
+            // 0s: Plane starts flying
+            
+            // 2.5s: Reveal "Good Morning"
+            setTimeout(() => {
+                msg1.classList.remove('hidden');
+                msg1.classList.add('fade-in-up');
+            }, 2500);
+
+            // 5.5s: Hide "Good Morning", Show "Best of Luck"
+            setTimeout(() => {
+                msg1.classList.remove('fade-in-up');
+                msg1.classList.add('fade-out-up');
+
+                setTimeout(() => {
+                    msg2.classList.remove('hidden');
+                    msg2.querySelectorAll('.text-line').forEach(el => el.classList.add('scale-in-bounce'));
+                    fireConfetti();
+                }, 800);
+            }, 5500);
+
+            // 8s: Show replay button
+            setTimeout(() => {
+                replayBtn.classList.remove('translate-y-24');
+            }, 8000);
+        }
+
+        function fireConfetti() {
+            const colors = ['#FFD700', '#FFFFFF', '#002D63', '#87CEEB'];
+            for (let i = 0; i < 50; i++) {
+                const conf = document.createElement('div');
+                conf.classList.add('confetti');
+                conf.style.left = Math.random() * 100 + 'vw';
+                conf.style.top = -10 + 'px';
+                conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                conf.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                document.body.appendChild(conf);
+
+                // Cleanup confetti
+                setTimeout(() => conf.remove(), 5000);
+            }
+        }
+
+        replayBtn.addEventListener('click', startSequence);
+
+        // Start on load
+        window.onload = startSequence;
+
+    </script>
+</body>
+</html>
+
