@@ -159,17 +159,19 @@
             font-size: 1rem;
         }
 
-        /* Sticky tabs */
+        /* UPDATED: Enhanced Sticky tabs with better glassmorphism */
         .tabs-container {
             position: sticky;
             top: 0;
             z-index: 100;
-            background: rgba(10, 14, 23, 0.95);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.15), rgba(58, 12, 163, 0.1));
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
             margin-bottom: 25px;
             padding: 15px 30px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+            border-radius: 0 0 15px 15px;
         }
 
         .tabs {
@@ -182,7 +184,7 @@
         .tab-btn {
             padding: 12px 24px;
             border: none;
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.07);
             border-radius: 12px;
             font-weight: 600;
             font-size: 0.95rem;
@@ -192,19 +194,21 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         .tab-btn.active {
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 0 6px 20px rgba(67, 97, 238, 0.3);
         }
 
         .tab-btn:hover:not(.active) {
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.12);
             transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
         }
 
         /* Controls Panel */
@@ -242,22 +246,24 @@
             z-index: 1;
         }
 
+        /* UPDATED: Better styled search input */
         .search-box input {
             width: 100%;
             padding: 12px 20px 12px 42px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+            border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 12px;
             color: var(--text-primary);
             font-size: 0.95rem;
             transition: var(--transition);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .search-box input:focus {
             outline: none;
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
-            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2), inset 0 2px 4px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
         }
 
         .filter-options {
@@ -266,27 +272,31 @@
             flex-wrap: wrap;
         }
 
+        /* UPDATED: Better styled filter dropdowns */
         .filter-options select {
             padding: 12px 16px;
-            background: var(--dropdown-bg);
+            background: linear-gradient(135deg, rgba(30, 35, 50, 0.95), rgba(40, 45, 65, 0.95));
             color: var(--dropdown-text);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 12px;
             font-size: 0.95rem;
             min-width: 180px;
             cursor: pointer;
             transition: var(--transition);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         .filter-options select:focus {
             outline: none;
             border-color: var(--primary-color);
             background: var(--dropdown-hover);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
         }
 
         select option {
             background: var(--dropdown-bg);
             color: var(--dropdown-text);
+            padding: 10px;
         }
 
         .action-buttons {
@@ -345,9 +355,9 @@
         }
 
         .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
             color: var(--text-primary);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
         }
 
         .btn-danger {
@@ -568,8 +578,8 @@
         .garment-smv-select {
             width: 100%;
             padding: 10px 15px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+            border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 10px;
             color: var(--text-primary);
             margin-bottom: 15px;
@@ -596,7 +606,7 @@
             margin-bottom: 3px;
         }
 
-        /* Main Content */
+        /* UPDATED: Main Content with scrollable tables */
         .main-content {
             display: grid;
             grid-template-columns: 1fr;
@@ -604,7 +614,7 @@
             margin-bottom: 30px;
         }
 
-        /* Table Container */
+        /* UPDATED: Table Container with scrollbars */
         .table-container {
             background: var(--card-bg);
             backdrop-filter: blur(20px);
@@ -644,13 +654,21 @@
             color: var(--primary-color);
         }
 
+        /* UPDATED: Data table with fixed height and scrollbars */
+        .data-table-wrapper {
+            max-height: 400px;
+            overflow-y: auto;
+            overflow-x: auto;
+        }
+
         .data-table {
             width: 100%;
             border-collapse: collapse;
+            min-width: 800px;
         }
 
         .data-table thead {
-            background: rgba(255, 255, 255, 0.05);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
             position: sticky;
             top: 0;
             z-index: 10;
@@ -693,7 +711,7 @@
             color: var(--primary-color);
         }
 
-        /* Skill level classes */
+        /* UPDATED: Skill level classes with new logic */
         .skill-level {
             display: inline-block;
             padding: 5px 12px;
@@ -716,6 +734,32 @@
         }
 
         .skill-group-c {
+            background: rgba(248, 150, 30, 0.15);
+            color: var(--warning-color);
+        }
+
+        /* Skill Score Display */
+        .skill-score {
+            font-weight: 600;
+            padding: 5px 10px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            display: inline-block;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .skill-score.group-a {
+            background: rgba(76, 201, 240, 0.15);
+            color: var(--success-color);
+        }
+
+        .skill-score.group-b {
+            background: rgba(67, 97, 238, 0.15);
+            color: var(--primary-color);
+        }
+
+        .skill-score.group-c {
             background: rgba(248, 150, 30, 0.15);
             color: var(--warning-color);
         }
@@ -768,29 +812,42 @@
             transform: translateY(-2px);
         }
 
-        /* Stopwatch Container - Made sticky */
+        /* UPDATED: Stopwatch Container with better glassmorphism */
         #time-study .stopwatch-container {
-            background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--card-border);
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.1), rgba(58, 12, 163, 0.05));
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 20px;
             overflow: hidden;
-            box-shadow: var(--glow);
-            padding: 20px;
+            box-shadow: 0 8px 32px rgba(67, 97, 238, 0.15);
+            padding: 25px;
             margin-bottom: 30px;
         }
 
         #time-study .stopwatch-container > h3 {
-            position: sticky;
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.15), rgba(58, 12, 163, 0.1));
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin: -25px -25px 25px -25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+        }
+
+        #time-study .stopwatch-container > h3::before {
+            content: '';
+            position: absolute;
             top: 0;
-            background: var(--card-bg);
-            padding: 15px 0;
-            z-index: 5;
-            margin: -20px -20px 20px -20px;
-            padding-left: 20px;
-            padding-right: 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            border-radius: 12px 12px 0 0;
         }
 
         .subtitle {
@@ -880,26 +937,42 @@
             border: none;
         }
 
+        /* UPDATED: Better styled cycle options */
         .cycle-options {
             display: flex;
             justify-content: center;
-            gap: 15px;
-            margin: 15px 0;
+            gap: 25px;
+            margin: 25px 0;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .cycle-options label {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 10px;
             color: var(--text-primary);
             font-weight: 500;
-            font-size: 0.95rem;
+            font-size: 1rem;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .cycle-options label:hover {
+            background: rgba(255, 255, 255, 0.08);
         }
 
         .cycle-options input[type="radio"] {
-            width: 16px;
-            height: 16px;
+            width: 18px;
+            height: 18px;
             cursor: pointer;
+            accent-color: var(--primary-color);
         }
 
         .laps-container {
@@ -1074,8 +1147,8 @@
         .form-group textarea {
             width: 100%;
             padding: 14px 18px;
-            background: var(--dropdown-bg);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: linear-gradient(135deg, rgba(30, 35, 50, 0.95), rgba(40, 45, 65, 0.95));
+            border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 12px;
             color: var(--text-primary);
             font-size: 0.95rem;
@@ -1102,9 +1175,16 @@
         }
 
         /* Performance Table */
+        .performance-table-wrapper {
+            max-height: 400px;
+            overflow-y: auto;
+            overflow-x: auto;
+        }
+
         .performance-table {
             width: 100%;
             border-collapse: collapse;
+            min-width: 1200px;
         }
 
         .performance-table thead {
@@ -1114,7 +1194,7 @@
         }
 
         .performance-table th {
-            background: rgba(255, 255, 255, 0.05);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
             padding: 16px 20px;
             text-align: left;
             font-weight: 600;
@@ -1154,23 +1234,46 @@
             }
         }
 
-        /* Legend */
+        /* UPDATED: Legend with better spacing and skill score info */
         .legend {
             background: var(--card-bg);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--card-border);
             border-radius: 20px;
-            padding: 20px;
+            padding: 25px;
             margin-bottom: 30px;
             box-shadow: var(--glow);
+            margin-top: 40px;
         }
 
         .legend-title {
             font-weight: 600;
             color: var(--primary-color);
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .legend-section {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .legend-section h4 {
+            color: var(--success-color);
+            margin-bottom: 12px;
+            font-size: 0.95rem;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -1178,15 +1281,18 @@
 
         .legend-items {
             display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
+            flex-direction: column;
+            gap: 12px;
         }
 
         .legend-item {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 12px;
             font-size: 0.9rem;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
         }
 
         .legend-color {
@@ -1194,6 +1300,18 @@
             height: 20px;
             border-radius: 4px;
             border: 1px solid rgba(255, 255, 255, 0.2);
+            flex-shrink: 0;
+        }
+
+        .legend-text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .legend-text .description {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
         }
 
         /* Footer */
@@ -1259,7 +1377,7 @@
         .modal-content {
             background: var(--card-bg);
             backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
+            -webkit-backdropfilter: blur(30px);
             border: 1px solid var(--card-border);
             border-radius: 20px;
             width: 100%;
@@ -1306,6 +1424,7 @@
             gap: 10px;
         }
 
+        /* UPDATED: Better styled close buttons */
         .close-modal {
             position: absolute;
             top: 25px;
@@ -1321,6 +1440,7 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             color: var(--text-secondary);
             transition: var(--transition);
+            font-size: 1.2rem;
         }
 
         .close-modal:hover {
@@ -1658,6 +1778,21 @@
             display: none;
         }
 
+        /* UPDATED: Real-time clock */
+        .realtime-clock {
+            font-family: 'Courier New', monospace;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            letter-spacing: 1px;
+        }
+
+        .last-updated-time {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
         /* Responsive Design */
         @media (max-width: 1200px) {
             .container {
@@ -1698,6 +1833,10 @@
                 grid-template-columns: 1fr;
                 gap: 8px;
             }
+            
+            .legend-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         @media (max-width: 768px) {
@@ -1727,14 +1866,6 @@
                 overflow-x: auto;
             }
             
-            .data-table {
-                min-width: 800px;
-            }
-            
-            .performance-table {
-                min-width: 1200px;
-            }
-            
             .stopwatch-main {
                 font-size: 2rem;
                 min-width: 250px;
@@ -1747,11 +1878,17 @@
             .stopwatch-btn {
                 min-width: 100px;
             }
+            
+            .cycle-options {
+                flex-direction: column;
+                gap: 10px;
+            }
         }
 
         /* Scrollbar Styling */
         ::-webkit-scrollbar {
             width: 8px;
+            height: 8px;
         }
 
         ::-webkit-scrollbar-track {
@@ -1787,22 +1924,23 @@
                     </div>
                     <div class="logo-text">
                         <h1>SIDNEY APPARELS LLC</h1>
-                        <h2>OPERATOR PERFORMANCE SYSTEM</h2>
+                        <h2>MANUFACTURING EXCELLENCE</h2>
                     </div>
                 </div>
                 <div class="header-info">
                     <div class="info-item">
-                        <i class="fas fa-calendar-alt"></i>
+                        <i class="fas fa-clock"></i>
                         <div>
-                            <div class="label">LAST UPDATED</div>
-                            <div class="value" id="lastUpdated">--/--/----</div>
+                            <div class="label">CURRENT TIME</div>
+                            <div class="realtime-clock" id="currentTime">--:--:--</div>
+                            <div class="last-updated-time" id="lastUpdatedDate">--/--/---- --:--</div>
                         </div>
                     </div>
                     <div class="info-item">
                         <i class="fas fa-user-tie"></i>
                         <div>
-                            <div class="label">MANUFACTURING EXCELLENCE</div>
-                            <div class="value">VERSION 3.0</div>
+                            <div class="label">OPERATOR PERFORMANCE SYSTEM</div>
+                            <div class="value">VERSION 4.0</div>
                         </div>
                     </div>
                 </div>
@@ -1942,21 +2080,23 @@
                 <div class="table-header">
                     <h3><i class="fas fa-table"></i> OPERATORS MASTER LIST</h3>
                 </div>
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>OPERATOR ID</th>
-                            <th>OPERATOR NAME</th>
-                            <th>CURRENT SEW LINE</th>
-                            <th>SKILL LEVEL</th>
-                            <th>SKILL SCORE</th>
-                            <th>ACTIONS</th>
-                        </tr>
-                    </thead>
-                    <tbody id="operatorsBody">
-                        <!-- Operators will be loaded here -->
-                    </tbody>
-                </table>
+                <div class="data-table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>OPERATOR ID</th>
+                                <th>OPERATOR NAME</th>
+                                <th>CURRENT SEW LINE</th>
+                                <th>SKILL LEVEL</th>
+                                <th>SKILL SCORE</th>
+                                <th>ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="operatorsBody">
+                            <!-- Operators will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
@@ -1977,6 +2117,9 @@
                     <div class="stat-content">
                         <h3 id="avgEfficiency">0%</h3>
                         <p>Average Efficiency</p>
+                        <div style="margin-top: 10px; color: var(--text-secondary); font-size: 0.9rem;">
+                            <div>Total Operations: <span id="totalOperations" style="color: var(--primary-color); font-weight: 600;">0</span></div>
+                        </div>
                     </div>
                 </div>
                 
@@ -2005,7 +2148,7 @@
                     </div>
                 </div>
                 
-                <!-- NEW: Garment SMV Card -->
+                <!-- UPDATED: Garment SMV Card with working logic -->
                 <div class="stat-card">
                     <div class="stat-header">
                         <div class="stat-icon">
@@ -2020,29 +2163,13 @@
                         <div class="garment-smv-values">
                             <div class="garment-smv-value">
                                 <div class="value" id="garmentStdSMV">0.00</div>
-                                <div class="label">Standard</div>
+                                <div class="label">Standard SMV</div>
                             </div>
                             <div class="garment-smv-value">
                                 <div class="value" id="garmentWorkingSMV">0.00</div>
-                                <div class="label">Working</div>
+                                <div class="label">Working SMV</div>
                             </div>
                         </div>
-                    </div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon">
-                            <i class="fas fa-cogs"></i>
-                        </div>
-                        <div class="stat-change">
-                            <i class="fas fa-arrow-up"></i>
-                            8%
-                        </div>
-                    </div>
-                    <div class="stat-content">
-                        <h3 id="totalOperations">0</h3>
-                        <p>Total Operations</p>
                     </div>
                 </div>
             </div>
@@ -2083,27 +2210,29 @@
             </div>
 
             <div class="table-container">
-                <table class="performance-table">
-                    <thead>
-                        <tr>
-                            <th>Timestamp</th>
-                            <th>Line No</th>
-                            <th>Style No</th>
-                            <th>Product Desc</th>
-                            <th>Operator ID</th>
-                            <th>Operator Name</th>
-                            <th>Operation</th>
-                            <th>Machine</th>
-                            <th>Std SMV</th>
-                            <th>Working SMV</th>
-                            <th>Efficiency</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="performanceBody">
-                        <!-- Performance data will be populated here -->
-                    </tbody>
-                </table>
+                <div class="performance-table-wrapper">
+                    <table class="performance-table">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Line No</th>
+                                <th>Style No</th>
+                                <th>Product Desc</th>
+                                <th>Operator ID</th>
+                                <th>Operator Name</th>
+                                <th>Operation</th>
+                                <th>Machine</th>
+                                <th>Std SMV</th>
+                                <th>Working SMV</th>
+                                <th>Efficiency</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="performanceBody">
+                            <!-- Performance data will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
@@ -2265,33 +2394,100 @@
             </div>
         </div>
 
-        <!-- Legend -->
+        <!-- UPDATED: Legend with better spacing and skill score info -->
         <div class="legend">
-            <div class="legend-title"><i class="fas fa-info-circle"></i> Skill Score & Efficiency Legend:</div>
-            <div class="legend-items">
-                <div class="legend-item">
-                    <span class="legend-color" style="background-color: #4cc9f0;"></span>
-                    <span>Group A Skill Level / Efficiency > 85%</span>
+            <div class="legend-title"><i class="fas fa-info-circle"></i> Skill Level, Score & Efficiency Legend:</div>
+            <div class="legend-grid">
+                <div class="legend-section">
+                    <h4><i class="fas fa-users"></i> Skill Level Classification</h4>
+                    <div class="legend-items">
+                        <div class="legend-item">
+                            <span class="legend-color" style="background-color: rgba(76, 201, 240, 0.8);"></span>
+                            <div class="legend-text">
+                                <strong>Group A:</strong> Operator has 3+ operations with ≥85% efficiency
+                                <span class="description">Multi-skilled high performer</span>
+                            </div>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color" style="background-color: rgba(67, 97, 238, 0.8);"></span>
+                            <div class="legend-text">
+                                <strong>Group B:</strong> Operator has 2 operations with ≥85% efficiency
+                                <span class="description">Good performer with multiple skills</span>
+                            </div>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color" style="background-color: rgba(248, 150, 30, 0.8);"></span>
+                            <div class="legend-text">
+                                <strong>Group C:</strong> Operator has 0-1 operations with ≥85% efficiency
+                                <span class="description">Developing skill set</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="legend-item">
-                    <span class="legend-color" style="background-color: #4361ee;"></span>
-                    <span>Group B Skill Level / Efficiency 70-85%</span>
+                
+                <div class="legend-section">
+                    <h4><i class="fas fa-chart-line"></i> Efficiency Classification</h4>
+                    <div class="legend-items">
+                        <div class="legend-item">
+                            <span class="legend-color" style="background-color: rgba(76, 201, 240, 0.8);"></span>
+                            <div class="legend-text">
+                                <strong>High Efficiency:</strong> ≥85%
+                                <span class="description">Exceeds expectations</span>
+                            </div>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color" style="background-color: rgba(67, 97, 238, 0.8);"></span>
+                            <div class="legend-text">
+                                <strong>Medium Efficiency:</strong> 70-85%
+                                <span class="description">Meets expectations</span>
+                            </div>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color" style="background-color: rgba(248, 150, 30, 0.8);"></span>
+                            <div class="legend-text">
+                                <strong>Low Efficiency:</strong> &lt;70%
+                                <span class="description">Needs improvement</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="legend-item">
-                    <span class="legend-color" style="background-color: #f8961e;"></span>
-                    <span>Group C Skill Level / Efficiency < 70%</span>
+                
+                <div class="legend-section">
+                    <h4><i class="fas fa-star"></i> Skill Score Calculation</h4>
+                    <div class="legend-items">
+                        <div class="legend-item">
+                            <span class="legend-color" style="background-color: rgba(76, 201, 240, 0.8);"></span>
+                            <div class="legend-text">
+                                <strong>0.67-1.00 (Group A):</strong> Overall efficiency ≥85%
+                                <span class="description">Excellent performance</span>
+                            </div>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color" style="background-color: rgba(67, 97, 238, 0.8);"></span>
+                            <div class="legend-text">
+                                <strong>0.34-0.66 (Group B):</strong> Overall efficiency 70-85%
+                                <span class="description">Good performance</span>
+                            </div>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color" style="background-color: rgba(248, 150, 30, 0.8);"></span>
+                            <div class="legend-text">
+                                <strong>0.00-0.33 (Group C):</strong> Overall efficiency &lt;70%
+                                <span class="description">Needs training</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Footer -->
+        <!-- UPDATED: Footer -->
         <footer class="footer">
             <p>© 2024 Sidney Apparels LLC - Manufacturing Excellence</p>
-            <p>Advanced Operator Management System | Real-time Performance Tracking</p>
             <div class="footer-stats">
                 <div class="footer-stat">
                     <i class="fas fa-database"></i>
-                    <span>Data Version: <strong id="dataVersion">3.0.0</strong></span>
+                    <span>Data Version: <strong id="dataVersion">4.0.0</strong></span>
                 </div>
                 <div class="footer-stat">
                     <i class="fas fa-sync-alt"></i>
@@ -2310,7 +2506,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3><i class="fas fa-user-plus"></i> Add New Operator</h3>
-                <span class="close-modal">&times;</span>
+                <span class="close-modal" onclick="closeModal('addOperatorModal')">&times;</span>
             </div>
             <div class="modal-body">
                 <form id="addOperatorForm">
@@ -2340,7 +2536,7 @@
                         </div>
                     </div>
                     <div class="form-actions">
-                        <button type="button" class="btn btn-secondary close-modal">Cancel</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('addOperatorModal')">Cancel</button>
                         <button type="submit" class="btn btn-primary">Add Operator</button>
                     </div>
                 </form>
@@ -2353,7 +2549,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3><i class="fas fa-edit"></i> Edit Operator Details</h3>
-                <span class="close-modal">&times;</span>
+                <span class="close-modal" onclick="closeModal('editCellModal')">&times;</span>
             </div>
             <div class="modal-body">
                 <div class="edit-info">
@@ -2388,7 +2584,7 @@
                         </div>
                     </div>
                     <div class="form-actions">
-                        <button type="button" class="btn btn-secondary close-modal">Cancel</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('editCellModal')">Cancel</button>
                         <button type="submit" class="btn btn-primary">Save Changes</button>
                     </div>
                 </form>
@@ -2401,7 +2597,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3><i class="fas fa-chart-line"></i> Add Performance Record</h3>
-                <span class="close-modal">&times;</span>
+                <span class="close-modal" onclick="closeModal('addPerformanceModal')">&times;</span>
             </div>
             <div class="modal-body">
                 <form id="addPerformanceForm">
@@ -2491,7 +2687,7 @@
                         </button>
                     </div>
                     <div class="form-actions">
-                        <button type="button" class="btn btn-secondary close-modal">Cancel</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('addPerformanceModal')">Cancel</button>
                         <button type="submit" class="btn btn-primary">Save Performance Data</button>
                     </div>
                 </form>
@@ -2504,7 +2700,7 @@
         <div class="modal-content analysis-modal-content">
             <div class="modal-header">
                 <h3><i class="fas fa-chart-bar"></i> Performance Analysis</h3>
-                <span class="close-modal" onclick="closeAnalysisModal()">&times;</span>
+                <span class="close-modal" onclick="closeModal('analysisModal')">&times;</span>
             </div>
             <div class="modal-body">
                 <div class="analysis-tabs">
@@ -2593,7 +2789,7 @@
         <div class="modal-content cycle-detail-modal">
             <div class="modal-header">
                 <h3><i class="fas fa-calculator"></i> Cycle Time Details</h3>
-                <span class="close-modal" onclick="closeCycleDetailModal()">&times;</span>
+                <span class="close-modal" onclick="closeModal('cycleDetailModal')">&times;</span>
             </div>
             <div class="modal-body cycle-detail-content">
                 <div class="cycle-info">
@@ -2715,7 +2911,8 @@
         // DOM Elements
         const elements = {
             loadingOverlay: document.getElementById('loadingOverlay'),
-            lastUpdated: document.getElementById('lastUpdated'),
+            currentTime: document.getElementById('currentTime'),
+            lastUpdatedDate: document.getElementById('lastUpdatedDate'),
             lastSync: document.getElementById('lastSync'),
             dataVersion: document.getElementById('dataVersion'),
             totalOperators: document.getElementById('totalOperators'),
@@ -2752,13 +2949,40 @@
             await loadData();
             setupEventListeners();
             setupTabs();
-            updateLastUpdated();
+            updateRealTimeClock();
+            
+            // Start real-time clock
+            setInterval(updateRealTimeClock, 1000);
             
             // Simulate loading animation
             setTimeout(() => {
                 elements.loadingOverlay.style.display = 'none';
             }, 1500);
         });
+
+        // Update real-time clock
+        function updateRealTimeClock() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-US', {
+                hour12: false,
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            
+            const dateString = now.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            }) + ' ' + now.toLocaleTimeString('en-US', {
+                hour12: true,
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            elements.currentTime.textContent = timeString;
+            elements.lastUpdatedDate.textContent = dateString;
+        }
 
         // Setup tabs
         function setupTabs() {
@@ -3055,7 +3279,7 @@
             });
         }
 
-        // Populate garment line select
+        // Populate garment line select and calculate SMV
         function populateGarmentLineSelect() {
             const garmentLineSelect = elements.garmentLineSelect;
             garmentLineSelect.innerHTML = '<option value="">Select Line...</option>';
@@ -3073,6 +3297,33 @@
                 option.textContent = line;
                 garmentLineSelect.appendChild(option);
             });
+            
+            // Add event listener for line selection
+            garmentLineSelect.addEventListener('change', (e) => {
+                calculateGarmentSMV(e.target.value);
+            });
+        }
+
+        // Calculate garment SMV for selected line
+        function calculateGarmentSMV(line) {
+            if (!line) {
+                elements.garmentStdSMV.textContent = '0.00';
+                elements.garmentWorkingSMV.textContent = '0.00';
+                return;
+            }
+            
+            const lineRecords = performanceData.filter(record => record.lineNo === line);
+            if (lineRecords.length === 0) {
+                elements.garmentStdSMV.textContent = '0.00';
+                elements.garmentWorkingSMV.textContent = '0.00';
+                return;
+            }
+            
+            const totalStdSMV = lineRecords.reduce((sum, record) => sum + (record.standardSMV || 0), 0);
+            const totalWorkingSMV = lineRecords.reduce((sum, record) => sum + (record.workingSMV || 0), 0);
+            
+            elements.garmentStdSMV.textContent = totalStdSMV.toFixed(2);
+            elements.garmentWorkingSMV.textContent = totalWorkingSMV.toFixed(2);
         }
 
         // Render operators table with proper skill scores
@@ -3092,19 +3343,17 @@
                 return;
             }
             
-            filteredData.forEach(operator => {
+            // Limit to 5 entries
+            const displayData = filteredData.slice(0, 5);
+            
+            displayData.forEach(operator => {
                 // Calculate skill level based on performance
                 const skillLevel = calculateSkillLevel(operator.operatorId);
                 const skillClass = `skill-group-${skillLevel.charAt(skillLevel.length - 1).toLowerCase()}`;
                 
-                // Calculate skill score - FIXED: Use actual skill score if available, otherwise calculate
-                let skillScore = operator.skillScore || 0;
-                if (!skillScore && operator.skills) {
-                    const scores = Object.values(operator.skills).filter(s => s !== null && s !== undefined);
-                    if (scores.length > 0) {
-                        skillScore = scores.reduce((a, b) => a + b, 0) / scores.length;
-                    }
-                }
+                // Calculate skill score based on overall efficiency
+                const skillScore = calculateSkillScore(operator.operatorId);
+                const skillScoreClass = getSkillScoreClass(skillScore);
                 
                 const row = document.createElement('tr');
                 row.innerHTML = `
@@ -3117,7 +3366,11 @@
                             '-'
                         }
                     </td>
-                    <td>${skillScore > 0 ? skillScore.toFixed(2) : '-'}</td>
+                    <td>
+                        <span class="skill-score ${skillScoreClass}">
+                            ${skillScore > 0 ? skillScore.toFixed(2) : '0.00'}
+                        </span>
+                    </td>
                     <td>
                         <div class="action-buttons-small">
                             <button class="btn-icon edit-operator" data-id="${operator.operatorId}" title="Edit Operator">
@@ -3150,7 +3403,7 @@
                 });
             });
             
-            // UPDATED: View performance records instead of details
+            // View performance records
             document.querySelectorAll('.view-performance').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const operatorId = e.target.closest('button').getAttribute('data-id');
@@ -3159,63 +3412,67 @@
             });
         }
 
-        // Calculate skill level based on performance
+        // UPDATED: Calculate skill level based on new logic
         function calculateSkillLevel(operatorId) {
             const operatorPerformances = performanceData.filter(p => p.operatorId === operatorId);
             if (operatorPerformances.length === 0) return 'Group C';
             
-            let highEfficiencyCount = 0;
-            let totalEfficiency = 0;
-            
+            // Count operations with efficiency >= 85%
+            let highEfficiencyOperations = 0;
             operatorPerformances.forEach(perf => {
                 if (perf.efficiency >= 85) {
-                    highEfficiencyCount++;
+                    highEfficiencyOperations++;
                 }
-                totalEfficiency += perf.efficiency || 0;
             });
             
-            const avgEfficiency = totalEfficiency / operatorPerformances.length;
-            
-            if (avgEfficiency >= 85 || highEfficiencyCount >= 3) {
+            // New logic: 
+            // Group A: 3+ operations with ≥85% efficiency
+            // Group B: 2 operations with ≥85% efficiency
+            // Group C: 0-1 operations with ≥85% efficiency
+            if (highEfficiencyOperations >= 3) {
                 return 'Group A';
-            } else if (avgEfficiency >= 70 || highEfficiencyCount >= 2) {
+            } else if (highEfficiencyOperations >= 2) {
                 return 'Group B';
             } else {
                 return 'Group C';
             }
         }
 
-        // Calculate skill score based on performance
+        // UPDATED: Calculate skill score based on overall efficiency
         function calculateSkillScore(operatorId) {
             const operatorPerformances = performanceData.filter(p => p.operatorId === operatorId);
             if (operatorPerformances.length === 0) return 0;
             
-            let totalScore = 0;
+            let totalEfficiency = 0;
             let count = 0;
             
             operatorPerformances.forEach(perf => {
                 if (perf.efficiency) {
-                    if (perf.efficiency >= 85) {
-                        totalScore += 1.0;
-                    } else if (perf.efficiency >= 70) {
-                        totalScore += 0.7;
-                    } else if (perf.efficiency >= 60) {
-                        totalScore += 0.5;
-                    } else {
-                        totalScore += 0.3;
-                    }
+                    totalEfficiency += perf.efficiency;
                     count++;
                 }
             });
             
-            return count > 0 ? totalScore / count : 0;
+            const avgEfficiency = count > 0 ? totalEfficiency / count : 0;
+            
+            // Convert efficiency to skill score (0.0 - 1.0)
+            if (avgEfficiency >= 85) return 0.85 + (avgEfficiency - 85) * 0.015; // 0.85-1.0
+            else if (avgEfficiency >= 70) return 0.34 + (avgEfficiency - 70) * 0.034; // 0.34-0.66
+            else return avgEfficiency * 0.0047; // 0.0-0.33
+        }
+
+        // Get skill score class based on value
+        function getSkillScoreClass(score) {
+            if (score >= 0.67) return 'group-a';
+            else if (score >= 0.34) return 'group-b';
+            else return 'group-c';
         }
 
         // UPDATED: Update statistics with combined layout
         function updateStats() {
             const totalOps = operators.length;
             
-            // Count operators by group
+            // Count operators by group using new logic
             let groupACount = 0;
             let groupBCount = 0;
             let groupCCount = 0;
@@ -3290,27 +3547,27 @@
             elements.totalOperations.textContent = totalOps;
         }
 
-        // Calculate garment SMV for selected line
-        function calculateGarmentSMV(line) {
-            const lineRecords = performanceData.filter(record => record.lineNo === line);
-            if (lineRecords.length === 0) {
-                elements.garmentStdSMV.textContent = '0.00';
-                elements.garmentWorkingSMV.textContent = '0.00';
-                return;
-            }
-            
-            const totalStdSMV = lineRecords.reduce((sum, record) => sum + (record.standardSMV || 0), 0);
-            const totalWorkingSMV = lineRecords.reduce((sum, record) => sum + (record.workingSMV || 0), 0);
-            
-            elements.garmentStdSMV.textContent = totalStdSMV.toFixed(2);
-            elements.garmentWorkingSMV.textContent = totalWorkingSMV.toFixed(2);
-        }
-
         // Render performance table
         function renderPerformanceTable(filteredData = performanceData) {
             elements.performanceBody.innerHTML = '';
             
-            filteredData.forEach(record => {
+            if (filteredData.length === 0) {
+                elements.performanceBody.innerHTML = `
+                    <tr>
+                        <td colspan="12" style="text-align: center; padding: 40px;">
+                            <i class="fas fa-chart-line" style="font-size: 3rem; color: var(--text-secondary); margin-bottom: 15px; display: block;"></i>
+                            <h3 style="color: var(--text-secondary); margin-bottom: 10px;">No Performance Data Found</h3>
+                            <p style="color: var(--text-secondary);">Add your first performance record to get started</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            // Limit to 5 entries
+            const displayData = filteredData.slice(0, 5);
+            
+            displayData.forEach(record => {
                 const formattedDate = record.timestamp ? record.timestamp.toLocaleString() : 'N/A';
                 const efficiency = record.efficiency || 0;
                 const efficiencyClass = efficiency >= 85 ? 'efficiency-high' :
@@ -3403,7 +3660,7 @@
             document.getElementById('editCellModal').classList.add('active');
         }
 
-        // UPDATED: View operator performance records
+        // View operator performance records
         function viewOperatorPerformance(operatorId) {
             const operator = operators.find(op => op.operatorId === operatorId);
             if (!operator) {
@@ -3963,16 +4220,6 @@
             resetStopwatch();
         }
 
-        // Update last updated time
-        function updateLastUpdated() {
-            const now = new Date();
-            elements.lastUpdated.textContent = now.toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit'
-            });
-        }
-
         // Show toast notification
         function showToast(message, type = 'success') {
             elements.toastMessage.textContent = message;
@@ -4502,12 +4749,8 @@
         }
 
         // Modal close functions
-        function closeAnalysisModal() {
-            document.getElementById('analysisModal').classList.remove('active');
-        }
-
-        function closeCycleDetailModal() {
-            document.getElementById('cycleDetailModal').classList.remove('active');
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
         }
 
         // Setup event listeners
@@ -4673,15 +4916,6 @@
                     </div>
                 `;
                 container.appendChild(cycleDiv);
-            });
-            
-            // Modal close buttons
-            document.querySelectorAll('.close-modal').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    document.getElementById('addOperatorModal').classList.remove('active');
-                    document.getElementById('editCellModal').classList.remove('active');
-                    document.getElementById('addPerformanceModal').classList.remove('active');
-                });
             });
             
             // Add operator form
