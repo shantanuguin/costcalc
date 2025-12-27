@@ -62,7 +62,7 @@
             padding: 20px;
         }
 
-        /* Header - Made smaller */
+        /* Header - Updated with Help button */
         .header {
             background: var(--card-bg);
             backdrop-filter: blur(20px);
@@ -141,6 +141,7 @@
         .header-info {
             display: flex;
             gap: 15px;
+            align-items: center;
         }
 
         .info-item {
@@ -159,7 +160,27 @@
             font-size: 0.9rem;
         }
 
-        /* UPDATED: Enhanced Sticky tabs with better glassmorphism */
+        /* Header Help Button */
+        .header-help-btn {
+            padding: 8px 12px;
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.1), rgba(76, 201, 240, 0.1));
+            border: 1px solid rgba(76, 201, 240, 0.3);
+            border-radius: 8px;
+            color: var(--success-color);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+        }
+
+        .header-help-btn:hover {
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.2), rgba(76, 201, 240, 0.2));
+            transform: translateY(-2px);
+        }
+
+        /* UPDATED: Enhanced Sticky tabs with 4 tabs */
         .tabs-container {
             position: sticky;
             top: 0;
@@ -574,36 +595,39 @@
             color: var(--accent-color);
         }
 
-        /* Garment SMV Card - FIXED */
-        .garment-smv-select {
-            width: 100%;
-            padding: 8px 12px;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 8px;
-            color: var(--text-primary);
-            margin-bottom: 12px;
-            font-size: 0.9rem;
+        /* Machine Usage Statistics Card */
+        .machine-usage-card {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
 
-        .garment-smv-values {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
+        .machine-usage-stats {
+            display: flex;
+            flex-direction: column;
             gap: 8px;
+            max-height: 150px;
+            overflow-y: auto;
         }
 
-        .garment-smv-value {
-            text-align: center;
-            padding: 10px;
+        .machine-usage-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 10px;
             background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
+            border-radius: 6px;
             border: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.85rem;
         }
 
-        .garment-smv-value .value {
-            font-size: 1.3rem;
-            font-weight: 700;
-            margin-bottom: 3px;
+        .machine-name {
+            color: var(--text-secondary);
+        }
+
+        .machine-count {
+            font-weight: 600;
+            color: var(--primary-color);
         }
 
         /* UPDATED: Main Content with scrollable tables */
@@ -787,6 +811,18 @@
             background: rgba(67, 97, 238, 0.2);
             color: var(--primary-color);
             border-color: rgba(67, 97, 238, 0.3);
+        }
+
+        /* NEW: Timer icon button */
+        .btn-icon-timer {
+            background: rgba(248, 150, 30, 0.1);
+            border-color: rgba(248, 150, 30, 0.3);
+            color: var(--warning-color);
+        }
+
+        .btn-icon-timer:hover {
+            background: rgba(248, 150, 30, 0.2);
+            color: var(--warning-color);
         }
 
         /* Working SMV Button */
@@ -1269,7 +1305,7 @@
             color: var(--text-secondary);
         }
 
-        /* UPDATED: Footer with help button */
+        /* UPDATED: Footer without help button */
         .footer {
             text-align: center;
             padding: 20px;
@@ -1312,10 +1348,6 @@
 
         .footer-stat i {
             color: var(--primary-color);
-        }
-
-        .help-btn {
-            margin-top: 15px;
         }
 
         /* Modal */
@@ -1895,6 +1927,121 @@
             color: var(--text-secondary);
         }
 
+        /* NEW: Analysis Tab Styles */
+        #analysis .controls-panel {
+            margin-bottom: 20px;
+        }
+
+        #analysis .stats-dashboard {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+
+        /* NEW: Garment SMV in Analysis Tab */
+        .garment-smv-analysis {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--card-border);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--glow);
+        }
+
+        .garment-smv-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .garment-smv-header h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .garment-smv-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+        }
+
+        .garment-smv-selectors {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .garment-smv-results {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .smv-line-ops {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .smv-line-ops h4 {
+            color: var(--success-color);
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+
+        .operation-smv-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.85rem;
+        }
+
+        .operation-smv-item:last-child {
+            border-bottom: none;
+        }
+
+        .operation-name {
+            color: var(--text-primary);
+        }
+
+        .operation-smv-values {
+            display: flex;
+            gap: 15px;
+        }
+
+        .operation-smv-standard {
+            color: var(--success-color);
+            font-weight: 600;
+        }
+
+        .operation-smv-working {
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+
+        /* UPDATED: Garment SMV Input Form */
+        .garment-smv-input-form {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 15px;
+        }
+
+        .garment-smv-input-form h4 {
+            color: var(--success-color);
+            margin-bottom: 15px;
+            font-size: 1rem;
+        }
+
         /* Responsive Design */
         @media (max-width: 1200px) {
             .container {
@@ -1910,6 +2057,10 @@
             }
             
             .analysis-charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .garment-smv-content {
                 grid-template-columns: 1fr;
             }
         }
@@ -1989,6 +2140,12 @@
             .analysis-tabs {
                 justify-content: center;
             }
+            
+            .garment-smv-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
         }
 
         /* Scrollbar Styling */
@@ -2021,14 +2178,14 @@
             <h3 style="color: var(--text-primary); margin-bottom: 10px;">Welcome to Sidney Apparels OPS</h3>
             <p style="color: var(--text-secondary); font-size: 0.9rem;">
                 This system helps you track operator performance, conduct time studies, and analyze manufacturing efficiency.
-                Click the Help button in the footer for a detailed guide.
+                Click the Help button in the header for a detailed guide.
             </p>
         </div>
     </div>
 
     <!-- Main Container -->
     <div class="container">
-        <!-- Smaller Header -->
+        <!-- Updated Header with Help Button -->
         <header class="header">
             <div class="header-content">
                 <div class="logo">
@@ -2053,14 +2210,17 @@
                         <i class="fas fa-user-tie"></i>
                         <div>
                             <div class="label">OPERATOR PERFORMANCE SYSTEM</div>
-                            <div class="value">VERSION 5.0</div>
+                            <div class="value">VERSION 6.0</div>
                         </div>
                     </div>
+                    <button class="header-help-btn" id="headerHelpBtn">
+                        <i class="fas fa-question-circle"></i> Help
+                    </button>
                 </div>
             </div>
         </header>
 
-        <!-- Sticky Tabs -->
+        <!-- Updated Sticky Tabs with 4 tabs -->
         <div class="tabs-container">
             <div class="tabs">
                 <button class="tab-btn active" data-tab="operators">
@@ -2072,13 +2232,16 @@
                 <button class="tab-btn" data-tab="time-study">
                     <i class="fas fa-stopwatch"></i> Time Study
                 </button>
+                <button class="tab-btn" data-tab="analysis">
+                    <i class="fas fa-chart-bar"></i> Analysis Dashboard
+                </button>
             </div>
         </div>
 
         <!-- Tab Contents -->
         <!-- Operators Tab -->
         <div id="operators" class="tab-content active">
-            <!-- UPDATED: Combined Statistics Dashboard -->
+            <!-- UPDATED: Combined Statistics Dashboard with 4 cards -->
             <div class="stats-dashboard">
                 <div class="stat-card glow">
                     <div class="stat-header">
@@ -2149,6 +2312,26 @@
                         </div>
                     </div>
                 </div>
+                
+                <!-- Analysis Summary Card -->
+                <div class="stat-card clickable" data-tab="analysis">
+                    <div class="stat-header">
+                        <div class="stat-icon">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <div class="stat-change">
+                            <i class="fas fa-external-link-alt"></i>
+                        </div>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="analysisSummary">0</h3>
+                        <p>Analysis Insights</p>
+                        <div style="margin-top: 10px; color: var(--text-secondary); font-size: 0.85rem;">
+                            <div>Active Lines: <span id="activeLines" style="color: var(--primary-color); font-weight: 600;">0</span></div>
+                            <div>Avg SMV Diff: <span id="avgSMVDiff" style="color: var(--accent-color); font-weight: 600;">0%</span></div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="controls-panel">
@@ -2215,7 +2398,7 @@
 
         <!-- Performance Data Tab -->
         <div id="performance" class="tab-content">
-            <!-- UPDATED: Combined Statistics Dashboard -->
+            <!-- UPDATED: Statistics Dashboard with 3 cards (removed garment SMV) -->
             <div class="stats-dashboard">
                 <div class="stat-card">
                     <div class="stat-header">
@@ -2261,31 +2444,27 @@
                     </div>
                 </div>
                 
-                <!-- UPDATED: Garment SMV Card with FIXED logic -->
-                <div class="stat-card">
+                <!-- NEW: Machine Usage Statistics Card -->
+                <div class="stat-card machine-usage-card">
                     <div class="stat-header">
                         <div class="stat-icon">
-                            <i class="fas fa-tshirt"></i>
+                            <i class="fas fa-cogs"></i>
                         </div>
                     </div>
                     <div class="stat-content">
-                        <p>Garment SMV by Line</p>
-                        <select class="garment-smv-select" id="garmentLineSelect">
-                            <option value="">Select Line...</option>
-                        </select>
-                        <div class="garment-smv-values">
-                            <div class="garment-smv-value">
-                                <div class="value" id="garmentStdSMV">0.00</div>
-                                <div class="label">Standard SMV</div>
-                            </div>
-                            <div class="garment-smv-value">
-                                <div class="value" id="garmentWorkingSMV">0.00</div>
-                                <div class="label">Working SMV</div>
+                        <p>Machine Usage Statistics</p>
+                        <div class="machine-usage-stats" id="machineUsageStats">
+                            <!-- Machine usage will be populated here -->
+                            <div class="machine-usage-item">
+                                <span class="machine-name">No data available</span>
+                                <span class="machine-count">0</span>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <!-- REMOVED: Advanced SMV Library Section has been removed -->
 
             <div class="controls-panel">
                 <div class="search-filter">
@@ -2316,7 +2495,7 @@
                         <i class="fas fa-file-excel"></i> Export Excel
                     </button>
                     <button id="analyzeBtn" class="btn btn-info">
-                        <i class="fas fa-chart-bar"></i> Analyze Performance
+                        <i class="fas fa-chart-bar"></i> Quick Analysis
                     </button>
                 </div>
                 <input type="file" id="importPerformanceInput" class="import-input" accept=".xlsx,.xls">
@@ -2494,6 +2673,207 @@
             </div>
         </div>
 
+        <!-- NEW: Analysis Dashboard Tab -->
+        <div id="analysis" class="tab-content">
+            <div class="controls-panel">
+                <div class="search-filter">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchAnalysis" placeholder="Search by Line, Machine or Operation...">
+                    </div>
+                    <div class="filter-options">
+                        <select id="analysisLineFilter">
+                            <option value="">Filter by Line...</option>
+                        </select>
+                        <select id="analysisDateRange">
+                            <option value="all">All Time</option>
+                            <option value="today">Today</option>
+                            <option value="week">This Week</option>
+                            <option value="month">This Month</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button id="refreshAnalysisBtn" class="btn btn-info">
+                        <i class="fas fa-sync-alt"></i> Refresh Analysis
+                    </button>
+                    <button id="exportAnalysisBtn" class="btn btn-success">
+                        <i class="fas fa-file-excel"></i> Export Analysis
+                    </button>
+                    <button id="fullAnalysisBtn" class="btn btn-primary">
+                        <i class="fas fa-chart-bar"></i> Full Analysis Report
+                    </button>
+                </div>
+            </div>
+
+            <!-- UPDATED: Garment SMV Analysis Section with Line Number Input -->
+            <div class="garment-smv-analysis">
+                <div class="garment-smv-header">
+                    <h3><i class="fas fa-tshirt"></i> Garment SMV by Line</h3>
+                    <div style="color: var(--text-secondary); font-size: 0.9rem;">
+                        Enter line number to view operations and SMV analysis
+                    </div>
+                </div>
+                
+                <div class="garment-smv-content">
+                    <div class="garment-smv-selectors">
+                        <!-- UPDATED: Changed from dropdown to direct input -->
+                        <div class="form-group">
+                            <label for="analysisLineInput">Enter Line Number *</label>
+                            <input type="text" id="analysisLineInput" placeholder="e.g., S-22, S-23">
+                            <small style="color: var(--text-secondary); font-size: 0.8rem; display: block; margin-top: 4px;">
+                                Enter line number exactly as recorded in time study performance data
+                            </small>
+                        </div>
+                        
+                        <div class="smv-summary-card" style="background: rgba(255, 255, 255, 0.05); border-radius: 10px; padding: 15px;">
+                            <h4 style="color: var(--primary-color); margin-bottom: 10px; font-size: 1rem;">Line Summary</h4>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                <div style="text-align: center; padding: 10px; background: rgba(76, 201, 240, 0.1); border-radius: 8px;">
+                                    <div style="font-size: 1.4rem; font-weight: 700; color: var(--success-color);" id="analysisStdSMV">0.00</div>
+                                    <div style="font-size: 0.8rem; color: var(--text-secondary);">Avg Standard SMV</div>
+                                </div>
+                                <div style="text-align: center; padding: 10px; background: rgba(248, 37, 133, 0.1); border-radius: 8px;">
+                                    <div style="font-size: 1.4rem; font-weight: 700; color: var(--accent-color);" id="analysisWorkingSMV">0.00</div>
+                                    <div style="font-size: 0.8rem; color: var(--text-secondary);">Avg Working SMV</div>
+                                </div>
+                            </div>
+                            <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+                                <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
+                                    <span style="color: var(--text-secondary);">Efficiency:</span>
+                                    <span style="font-weight: 600; color: var(--success-color);" id="analysisLineEfficiency">0%</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-top: 5px;">
+                                    <span style="color: var(--text-secondary);">Total Operations:</span>
+                                    <span style="font-weight: 600; color: var(--primary-color);" id="analysisLineOperations">0</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-top: 5px;">
+                                    <span style="color: var(--text-secondary);">Line Number:</span>
+                                    <span style="font-weight: 600; color: var(--primary-color);" id="analysisCurrentLine">-</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button id="analyzeLineBtn" class="btn btn-primary" style="width: 100%;">
+                            <i class="fas fa-chart-line"></i> Analyze Line
+                        </button>
+                    </div>
+                    
+                    <div class="garment-smv-results">
+                        <div class="smv-line-ops">
+                            <h4><i class="fas fa-list"></i> Operations on Selected Line</h4>
+                            <div id="lineOperationsList">
+                                <!-- Operations will be listed here -->
+                                <div style="text-align: center; padding: 30px; color: var(--text-secondary);">
+                                    <i class="fas fa-tshirt" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+                                    <p>Enter a line number to view operations and SMV analysis</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px;">
+                            <div style="background: rgba(255, 255, 255, 0.05); border-radius: 10px; padding: 15px;">
+                                <h4 style="color: var(--success-color); margin-bottom: 10px; font-size: 0.95rem;">Best Performing Operation</h4>
+                                <div style="font-size: 0.85rem;">
+                                    <div id="bestOperation">-</div>
+                                    <div style="margin-top: 5px; color: var(--text-secondary);">Efficiency: <span id="bestOperationEff" style="color: var(--success-color); font-weight: 600;">0%</span></div>
+                                </div>
+                            </div>
+                            <div style="background: rgba(255, 255, 255, 0.05); border-radius: 10px; padding: 15px;">
+                                <h4 style="color: var(--accent-color); margin-bottom: 10px; font-size: 0.95rem;">Needs Improvement</h4>
+                                <div style="font-size: 0.85rem;">
+                                    <div id="worstOperation">-</div>
+                                    <div style="margin-top: 5px; color: var(--text-secondary);">Efficiency: <span id="worstOperationEff" style="color: var(--accent-color); font-weight: 600;">0%</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- UPDATED: Garment SMV Input Form for Manual Entry -->
+                <div class="garment-smv-input-form">
+                    <h4><i class="fas fa-calculator"></i> Calculate Garment Total SMV</h4>
+                    <p style="color: var(--text-secondary); margin-bottom: 15px; font-size: 0.9rem;">
+                        Enter operations and their standard SMVs to calculate total garment SMV for the selected line
+                    </p>
+                    <div id="garmentSMVOperations">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Operation 1</label>
+                                <input type="text" class="garment-op-name" placeholder="Operation name">
+                            </div>
+                            <div class="form-group">
+                                <label>Standard SMV (min)</label>
+                                <input type="number" class="garment-op-smv" step="0.01" placeholder="0.00">
+                            </div>
+                        </div>
+                    </div>
+                    <button id="addGarmentOpBtn" class="btn btn-secondary">
+                        <i class="fas fa-plus"></i> Add Another Operation
+                    </button>
+                    <div class="form-row" style="margin-top: 15px;">
+                        <div class="form-group">
+                            <label>Total Garment SMV (min)</label>
+                            <input type="number" id="totalGarmentSMV" step="0.01" placeholder="0.00" readonly style="background: rgba(255, 255, 255, 0.1);">
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button id="calculateGarmentSMVBtn" class="btn btn-success">
+                            <i class="fas fa-calculator"></i> Calculate Total
+                        </button>
+                        <button id="resetGarmentSMVBtn" class="btn btn-danger">
+                            <i class="fas fa-redo"></i> Reset
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Line & Machine Analysis Section -->
+            <div class="line-machine-analysis">
+                <h3 style="margin-bottom: 15px; color: var(--text-primary);"><i class="fas fa-chart-bar"></i> Line & Machine Analysis</h3>
+                
+                <div class="analysis-filters">
+                    <select id="matrixLineFilter">
+                        <option value="">All Lines</option>
+                    </select>
+                    <select id="matrixMachineFilter">
+                        <option value="">All Machines</option>
+                        <option value="SNLS">Lock Stitch (SNLS)</option>
+                        <option value="OVERLOCK">Overlock</option>
+                        <option value="BARTACK">Bartack</option>
+                        <option value="BUTTONHOLE">Buttonhole</option>
+                        <option value="DNLS">DNLS</option>
+                        <option value="KANSAI">Kansai</option>
+                    </select>
+                </div>
+                
+                <div class="skill-matrix-grid" id="skillMatrixGrid">
+                    <!-- Skill matrix will be populated here -->
+                    <div class="matrix-card">
+                        <h5>Overall Skill Distribution</h5>
+                        <div class="matrix-stats">
+                            <div class="matrix-stat group-a">
+                                <div class="count">0</div>
+                                <div class="label">Group A</div>
+                            </div>
+                            <div class="matrix-stat group-b">
+                                <div class="count">0</div>
+                                <div class="label">Group B</div>
+                            </div>
+                            <div class="matrix-stat group-c">
+                                <div class="count">0</div>
+                                <div class="label">Group C</div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 15px; font-size: 0.85rem; color: var(--text-secondary);">
+                            <div>Total Operators: <strong>0</strong></div>
+                            <div>Filter: All Lines / All Machines</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- UPDATED: Compact Legend -->
         <div class="legend">
             <div class="legend-title"><i class="fas fa-info-circle"></i> Skill Level & Efficiency Legend</div>
@@ -2581,14 +2961,14 @@
             </div>
         </div>
 
-        <!-- UPDATED: Footer with Help Button -->
+        <!-- UPDATED: Footer without help button -->
         <footer class="footer">
             <p>© 2025 Sidney Apparels LLC - Manufacturing Excellence</p>
-            <div class="footer-credit">Made by Shantanu in HTML</div>
+            <div class="footer-credit">Made by Shantanu in HTML - Version 6.0</div>
             <div class="footer-stats">
                 <div class="footer-stat">
                     <i class="fas fa-database"></i>
-                    <span>Data Version: <strong id="dataVersion">5.0.0</strong></span>
+                    <span>Data Version: <strong id="dataVersion">6.0.0</strong></span>
                 </div>
                 <div class="footer-stat">
                     <i class="fas fa-sync-alt"></i>
@@ -2598,11 +2978,6 @@
                     <i class="fas fa-shield-alt"></i>
                     <span>Secure Connection: <strong>Active</strong></span>
                 </div>
-            </div>
-            <div class="help-btn">
-                <button id="helpBtn" class="btn btn-info">
-                    <i class="fas fa-question-circle"></i> How to Use This App
-                </button>
             </div>
         </footer>
     </div>
@@ -2881,10 +3256,10 @@
                 <div id="analysisSkillMatrix" class="analysis-tab-content">
                     <div class="line-machine-analysis">
                         <div class="analysis-filters">
-                            <select id="matrixLineFilter">
+                            <select id="modalMatrixLineFilter">
                                 <option value="">All Lines</option>
                             </select>
-                            <select id="matrixMachineFilter">
+                            <select id="modalMatrixMachineFilter">
                                 <option value="">All Machines</option>
                                 <option value="SNLS">Lock Stitch (SNLS)</option>
                                 <option value="OVERLOCK">Overlock</option>
@@ -2894,7 +3269,7 @@
                                 <option value="KANSAI">Kansai</option>
                             </select>
                         </div>
-                        <div class="skill-matrix-grid" id="skillMatrixGrid">
+                        <div class="skill-matrix-grid" id="modalSkillMatrixGrid">
                             <!-- Skill matrix will be populated here -->
                         </div>
                     </div>
@@ -2972,7 +3347,7 @@
     <div id="helpModal" class="modal">
         <div class="modal-content help-modal-content">
             <div class="modal-header">
-                <h3><i class="fas fa-question-circle"></i> How to Use Sidney Apparels OPS</h3>
+                <h3><i class="fas fa-question-circle"></i> How to Use Sidney Apparels OPS v6.0</h3>
                 <span class="close-modal" onclick="closeModal('helpModal')">&times;</span>
             </div>
             <div class="modal-body">
@@ -2992,32 +3367,39 @@
                             <p class="step-tip">Tip: Time Study automatically calculates efficiency with 11% allowance.</p>
                         </div>
                     </div>
-                </div>
-                
-                <div class="help-section">
-                    <h4><i class="fas fa-chart-line"></i> Using the Time Study</h4>
-                    <div class="help-step">
-                        <div class="step-number">1</div>
-                        <div class="step-content">
-                            <p><strong>Select Operator</strong> - Choose an operator from the dropdown list.</p>
-                        </div>
-                    </div>
-                    <div class="help-step">
-                        <div class="step-number">2</div>
-                        <div class="step-content">
-                            <p><strong>Enter Operation Details</strong> - Fill in line number, style, product description, operation name, and machine.</p>
-                        </div>
-                    </div>
                     <div class="help-step">
                         <div class="step-number">3</div>
                         <div class="step-content">
-                            <p><strong>Record Cycle Times</strong> - Click Start to begin timing. Click Lap after each cycle (3 or 5 cycles recommended).</p>
+                            <p><strong>Analyze Data</strong> - Use the new Analysis Dashboard tab to view garment SMV by line, machine usage, and skill distribution.</p>
+                            <p class="step-tip">Tip: Click on operator timer icon to quickly start time study for that operator.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="help-section">
+                    <h4><i class="fas fa-chart-bar"></i> New in Version 6.0</h4>
+                    <div class="help-step">
+                        <div class="step-number">🆕</div>
+                        <div class="step-content">
+                            <p><strong>Analysis Dashboard</strong> - New dedicated tab for all analysis features including Garment SMV by Line and Line & Machine Analysis.</p>
                         </div>
                     </div>
                     <div class="help-step">
-                        <div class="step-number">4</div>
+                        <div class="step-number">🆕</div>
                         <div class="step-content">
-                            <p><strong>Save Results</strong> - The system automatically calculates working SMV and efficiency. Click Save to record.</p>
+                            <p><strong>Garment SMV by Line</strong> - Enter line number to see all operations, standard vs working SMV, and efficiency analysis.</p>
+                        </div>
+                    </div>
+                    <div class="help-step">
+                        <div class="step-number">🆕</div>
+                        <div class="step-content">
+                            <p><strong>Machine Usage Statistics</strong> - View which machines are being used most frequently in the Performance Data tab.</p>
+                        </div>
+                    </div>
+                    <div class="help-step">
+                        <div class="step-number">🆕</div>
+                        <div class="step-content">
+                            <p><strong>Quick Time Study Access</strong> - Timer icon next to each operator for instant time study with pre-selected operator.</p>
                         </div>
                     </div>
                 </div>
@@ -3027,19 +3409,19 @@
                     <div class="help-step">
                         <div class="step-number">1</div>
                         <div class="step-content">
-                            <p><strong>Performance Analysis</strong> - Click "Analyze Performance" to view charts and statistics.</p>
+                            <p><strong>Garment SMV Analysis</strong> - Go to Analysis Dashboard tab, enter line number to view all operations and SMV analysis.</p>
                         </div>
                     </div>
                     <div class="help-step">
                         <div class="step-number">2</div>
                         <div class="step-content">
-                            <p><strong>Line & Machine Analysis</strong> - Check how many A/B/C skill operators are on specific lines and machines.</p>
+                            <p><strong>Line & Machine Analysis</strong> - Filter by line and/or machine to see skill distribution and operator assignments.</p>
                         </div>
                     </div>
                     <div class="help-step">
                         <div class="step-number">3</div>
                         <div class="step-content">
-                            <p><strong>Garment SMV by Line</strong> - Select a line in the Performance tab to see average standard vs working SMV.</p>
+                            <p><strong>Machine Usage</strong> - Check Performance Data tab to see which machines are most frequently used.</p>
                         </div>
                     </div>
                 </div>
@@ -3049,25 +3431,27 @@
                     <div class="help-step">
                         <div class="step-number">💡</div>
                         <div class="step-content">
-                            <p><strong>Skill Levels</strong> - Operators are automatically grouped into A, B, or C based on their performance records.</p>
+                            <p><strong>Timer Icon</strong> - Use the timer icon (⏱️) next to operators to quickly start a time study for that operator.</p>
                         </div>
                     </div>
                     <div class="help-step">
                         <div class="step-number">💡</div>
                         <div class="step-content">
-                            <p><strong>Export Data</strong> - Use the Export Excel buttons to backup your data or share reports.</p>
+                            <p><strong>Line Number Analysis</strong> - Enter exact line numbers from time study data for accurate garment SMV analysis.</p>
                         </div>
                     </div>
                     <div class="help-step">
                         <div class="step-number">💡</div>
                         <div class="step-content">
-                            <p><strong>Real-time Updates</strong> - All data syncs automatically. The clock shows the last sync time.</p>
+                            <p><strong>Export Data</strong> - Use Export buttons in each tab to backup data or create reports for management.</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- REMOVED: Add SMV Standard Modal has been removed -->
 
     <!-- Notification Toast -->
     <div id="notificationToast" class="toast">
@@ -3147,8 +3531,9 @@
             avgSMV: document.getElementById('avgSMV'),
             avgWorkingSMV: document.getElementById('avgWorkingSMV'),
             totalOperations: document.getElementById('totalOperations'),
-            garmentStdSMV: document.getElementById('garmentStdSMV'),
-            garmentWorkingSMV: document.getElementById('garmentWorkingSMV'),
+            analysisSummary: document.getElementById('analysisSummary'),
+            activeLines: document.getElementById('activeLines'),
+            avgSMVDiff: document.getElementById('avgSMVDiff'),
             searchInput: document.getElementById('searchInput'),
             skillFilter: document.getElementById('skillFilter'),
             lineFilter: document.getElementById('lineFilter'),
@@ -3159,7 +3544,20 @@
             stopwatchDisplay: document.getElementById('stopwatchDisplay'),
             lapDisplay: document.getElementById('lapDisplay'),
             lapsList: document.getElementById('lapsList'),
-            garmentLineSelect: document.getElementById('garmentLineSelect')
+            machineUsageStats: document.getElementById('machineUsageStats'),
+            analysisLineInput: document.getElementById('analysisLineInput'),
+            lineOperationsList: document.getElementById('lineOperationsList'),
+            analysisStdSMV: document.getElementById('analysisStdSMV'),
+            analysisWorkingSMV: document.getElementById('analysisWorkingSMV'),
+            analysisLineEfficiency: document.getElementById('analysisLineEfficiency'),
+            analysisLineOperations: document.getElementById('analysisLineOperations'),
+            analysisCurrentLine: document.getElementById('analysisCurrentLine'),
+            bestOperation: document.getElementById('bestOperation'),
+            bestOperationEff: document.getElementById('bestOperationEff'),
+            worstOperation: document.getElementById('worstOperation'),
+            worstOperationEff: document.getElementById('worstOperationEff'),
+            skillMatrixGrid: document.getElementById('skillMatrixGrid'),
+            modalSkillMatrixGrid: document.getElementById('modalSkillMatrixGrid')
         };
 
         // Initialize application
@@ -3173,13 +3571,13 @@
             setInterval(updateRealTimeClock, 1000);
             
             // Show help on first load
-            const firstVisit = !localStorage.getItem('appVisited');
+            const firstVisit = !localStorage.getItem('appVisitedV6');
             if (firstVisit) {
                 setTimeout(() => {
                     elements.loadingOverlay.style.display = 'none';
                     setTimeout(() => {
                         document.getElementById('helpModal').classList.add('active');
-                        localStorage.setItem('appVisited', 'true');
+                        localStorage.setItem('appVisitedV6', 'true');
                     }, 500);
                 }, 1500);
             } else {
@@ -3232,6 +3630,12 @@
                         content.classList.remove('active');
                         if (content.id === tabId) {
                             content.classList.add('active');
+                            
+                            // Load specific data for analysis tab
+                            if (tabId === 'analysis') {
+                                updateAnalysisDashboard();
+                                updateSkillMatrix();
+                            }
                         }
                     });
                 });
@@ -3245,7 +3649,7 @@
                 });
             });
             
-            // Setup analysis tabs
+            // Setup analysis modal tabs
             const analysisTabs = document.querySelectorAll('.analysis-tab-btn');
             analysisTabs.forEach(tab => {
                 tab.addEventListener('click', () => {
@@ -3266,7 +3670,7 @@
                         
                         // Load specific analysis data
                         if (tabId === 'skillMatrix') {
-                            updateSkillMatrix();
+                            updateModalSkillMatrix();
                         } else if (tabId === 'efficiency') {
                             createDailyEfficiencyChart();
                         } else if (tabId === 'operator') {
@@ -3424,7 +3828,6 @@
                     updateStats();
                     populateOperatorDropdowns();
                     populateLineFilter();
-                    populateGarmentLineSelect();
                     populateMatrixFilters();
                     
                     // Update sync time
@@ -3454,10 +3857,12 @@
                     renderPerformanceTable();
                     updatePerformanceStats();
                     updateSummaryStats();
-                    // Update Garment SMV for current line selection
-                    const selectedLine = elements.garmentLineSelect.value;
-                    if (selectedLine) {
-                        calculateGarmentSMV(selectedLine);
+                    updateMachineUsageStats();
+                    
+                    // Update analysis dashboard if active
+                    if (document.getElementById('analysis').classList.contains('active')) {
+                        updateAnalysisDashboard();
+                        updateSkillMatrix();
                     }
                 });
             } catch (error) {
@@ -3493,13 +3898,16 @@
         function populateLineFilter() {
             const lineFilter = document.getElementById('lineFilter');
             const perfLineFilter = document.getElementById('perfLineFilter');
-            const sewLines = new Set();
+            const analysisLineFilter = document.getElementById('analysisLineFilter');
             
             // Clear and add default option
             lineFilter.innerHTML = '<option value="">Filter by Sew Line...</option>';
             perfLineFilter.innerHTML = '<option value="">Filter by Line...</option>';
+            analysisLineFilter.innerHTML = '<option value="">Filter by Line...</option>';
             
             // Collect unique sew lines
+            const sewLines = new Set();
+            
             operators.forEach(operator => {
                 if (operator.sewLine) {
                     sewLines.add(operator.sewLine);
@@ -3523,14 +3931,19 @@
                 option2.value = line;
                 option2.textContent = line;
                 perfLineFilter.appendChild(option2);
+                
+                const option3 = document.createElement('option');
+                option3.value = line;
+                option3.textContent = line;
+                analysisLineFilter.appendChild(option3);
             });
         }
 
-        // FIXED: Populate garment line select and calculate SMV
-        function populateGarmentLineSelect() {
-            const garmentLineSelect = elements.garmentLineSelect;
-            garmentLineSelect.innerHTML = '<option value="">Select Line...</option>';
+        // UPDATED: Populate analysis line input suggestions
+        function populateAnalysisLineSuggestions() {
+            const analysisLineInput = document.getElementById('analysisLineInput');
             
+            // Get unique line numbers from performance data
             const lines = new Set();
             performanceData.forEach(record => {
                 if (record.lineNo) {
@@ -3538,49 +3951,187 @@
                 }
             });
             
+            // Create datalist for autocomplete
+            let datalist = document.getElementById('lineSuggestions');
+            if (!datalist) {
+                datalist = document.createElement('datalist');
+                datalist.id = 'lineSuggestions';
+                document.body.appendChild(datalist);
+                analysisLineInput.setAttribute('list', 'lineSuggestions');
+            }
+            
+            datalist.innerHTML = '';
             lines.forEach(line => {
                 const option = document.createElement('option');
                 option.value = line;
-                option.textContent = line;
-                garmentLineSelect.appendChild(option);
-            });
-            
-            // Add event listener for line selection
-            garmentLineSelect.addEventListener('change', (e) => {
-                calculateGarmentSMV(e.target.value);
+                datalist.appendChild(option);
             });
         }
 
-        // FIXED: Calculate garment SMV for selected line
-        function calculateGarmentSMV(line) {
+        // Update line operations analysis
+        function updateLineOperationsAnalysis(line) {
             if (!line) {
-                elements.garmentStdSMV.textContent = '0.00';
-                elements.garmentWorkingSMV.textContent = '0.00';
+                elements.lineOperationsList.innerHTML = `
+                    <div style="text-align: center; padding: 30px; color: var(--text-secondary);">
+                        <i class="fas fa-tshirt" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+                        <p>Enter a line number to view operations and SMV analysis</p>
+                    </div>
+                `;
+                elements.analysisStdSMV.textContent = '0.00';
+                elements.analysisWorkingSMV.textContent = '0.00';
+                elements.analysisLineEfficiency.textContent = '0%';
+                elements.analysisLineOperations.textContent = '0';
+                elements.analysisCurrentLine.textContent = '-';
+                elements.bestOperation.textContent = '-';
+                elements.bestOperationEff.textContent = '0%';
+                elements.worstOperation.textContent = '-';
+                elements.worstOperationEff.textContent = '0%';
                 return;
             }
             
             const lineRecords = performanceData.filter(record => record.lineNo === line);
             if (lineRecords.length === 0) {
-                elements.garmentStdSMV.textContent = '0.00';
-                elements.garmentWorkingSMV.textContent = '0.00';
+                elements.lineOperationsList.innerHTML = `
+                    <div style="text-align: center; padding: 30px; color: var(--text-secondary);">
+                        <i class="fas fa-exclamation-circle" style="font-size: 2rem; margin-bottom: 10px; display: block; color: var(--warning-color);"></i>
+                        <p>No performance data found for line ${line}</p>
+                        <p style="font-size: 0.9rem; margin-top: 10px;">Make sure you enter the exact line number as recorded in time studies</p>
+                    </div>
+                `;
+                elements.analysisCurrentLine.textContent = line;
                 return;
             }
             
-            // Calculate averages for the selected line
-            const validStdSMV = lineRecords.filter(record => record.standardSMV && !isNaN(record.standardSMV));
-            const validWorkingSMV = lineRecords.filter(record => record.workingSMV && !isNaN(record.workingSMV));
+            // Group operations
+            const operationsMap = {};
+            lineRecords.forEach(record => {
+                const operation = record.operation || 'Unknown';
+                if (!operationsMap[operation]) {
+                    operationsMap[operation] = {
+                        standardSMV: [],
+                        workingSMV: [],
+                        efficiency: [],
+                        machine: record.machineName || 'Unknown',
+                        count: 0
+                    };
+                }
+                if (record.standardSMV) operationsMap[operation].standardSMV.push(record.standardSMV);
+                if (record.workingSMV) operationsMap[operation].workingSMV.push(record.workingSMV);
+                if (record.efficiency) operationsMap[operation].efficiency.push(record.efficiency);
+                operationsMap[operation].count++;
+            });
             
-            if (validStdSMV.length === 0 || validWorkingSMV.length === 0) {
-                elements.garmentStdSMV.textContent = '0.00';
-                elements.garmentWorkingSMV.textContent = '0.00';
+            // Calculate averages and populate list
+            let operationsHTML = '';
+            let totalStdSMV = 0;
+            let totalWorkingSMV = 0;
+            let operationCount = 0;
+            let bestOp = { name: '', efficiency: 0 };
+            let worstOp = { name: '', efficiency: 100 };
+            
+            for (const [opName, data] of Object.entries(operationsMap)) {
+                const avgStdSMV = data.standardSMV.length > 0 ? 
+                    data.standardSMV.reduce((a, b) => a + b, 0) / data.standardSMV.length : 0;
+                const avgWorkingSMV = data.workingSMV.length > 0 ? 
+                    data.workingSMV.reduce((a, b) => a + b, 0) / data.workingSMV.length : 0;
+                const avgEfficiency = data.efficiency.length > 0 ? 
+                    data.efficiency.reduce((a, b) => a + b, 0) / data.efficiency.length : 0;
+                
+                totalStdSMV += avgStdSMV;
+                totalWorkingSMV += avgWorkingSMV;
+                operationCount++;
+                
+                // Track best and worst operations
+                if (avgEfficiency > bestOp.efficiency) {
+                    bestOp = { name: opName, efficiency: avgEfficiency };
+                }
+                if (avgEfficiency < worstOp.efficiency && avgEfficiency > 0) {
+                    worstOp = { name: opName, efficiency: avgEfficiency };
+                }
+                
+                const efficiencyClass = avgEfficiency >= 85 ? 'efficiency-high' :
+                                     avgEfficiency >= 70 ? 'efficiency-medium' : 'efficiency-low';
+                
+                operationsHTML += `
+                    <div class="operation-smv-item">
+                        <div class="operation-name">
+                            <strong>${opName}</strong>
+                            <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 2px;">
+                                ${data.machine} • ${data.count} records
+                            </div>
+                        </div>
+                        <div class="operation-smv-values">
+                            <div class="operation-smv-standard">${avgStdSMV.toFixed(2)}</div>
+                            <div class="operation-smv-working">${avgWorkingSMV.toFixed(2)}</div>
+                            <div class="${efficiencyClass}" style="font-weight: 600; min-width: 50px; text-align: right;">
+                                ${avgEfficiency.toFixed(1)}%
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Update the operations list
+            elements.lineOperationsList.innerHTML = operationsHTML;
+            
+            // Update summary stats
+            const avgLineStdSMV = operationCount > 0 ? totalStdSMV / operationCount : 0;
+            const avgLineWorkingSMV = operationCount > 0 ? totalWorkingSMV / operationCount : 0;
+            const lineEfficiency = avgLineStdSMV > 0 ? (avgLineStdSMV / avgLineWorkingSMV) * 100 : 0;
+            
+            elements.analysisStdSMV.textContent = avgLineStdSMV.toFixed(2);
+            elements.analysisWorkingSMV.textContent = avgLineWorkingSMV.toFixed(2);
+            elements.analysisLineEfficiency.textContent = lineEfficiency.toFixed(1) + '%';
+            elements.analysisLineOperations.textContent = operationCount;
+            elements.analysisCurrentLine.textContent = line;
+            elements.bestOperation.textContent = bestOp.name || '-';
+            elements.bestOperationEff.textContent = bestOp.efficiency.toFixed(1) + '%';
+            elements.worstOperation.textContent = worstOp.name || '-';
+            elements.worstOperationEff.textContent = worstOp.efficiency.toFixed(1) + '%';
+        }
+
+        // Update machine usage statistics
+        function updateMachineUsageStats() {
+            const machineUsage = {};
+            
+            performanceData.forEach(record => {
+                let machineName = record.machineName || 'Unknown';
+                if (record.machineName === 'Others' && record.customMachineName) {
+                    machineName = record.customMachineName;
+                }
+                
+                if (!machineUsage[machineName]) {
+                    machineUsage[machineName] = 0;
+                }
+                machineUsage[machineName]++;
+            });
+            
+            // Sort by count descending
+            const sortedMachines = Object.entries(machineUsage)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 8); // Show top 8 machines
+            
+            if (sortedMachines.length === 0) {
+                elements.machineUsageStats.innerHTML = `
+                    <div class="machine-usage-item">
+                        <span class="machine-name">No data available</span>
+                        <span class="machine-count">0</span>
+                    </div>
+                `;
                 return;
             }
             
-            const avgStdSMV = validStdSMV.reduce((sum, record) => sum + record.standardSMV, 0) / validStdSMV.length;
-            const avgWorkingSMV = validWorkingSMV.reduce((sum, record) => sum + record.workingSMV, 0) / validWorkingSMV.length;
+            let machineHTML = '';
+            sortedMachines.forEach(([machine, count]) => {
+                machineHTML += `
+                    <div class="machine-usage-item">
+                        <span class="machine-name">${machine}</span>
+                        <span class="machine-count">${count}</span>
+                    </div>
+                `;
+            });
             
-            elements.garmentStdSMV.textContent = avgStdSMV.toFixed(2);
-            elements.garmentWorkingSMV.textContent = avgWorkingSMV.toFixed(2);
+            elements.machineUsageStats.innerHTML = machineHTML;
         }
 
         // Populate matrix filters for line & machine analysis
@@ -3597,6 +4148,12 @@
                 }
             });
             
+            performanceData.forEach(record => {
+                if (record.lineNo) {
+                    lines.add(record.lineNo);
+                }
+            });
+            
             lines.forEach(line => {
                 const option = document.createElement('option');
                 option.value = line;
@@ -3607,6 +4164,24 @@
             // Add event listeners
             matrixLineFilter.addEventListener('change', updateSkillMatrix);
             matrixMachineFilter.addEventListener('change', updateSkillMatrix);
+            
+            // Modal filters
+            const modalMatrixLineFilter = document.getElementById('modalMatrixLineFilter');
+            const modalMatrixMachineFilter = document.getElementById('modalMatrixMachineFilter');
+            
+            modalMatrixLineFilter.innerHTML = '<option value="">All Lines</option>';
+            lines.forEach(line => {
+                const option = document.createElement('option');
+                option.value = line;
+                option.textContent = line;
+                modalMatrixLineFilter.appendChild(option);
+            });
+            
+            modalMatrixLineFilter.addEventListener('change', updateModalSkillMatrix);
+            modalMatrixMachineFilter.addEventListener('change', updateModalSkillMatrix);
+            
+            // Update line suggestions for analysis input
+            populateAnalysisLineSuggestions();
         }
 
         // Update skill matrix for line & machine analysis
@@ -3614,8 +4189,20 @@
             const selectedLine = document.getElementById('matrixLineFilter').value;
             const selectedMachine = document.getElementById('matrixMachineFilter').value;
             
-            const skillMatrixGrid = document.getElementById('skillMatrixGrid');
-            skillMatrixGrid.innerHTML = '';
+            updateSkillMatrixDisplay(elements.skillMatrixGrid, selectedLine, selectedMachine);
+        }
+
+        // Update modal skill matrix
+        function updateModalSkillMatrix() {
+            const selectedLine = document.getElementById('modalMatrixLineFilter').value;
+            const selectedMachine = document.getElementById('modalMatrixMachineFilter').value;
+            
+            updateSkillMatrixDisplay(elements.modalSkillMatrixGrid, selectedLine, selectedMachine);
+        }
+
+        // Common function to update skill matrix display
+        function updateSkillMatrixDisplay(container, selectedLine, selectedMachine) {
+            container.innerHTML = '';
             
             // Filter operators based on selections
             let filteredOperators = operators;
@@ -3671,7 +4258,7 @@
                 </div>
             `;
             
-            skillMatrixGrid.appendChild(matrixCard);
+            container.appendChild(matrixCard);
             
             // If machine is selected, show operator details
             if (selectedMachine && filteredOperators.length > 0) {
@@ -3696,11 +4283,38 @@
                     </div>
                 `;
                 
-                skillMatrixGrid.appendChild(operatorsCard);
+                container.appendChild(operatorsCard);
             }
         }
 
-        // Render operators table with proper skill scores
+        // Update analysis dashboard
+        function updateAnalysisDashboard() {
+            // Update summary card in operators tab
+            const uniqueLines = new Set();
+            performanceData.forEach(record => {
+                if (record.lineNo) uniqueLines.add(record.lineNo);
+            });
+            
+            elements.activeLines.textContent = uniqueLines.size;
+            
+            // Calculate average SMV difference
+            let totalDiff = 0;
+            let count = 0;
+            
+            performanceData.forEach(record => {
+                if (record.standardSMV && record.workingSMV && record.standardSMV > 0) {
+                    const diff = ((record.workingSMV - record.standardSMV) / record.standardSMV) * 100;
+                    totalDiff += diff;
+                    count++;
+                }
+            });
+            
+            const avgDiff = count > 0 ? totalDiff / count : 0;
+            elements.avgSMVDiff.textContent = avgDiff.toFixed(1) + '%';
+            elements.analysisSummary.textContent = performanceData.length;
+        }
+
+        // Render operators table with proper skill scores and timer icon
         function renderOperatorsTable(filteredData = operators) {
             elements.operatorsBody.innerHTML = '';
             
@@ -3756,6 +4370,9 @@
                             <button class="btn-icon view-performance" data-id="${operator.operatorId}" title="View Performance Records">
                                 <i class="fas fa-eye"></i>
                             </button>
+                            <button class="btn-icon btn-icon-timer time-study-operator" data-id="${operator.operatorId}" title="Start Time Study for this Operator">
+                                <i class="fas fa-stopwatch"></i>
+                            </button>
                         </div>
                     </td>
                 `;
@@ -3784,6 +4401,39 @@
                     viewOperatorPerformance(operatorId);
                 });
             });
+            
+            // Time study for operator
+            document.querySelectorAll('.time-study-operator').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const operatorId = e.target.closest('button').getAttribute('data-id');
+                    startTimeStudyForOperator(operatorId);
+                });
+            });
+        }
+
+        // Start time study for specific operator
+        function startTimeStudyForOperator(operatorId) {
+            const operator = operators.find(op => op.operatorId === operatorId);
+            if (!operator) {
+                showToast('Operator not found!', 'error');
+                return;
+            }
+            
+            // Switch to time study tab
+            document.querySelector('.tab-btn[data-tab="time-study"]').click();
+            
+            // Set the operator in the dropdown
+            document.getElementById('studyOperatorId').value = operatorId;
+            
+            // If operator has a sew line, set it
+            if (operator.sewLine) {
+                document.getElementById('studyLineNo').value = operator.sewLine;
+            }
+            
+            // Focus on operation name field
+            document.getElementById('studyOperation').focus();
+            
+            showToast(`Time study ready for ${operator.name}. Select operation and machine to begin.`, 'success');
         }
 
         // UPDATED: Calculate skill level based on new logic
@@ -3898,6 +4548,9 @@
             elements.timeStudies.textContent = timeStudiesToday.length;
             elements.timeStudyCompleted.textContent = completedStudies;
             elements.timeStudyAvgCycle.textContent = completedStudies > 0 ? (totalCycleTime / completedStudies).toFixed(1) + 's' : '0s';
+            
+            // Update analysis dashboard
+            updateAnalysisDashboard();
         }
 
         // Update performance statistics
@@ -4490,7 +5143,7 @@
                     });
                     
                     filename = `Operators_List_${new Date().toISOString().split('T')[0]}.xlsx`;
-                } else {
+                } else if (type === 'performance') {
                     performanceData.forEach(record => {
                         let machineName = record.machineName || '-';
                         if (record.machineName === 'Others' && record.customMachineName) {
@@ -4522,11 +5175,43 @@
                     });
                     
                     filename = `Performance_Data_${new Date().toISOString().split('T')[0]}.xlsx`;
+                } else if (type === 'analysis') {
+                    // Export analysis data
+                    const uniqueLines = new Set();
+                    performanceData.forEach(record => {
+                        if (record.lineNo) uniqueLines.add(record.lineNo);
+                    });
+                    
+                    data.push({
+                        'Analysis Type': 'Summary',
+                        'Total Operators': operators.length,
+                        'Total Performance Records': performanceData.length,
+                        'Active Lines': uniqueLines.size,
+                        'Average Efficiency': performanceData.length > 0 ? 
+                            (performanceData.reduce((sum, record) => sum + (record.efficiency || 0), 0) / performanceData.length).toFixed(1) + '%' : '0%'
+                    });
+                    
+                    // Add line analysis
+                    uniqueLines.forEach(line => {
+                        const lineRecords = performanceData.filter(record => record.lineNo === line);
+                        const avgEfficiency = lineRecords.length > 0 ? 
+                            lineRecords.reduce((sum, record) => sum + (record.efficiency || 0), 0) / lineRecords.length : 0;
+                        
+                        data.push({
+                            'Analysis Type': `Line ${line}`,
+                            'Records Count': lineRecords.length,
+                            'Average Efficiency': avgEfficiency.toFixed(1) + '%',
+                            'Unique Operations': new Set(lineRecords.map(r => r.operation)).size
+                        });
+                    });
+                    
+                    filename = `Analysis_Report_${new Date().toISOString().split('T')[0]}.xlsx`;
                 }
                 
                 const worksheet = XLSX.utils.json_to_sheet(data);
                 const workbook = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(workbook, worksheet, type === 'operators' ? 'Operators' : 'Performance');
+                XLSX.utils.book_append_sheet(workbook, worksheet, type === 'operators' ? 'Operators' : 
+                    type === 'performance' ? 'Performance' : 'Analysis');
                 
                 // Auto-size columns
                 const maxWidth = data.reduce((w, r) => Math.max(w, r['Operator ID']?.length || 0), 10);
@@ -5360,8 +6045,8 @@
 
         // Setup event listeners
         function setupEventListeners() {
-            // Help button
-            document.getElementById('helpBtn').addEventListener('click', () => {
+            // Header Help button
+            document.getElementById('headerHelpBtn').addEventListener('click', () => {
                 document.getElementById('helpModal').classList.add('active');
             });
             
@@ -5375,9 +6060,73 @@
             document.getElementById('perfLineFilter').addEventListener('change', filterPerformanceData);
             document.getElementById('dateFilter').addEventListener('change', filterPerformanceData);
             
-            // Garment Line Select
-            elements.garmentLineSelect.addEventListener('change', (e) => {
-                calculateGarmentSMV(e.target.value);
+            // Analysis Tab
+            document.getElementById('searchAnalysis').addEventListener('input', () => {
+                // Implement analysis search if needed
+            });
+            
+            // UPDATED: Analyze Line button
+            document.getElementById('analyzeLineBtn').addEventListener('click', () => {
+                const line = elements.analysisLineInput.value.trim();
+                if (!line) {
+                    showToast('Please enter a line number', 'error');
+                    return;
+                }
+                updateLineOperationsAnalysis(line);
+            });
+            
+            // UPDATED: Enter key on line input
+            elements.analysisLineInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    document.getElementById('analyzeLineBtn').click();
+                }
+            });
+            
+            // Garment SMV Calculation
+            document.getElementById('addGarmentOpBtn').addEventListener('click', () => {
+                const container = document.getElementById('garmentSMVOperations');
+                const opCount = container.querySelectorAll('.garment-op-name').length + 1;
+                const opDiv = document.createElement('div');
+                opDiv.className = 'form-row';
+                opDiv.innerHTML = `
+                    <div class="form-group">
+                        <label>Operation ${opCount}</label>
+                        <input type="text" class="garment-op-name" placeholder="Operation name">
+                    </div>
+                    <div class="form-group">
+                        <label>Standard SMV (min)</label>
+                        <input type="number" class="garment-op-smv" step="0.01" placeholder="0.00">
+                    </div>
+                `;
+                container.appendChild(opDiv);
+            });
+            
+            document.getElementById('calculateGarmentSMVBtn').addEventListener('click', () => {
+                let totalSMV = 0;
+                document.querySelectorAll('.garment-op-smv').forEach(input => {
+                    const value = parseFloat(input.value);
+                    if (!isNaN(value)) {
+                        totalSMV += value;
+                    }
+                });
+                document.getElementById('totalGarmentSMV').value = totalSMV.toFixed(2);
+                showToast(`Total Garment SMV: ${totalSMV.toFixed(2)} minutes`);
+            });
+            
+            document.getElementById('resetGarmentSMVBtn').addEventListener('click', () => {
+                document.getElementById('garmentSMVOperations').innerHTML = `
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Operation 1</label>
+                            <input type="text" class="garment-op-name" placeholder="Operation name">
+                        </div>
+                        <div class="form-group">
+                            <label>Standard SMV (min)</label>
+                            <input type="number" class="garment-op-smv" step="0.01" placeholder="0.00">
+                        </div>
+                    </div>
+                `;
+                document.getElementById('totalGarmentSMV').value = '';
             });
             
             // Import Excel buttons
@@ -5413,6 +6162,7 @@
             
             document.getElementById('exportBtn').addEventListener('click', () => exportToExcel('operators'));
             document.getElementById('exportPerformanceBtn').addEventListener('click', () => exportToExcel('performance'));
+            document.getElementById('exportAnalysisBtn').addEventListener('click', () => exportToExcel('analysis'));
             
             document.getElementById('saveBtn').addEventListener('click', async () => {
                 showToast('All changes saved to cloud!');
@@ -5423,6 +6173,12 @@
                 showToast('Refreshing data...');
             });
             
+            document.getElementById('refreshAnalysisBtn').addEventListener('click', () => {
+                updateAnalysisDashboard();
+                updateSkillMatrix();
+                showToast('Analysis data refreshed!');
+            });
+            
             document.getElementById('addPerformanceBtn').addEventListener('click', () => {
                 document.getElementById('addPerformanceModal').classList.add('active');
                 document.getElementById('perfOperatorId').focus();
@@ -5430,6 +6186,9 @@
             
             // Analyze Performance button
             document.getElementById('analyzeBtn').addEventListener('click', analyzePerformance);
+            
+            // Full Analysis Report button
+            document.getElementById('fullAnalysisBtn').addEventListener('click', analyzePerformance);
             
             // Stopwatch event listeners
             document.getElementById('startBtn').addEventListener('click', startStopwatch);
@@ -5543,6 +6302,7 @@
                     document.getElementById('addOperatorModal').classList.remove('active');
                     populateOperatorDropdowns();
                     populateLineFilter();
+                    populateMatrixFilters();
                 }
             });
             
@@ -5596,6 +6356,8 @@
                     document.getElementById('addPerformanceModal').classList.remove('active');
                 }
             });
+            
+            // REMOVED: All Advanced SMV Library related event listeners have been removed
             
             // Close modals on outside click
             window.addEventListener('click', (e) => {
