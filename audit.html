@@ -1,0 +1,2488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Garment Factory Audit Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #7209b7;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            --dark: #121826;
+            --dark-light: #1f2937;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --gray-dark: #495057;
+            --border-radius: 8px;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--dark);
+            color: var(--light);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background-color: var(--dark-light);
+            padding: 20px 0;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            z-index: 100;
+        }
+
+        .sidebar.collapsed {
+            width: 70px;
+        }
+
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 1.4rem;
+            color: var(--light);
+        }
+
+        .logo i {
+            color: var(--primary);
+            font-size: 1.8rem;
+        }
+
+        .toggle-sidebar {
+            background: none;
+            border: none;
+            color: var(--light);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 4px;
+        }
+
+        .toggle-sidebar:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 20px 0;
+            flex-grow: 1;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 5px;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 14px 20px;
+            color: var(--light);
+            text-decoration: none;
+            transition: var(--transition);
+            font-size: 0.95rem;
+        }
+
+        .sidebar-menu a:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-left: 4px solid var(--primary);
+        }
+
+        .sidebar-menu a.active {
+            background-color: rgba(67, 97, 238, 0.2);
+            border-left: 4px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .sidebar-menu a i {
+            margin-right: 12px;
+            font-size: 1.1rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .sidebar.collapsed .menu-text {
+            display: none;
+        }
+
+        .sidebar.collapsed .sidebar-header {
+            justify-content: center;
+        }
+
+        .sidebar.collapsed .logo span {
+            display: none;
+        }
+
+        .user-info {
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .user-details {
+            flex-grow: 1;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .user-role {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .week-selector {
+            background-color: var(--dark-light);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius);
+            padding: 8px 15px;
+            color: var(--light);
+            font-size: 0.9rem;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: var(--border-radius);
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            color: var(--dark);
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn-warning {
+            background-color: var(--warning);
+            color: var(--dark);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background-color: rgba(67, 97, 238, 0.1);
+        }
+
+        /* Cards */
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background-color: var(--dark-light);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            color: var(--gray);
+            font-weight: 600;
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .card-icon.primary {
+            background-color: rgba(67, 97, 238, 0.2);
+            color: var(--primary);
+        }
+
+        .card-icon.success {
+            background-color: rgba(76, 201, 240, 0.2);
+            color: var(--success);
+        }
+
+        .card-icon.danger {
+            background-color: rgba(247, 37, 133, 0.2);
+            color: var(--danger);
+        }
+
+        .card-icon.warning {
+            background-color: rgba(248, 150, 30, 0.2);
+            color: var(--warning);
+        }
+
+        .card-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .card-change {
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+
+        .card-change.positive {
+            color: var(--success);
+        }
+
+        .card-change.negative {
+            color: var(--danger);
+        }
+
+        /* Charts */
+        .charts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .chart-card {
+            background-color: var(--dark-light);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .chart-card h3 {
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        /* Tables */
+        .table-container {
+            background-color: var(--dark-light);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            overflow-x: auto;
+        }
+
+        .table-container h3 {
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-weight: 600;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.9rem;
+        }
+
+        tr:hover {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+
+        .badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .badge-success {
+            background-color: rgba(76, 201, 240, 0.2);
+            color: var(--success);
+        }
+
+        .badge-danger {
+            background-color: rgba(247, 37, 133, 0.2);
+            color: var(--danger);
+        }
+
+        .badge-warning {
+            background-color: rgba(248, 150, 30, 0.2);
+            color: var(--warning);
+        }
+
+        .badge-primary {
+            background-color: rgba(67, 97, 238, 0.2);
+            color: var(--primary);
+        }
+
+        .badge-secondary {
+            background-color: rgba(114, 9, 183, 0.2);
+            color: var(--secondary);
+        }
+
+        /* Forms */
+        .form-container {
+            background-color: var(--dark-light);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            background-color: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius);
+            color: var(--light);
+            font-size: 0.95rem;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        /* Login Page */
+        .login-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .login-card {
+            background-color: var(--dark-light);
+            border-radius: var(--border-radius);
+            padding: 40px;
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .login-header p {
+            color: var(--gray);
+        }
+
+        /* Audit Questions */
+        .question-container {
+            background-color: rgba(0, 0, 0, 0.1);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .score-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .score-option {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .score-option:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .score-option.selected {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .score-label {
+            display: block;
+            font-size: 0.8rem;
+            margin-top: 5px;
+            color: var(--gray);
+        }
+
+        .score-value {
+            display: block;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: var(--dark-light);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: var(--light);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Utility */
+        .hidden {
+            display: none !important;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .mb-20 {
+            margin-bottom: 20px;
+        }
+
+        .mt-20 {
+            margin-top: 20px;
+        }
+
+        .p-20 {
+            padding: 20px;
+        }
+
+        .w-100 {
+            width: 100%;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 70px;
+            }
+
+            .sidebar .menu-text {
+                display: none;
+            }
+
+            .sidebar .sidebar-header {
+                justify-content: center;
+            }
+
+            .sidebar .logo span {
+                display: none;
+            }
+
+            .user-details {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .cards-container, .charts-container {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Page -->
+    <div id="login-page" class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <h1><i class="fas fa-industry"></i> Garment Factory Audit</h1>
+                <p>Management System</p>
+            </div>
+            <div class="form-group">
+                <label for="login-username">Username</label>
+                <input type="text" id="login-username" placeholder="Enter your username">
+            </div>
+            <div class="form-group">
+                <label for="login-password">Password</label>
+                <input type="password" id="login-password" placeholder="Enter your password">
+            </div>
+            <div class="form-group">
+                <button id="login-btn" class="btn btn-primary w-100">Login</button>
+            </div>
+            <div class="text-center">
+                <p class="mt-20" style="color: var(--gray);">Demo Users:</p>
+                <p style="font-size: 0.85rem; color: var(--gray);">
+                    Admin: admin / pass123<br>
+                    Auditor: auditor / pass123<br>
+                    Dept Rep: sewing_mgr / pass123<br>
+                    Supervisor: line_super / pass123
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="app" class="app-container hidden">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-industry"></i>
+                    <span>Audit System</span>
+                </div>
+                <button class="toggle-sidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="#dashboard" class="active"><i class="fas fa-tachometer-alt"></i><span class="menu-text">Dashboard</span></a></li>
+                <li><a href="#audits"><i class="fas fa-clipboard-check"></i><span class="menu-text">Audits</span></a></li>
+                <li><a href="#new-audit"><i class="fas fa-plus-circle"></i><span class="menu-text">New Audit</span></a></li>
+                <li><a href="#reports"><i class="fas fa-chart-bar"></i><span class="menu-text">Reports</span></a></li>
+                <li id="admin-menu" class="hidden"><a href="#admin"><i class="fas fa-cog"></i><span class="menu-text">Admin</span></a></li>
+                <li id="user-management-menu" class="hidden"><a href="#users"><i class="fas fa-users"></i><span class="menu-text">Users</span></a></li>
+                <li id="sop-management-menu" class="hidden"><a href="#sops"><i class="fas fa-file-alt"></i><span class="menu-text">SOPs</span></a></li>
+                <li id="cleanup-menu" class="hidden"><a href="#cleanup"><i class="fas fa-broom"></i><span class="menu-text">Cleanup</span></a></li>
+            </ul>
+            <div class="user-info">
+                <div class="user-avatar" id="user-avatar">AD</div>
+                <div class="user-details">
+                    <div class="user-name" id="user-name">Admin User</div>
+                    <div class="user-role" id="user-role">Administrator</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <h1 id="page-title">Dashboard</h1>
+                <div class="header-actions">
+                    <select id="week-selector" class="week-selector">
+                        <option value="current">Current Week (Sat-Thu)</option>
+                        <option value="last">Last Week</option>
+                        <option value="2weeks">2 Weeks Ago</option>
+                    </select>
+                    <button id="logout-btn" class="btn btn-outline">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </div>
+
+            <!-- Content will be dynamically loaded here -->
+            <div id="content"></div>
+        </div>
+    </div>
+
+    <!-- Modal for audit details -->
+    <div id="audit-detail-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Audit Details</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div id="audit-detail-content"></div>
+        </div>
+    </div>
+
+    <!-- Modal for user management -->
+    <div id="user-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="user-modal-title">Add User</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div id="user-modal-content"></div>
+        </div>
+    </div>
+
+    <script>
+        // ========== DATA MODELS & STORAGE ==========
+        // Initialize localStorage if empty
+        const initializeData = () => {
+            if (!localStorage.getItem('auditSystemUsers')) {
+                const defaultUsers = [
+                    { id: 1, name: "Admin User", username: "admin", password: "pass123", role: "admin", department: null, line: null, created: "2023-01-01" },
+                    { id: 2, name: "Auditor User", username: "auditor", password: "pass123", role: "auditor", department: null, line: null, created: "2023-01-02" },
+                    { id: 3, name: "Sewing Manager", username: "sewing_mgr", password: "pass123", role: "dept_rep", department: "Sewing", line: null, created: "2023-01-03" },
+                    { id: 4, name: "Line Supervisor", username: "line_super", password: "pass123", role: "supervisor", department: "Sewing", line: "Line S-1", created: "2023-01-04" },
+                    { id: 5, name: "Quality Manager", username: "quality_mgr", password: "pass123", role: "dept_rep", department: "Quality – Sewing", line: null, created: "2023-01-05" }
+                ];
+                localStorage.setItem('auditSystemUsers', JSON.stringify(defaultUsers));
+            }
+
+            if (!localStorage.getItem('auditSystemDepartments')) {
+                const departments = [
+                    "Cutting", "Sewing", "Finishing", "Quality – Sewing", 
+                    "Technical", "Pre-Production", "Product Safety", 
+                    "Warehouse", "IE Department", "CAD"
+                ];
+                localStorage.setItem('auditSystemDepartments', JSON.stringify(departments));
+            }
+
+            if (!localStorage.getItem('auditSystemLines')) {
+                const lines = [];
+                for (let i = 1; i <= 32; i++) {
+                    lines.push(`Line S-${i}`);
+                }
+                localStorage.setItem('auditSystemLines', JSON.stringify(lines));
+            }
+
+            if (!localStorage.getItem('auditSystemSOPs')) {
+                const sops = {
+                    "Cutting": [
+                        { id: 1, text: "Proper layout and marking procedures followed", maxScore: 5 },
+                        { id: 2, text: "Cutting equipment maintained and calibrated", maxScore: 5 },
+                        { id: 3, text: "Material utilization within acceptable limits", maxScore: 5 },
+                        { id: 4, text: "Cut pieces bundled and labeled correctly", maxScore: 5 },
+                        { id: 5, text: "Safety procedures followed during cutting operations", maxScore: 5 }
+                    ],
+                    "Sewing": [
+                        { id: 1, text: "Machine maintenance records up to date", maxScore: 5 },
+                        { id: 2, text: "Operators following correct sewing procedures", maxScore: 5 },
+                        { id: 3, text: "Quality checkpoints operational and documented", maxScore: 5 },
+                        { id: 4, text: "Workstation organization and 5S compliance", maxScore: 5 },
+                        { id: 5, text: "Production targets being met without quality compromise", maxScore: 5 },
+                        { id: 6, text: "Thread tension and stitch quality consistent", maxScore: 5 },
+                        { id: 7, text: "Proper handling of sensitive fabrics", maxScore: 5 }
+                    ],
+                    "Finishing": [
+                        { id: 1, text: "Final inspection procedures properly followed", maxScore: 5 },
+                        { id: 2, text: "Pressing and steaming equipment maintained", maxScore: 5 },
+                        { id: 3, text: "Garment packaging meets quality standards", maxScore: 5 },
+                        { id: 4, text: "Trim and accessory attachment secure", maxScore: 5 },
+                        { id: 5, text: "Final audit compliance rate", maxScore: 5 }
+                    ]
+                };
+                localStorage.setItem('auditSystemSOPs', JSON.stringify(sops));
+            }
+
+            if (!localStorage.getItem('auditSystemAudits')) {
+                const today = new Date();
+                const lastWeek = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+                
+                const audits = [
+                    {
+                        id: 1,
+                        department: "Sewing",
+                        line: "Line S-1",
+                        auditorId: 2,
+                        auditorName: "Auditor User",
+                        auditorRole: "auditor",
+                        date: today.toISOString().split('T')[0],
+                        weekRange: getWeekRange(today),
+                        questions: [
+                            { id: 1, score: 5, comment: "All machines properly maintained", selfEval: "" },
+                            { id: 2, score: 4, comment: "Minor deviations in procedure", selfEval: "Need more training" },
+                            { id: 3, score: 5, comment: "Quality checks properly documented", selfEval: "" },
+                            { id: 4, score: 3, comment: "5S needs improvement", selfEval: "We're working on organization" },
+                            { id: 5, score: 4, comment: "Targets met with minor issues", selfEval: "" },
+                            { id: 6, score: 5, comment: "Stitch quality excellent", selfEval: "" },
+                            { id: 7, score: 4, comment: "Good handling overall", selfEval: "" }
+                        ],
+                        score: 30,
+                        maxScore: 35,
+                        percentage: 85.7,
+                        status: "passed",
+                        passThreshold: 70
+                    },
+                    {
+                        id: 2,
+                        department: "Cutting",
+                        line: null,
+                        auditorId: 2,
+                        auditorName: "Auditor User",
+                        auditorRole: "auditor",
+                        date: lastWeek.toISOString().split('T')[0],
+                        weekRange: getWeekRange(lastWeek),
+                        questions: [
+                            { id: 1, score: 4, comment: "Good layout procedures", selfEval: "" },
+                            { id: 2, score: 3, comment: "Calibration overdue", selfEval: "Need to schedule calibration" },
+                            { id: 3, score: 5, comment: "Excellent material utilization", selfEval: "" },
+                            { id: 4, score: 2, comment: "Labeling inconsistent", selfEval: "We need better labeling system" },
+                            { id: 5, score: 4, comment: "Safety procedures followed", selfEval: "" }
+                        ],
+                        score: 18,
+                        maxScore: 25,
+                        percentage: 72,
+                        status: "passed",
+                        passThreshold: 70
+                    }
+                ];
+                localStorage.setItem('auditSystemAudits', JSON.stringify(audits));
+            }
+        };
+
+        // Helper function to get week range (Saturday to Thursday)
+        const getWeekRange = (date) => {
+            const d = new Date(date);
+            const day = d.getDay(); // 0 = Sunday, 6 = Saturday
+            
+            // Adjust to get Saturday (6) as start of week
+            let saturday = new Date(d);
+            saturday.setDate(d.getDate() - ((day + 1) % 7));
+            
+            let thursday = new Date(saturday);
+            thursday.setDate(saturday.getDate() + 6);
+            
+            return {
+                start: saturday.toISOString().split('T')[0],
+                end: thursday.toISOString().split('T')[0]
+            };
+        };
+
+        // ========== APPLICATION STATE ==========
+        let currentUser = null;
+        let currentView = 'dashboard';
+        let currentWeekFilter = 'current';
+
+        // ========== DOM ELEMENTS ==========
+        const loginPage = document.getElementById('login-page');
+        const appContainer = document.getElementById('app');
+        const contentDiv = document.getElementById('content');
+        const pageTitle = document.getElementById('page-title');
+        const userName = document.getElementById('user-name');
+        const userRole = document.getElementById('user-role');
+        const userAvatar = document.getElementById('user-avatar');
+        const adminMenu = document.getElementById('admin-menu');
+        const userManagementMenu = document.getElementById('user-management-menu');
+        const sopManagementMenu = document.getElementById('sop-management-menu');
+        const cleanupMenu = document.getElementById('cleanup-menu');
+        const loginBtn = document.getElementById('login-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+        const weekSelector = document.getElementById('week-selector');
+        const auditDetailModal = document.getElementById('audit-detail-modal');
+        const userModal = document.getElementById('user-modal');
+
+        // ========== INITIALIZATION ==========
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeData();
+            
+            // Check if user is already logged in
+            const savedUser = localStorage.getItem('auditSystemCurrentUser');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                showApp();
+            }
+            
+            // Event listeners
+            loginBtn.addEventListener('click', handleLogin);
+            logoutBtn.addEventListener('click', handleLogout);
+            weekSelector.addEventListener('change', (e) => {
+                currentWeekFilter = e.target.value;
+                loadView(currentView);
+            });
+            
+            // Handle sidebar menu clicks
+            document.querySelectorAll('.sidebar-menu a').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const view = link.getAttribute('href').substring(1);
+                    
+                    // Update active menu item
+                    document.querySelectorAll('.sidebar-menu a').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                    link.classList.add('active');
+                    
+                    // Load the view
+                    loadView(view);
+                });
+            });
+            
+            // Handle modal close buttons
+            document.querySelectorAll('.close-modal').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    auditDetailModal.classList.remove('active');
+                    userModal.classList.remove('active');
+                });
+            });
+            
+            // Close modal when clicking outside
+            window.addEventListener('click', (e) => {
+                if (e.target === auditDetailModal) {
+                    auditDetailModal.classList.remove('active');
+                }
+                if (e.target === userModal) {
+                    userModal.classList.remove('active');
+                }
+            });
+            
+            // Toggle sidebar
+            document.querySelector('.toggle-sidebar').addEventListener('click', () => {
+                document.querySelector('.sidebar').classList.toggle('collapsed');
+            });
+        });
+
+        // ========== AUTHENTICATION ==========
+        const handleLogin = () => {
+            const username = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+            
+            const users = JSON.parse(localStorage.getItem('auditSystemUsers'));
+            const user = users.find(u => u.username === username && u.password === password);
+            
+            if (user) {
+                currentUser = user;
+                localStorage.setItem('auditSystemCurrentUser', JSON.stringify(user));
+                showApp();
+            } else {
+                alert('Invalid username or password');
+            }
+        };
+
+        const handleLogout = () => {
+            currentUser = null;
+            localStorage.removeItem('auditSystemCurrentUser');
+            loginPage.classList.remove('hidden');
+            appContainer.classList.add('hidden');
+            
+            // Clear login form
+            document.getElementById('login-username').value = '';
+            document.getElementById('login-password').value = '';
+        };
+
+        const showApp = () => {
+            loginPage.classList.add('hidden');
+            appContainer.classList.remove('hidden');
+            
+            // Update user info
+            userName.textContent = currentUser.name;
+            userRole.textContent = getRoleName(currentUser.role);
+            userAvatar.textContent = currentUser.name.split(' ').map(n => n[0]).join('');
+            
+            // Show/hide admin menus based on role
+            if (currentUser.role === 'admin') {
+                adminMenu.classList.remove('hidden');
+                userManagementMenu.classList.remove('hidden');
+                sopManagementMenu.classList.remove('hidden');
+                cleanupMenu.classList.remove('hidden');
+            } else {
+                adminMenu.classList.add('hidden');
+                userManagementMenu.classList.add('hidden');
+                sopManagementMenu.classList.add('hidden');
+                cleanupMenu.classList.add('hidden');
+            }
+            
+            // Load initial view
+            loadView('dashboard');
+        };
+
+        // ========== VIEW MANAGEMENT ==========
+        const loadView = (view) => {
+            currentView = view;
+            
+            // Update page title
+            pageTitle.textContent = getPageTitle(view);
+            
+            // Clear content
+            contentDiv.innerHTML = '';
+            
+            // Load appropriate view
+            switch(view) {
+                case 'dashboard':
+                    loadDashboard();
+                    break;
+                case 'audits':
+                    loadAudits();
+                    break;
+                case 'new-audit':
+                    loadNewAudit();
+                    break;
+                case 'reports':
+                    loadReports();
+                    break;
+                case 'admin':
+                    loadAdmin();
+                    break;
+                case 'users':
+                    loadUserManagement();
+                    break;
+                case 'sops':
+                    loadSOPManagement();
+                    break;
+                case 'cleanup':
+                    loadCleanup();
+                    break;
+                default:
+                    loadDashboard();
+            }
+        };
+
+        const getPageTitle = (view) => {
+            const titles = {
+                'dashboard': 'Dashboard',
+                'audits': 'Audit Results',
+                'new-audit': 'New Audit',
+                'reports': 'Reports & Analytics',
+                'admin': 'Admin Panel',
+                'users': 'User Management',
+                'sops': 'SOP Management',
+                'cleanup': 'Cleanup Incomplete Audits'
+            };
+            return titles[view] || 'Dashboard';
+        };
+
+        const getRoleName = (role) => {
+            const roles = {
+                'admin': 'Administrator',
+                'auditor': 'Auditor',
+                'dept_rep': 'Department Representative',
+                'supervisor': 'Supervisor'
+            };
+            return roles[role] || role;
+        };
+
+        // ========== VIEW COMPONENTS ==========
+        // Dashboard
+        const loadDashboard = () => {
+            const audits = JSON.parse(localStorage.getItem('auditSystemAudits') || '[]');
+            const departments = JSON.parse(localStorage.getItem('auditSystemDepartments') || '[]');
+            const users = JSON.parse(localStorage.getItem('auditSystemUsers') || '[]');
+            
+            // Filter audits by selected week
+            const filteredAudits = filterAuditsByWeek(audits);
+            
+            // Calculate metrics
+            const totalAudits = audits.length;
+            const weekAudits = filteredAudits.length;
+            const passedAudits = filteredAudits.filter(a => a.status === 'passed').length;
+            const failedAudits = weekAudits - passedAudits;
+            const avgScore = weekAudits > 0 
+                ? filteredAudits.reduce((sum, a) => sum + a.percentage, 0) / weekAudits 
+                : 0;
+            
+            contentDiv.innerHTML = `
+                <div class="cards-container">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Total Audits</div>
+                            <div class="card-icon primary">
+                                <i class="fas fa-clipboard-list"></i>
+                            </div>
+                        </div>
+                        <div class="card-value">${totalAudits}</div>
+                        <div class="card-change">${weekAudits} this week</div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Average Score</div>
+                            <div class="card-icon success">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                        </div>
+                        <div class="card-value">${avgScore.toFixed(1)}%</div>
+                        <div class="card-change ${avgScore >= 70 ? 'positive' : 'negative'}">
+                            ${avgScore >= 70 ? 'Above threshold' : 'Below threshold'}
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Passed / Failed</div>
+                            <div class="card-icon ${passedAudits >= failedAudits ? 'success' : 'danger'}">
+                                <i class="fas ${passedAudits >= failedAudits ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+                            </div>
+                        </div>
+                        <div class="card-value">${passedAudits} / ${failedAudits}</div>
+                        <div class="card-change">${weekAudits > 0 ? ((passedAudits/weekAudits)*100).toFixed(1) : 0}% pass rate</div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Departments</div>
+                            <div class="card-icon warning">
+                                <i class="fas fa-building"></i>
+                            </div>
+                        </div>
+                        <div class="card-value">${departments.length}</div>
+                        <div class="card-change">${users.length} total users</div>
+                    </div>
+                </div>
+                
+                <div class="charts-container">
+                    <div class="chart-card">
+                        <h3>Department Performance</h3>
+                        <canvas id="dept-performance-chart" height="250"></canvas>
+                    </div>
+                    
+                    <div class="chart-card">
+                        <h3>Pass/Fail Distribution</h3>
+                        <canvas id="pass-fail-chart" height="250"></canvas>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <h3>Recent Audits</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Department / Line</th>
+                                <th>Auditor</th>
+                                <th>Role</th>
+                                <th>Date</th>
+                                <th>Score %</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recent-audits-table">
+                            ${filteredAudits.slice(0, 5).map(audit => `
+                                <tr>
+                                    <td>${audit.department}${audit.line ? ` / ${audit.line}` : ''}</td>
+                                    <td>${audit.auditorName}</td>
+                                    <td>${getRoleName(audit.auditorRole)}</td>
+                                    <td>${audit.date}</td>
+                                    <td>${audit.percentage.toFixed(1)}%</td>
+                                    <td><span class="badge ${audit.status === 'passed' ? 'badge-success' : 'badge-danger'}">${audit.status.toUpperCase()}</span></td>
+                                    <td><button class="btn btn-outline btn-sm" onclick="viewAuditDetails(${audit.id})">View Details</button></td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            // Render charts
+            renderDepartmentPerformanceChart(filteredAudits);
+            renderPassFailChart(filteredAudits);
+        };
+
+        // Audits List
+        const loadAudits = () => {
+            const audits = JSON.parse(localStorage.getItem('auditSystemAudits') || '[]');
+            const filteredAudits = filterAuditsByWeek(audits);
+            
+            contentDiv.innerHTML = `
+                <div class="table-container">
+                    <h3>All Audits</h3>
+                    <div class="mb-20">
+                        <input type="text" id="audit-search" placeholder="Search audits..." class="w-100">
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Department / Line</th>
+                                <th>Auditor</th>
+                                <th>Role</th>
+                                <th>Date</th>
+                                <th>Score %</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="audits-table">
+                            ${filteredAudits.map(audit => `
+                                <tr>
+                                    <td>${audit.id}</td>
+                                    <td>${audit.department}${audit.line ? ` / ${audit.line}` : ''}</td>
+                                    <td>${audit.auditorName}</td>
+                                    <td>${getRoleName(audit.auditorRole)}</td>
+                                    <td>${audit.date}</td>
+                                    <td>${audit.percentage.toFixed(1)}%</td>
+                                    <td><span class="badge ${audit.status === 'passed' ? 'badge-success' : 'badge-danger'}">${audit.status.toUpperCase()}</span></td>
+                                    <td>
+                                        <button class="btn btn-outline btn-sm" onclick="viewAuditDetails(${audit.id})">View</button>
+                                        ${currentUser.role === 'admin' ? `<button class="btn btn-danger btn-sm" onclick="deleteAudit(${audit.id})">Delete</button>` : ''}
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            // Add search functionality
+            document.getElementById('audit-search').addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase();
+                const rows = document.querySelectorAll('#audits-table tr');
+                
+                rows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(searchTerm) ? '' : 'none';
+                });
+            });
+        };
+
+        // New Audit
+        const loadNewAudit = () => {
+            // Check if user has permission to create audits
+            if (currentUser.role === 'admin') {
+                contentDiv.innerHTML = `
+                    <div class="text-center p-20">
+                        <h3><i class="fas fa-ban"></i> Admin users cannot perform audits</h3>
+                        <p class="mt-20">Only Auditors, Department Representatives, and Supervisors can create new audits.</p>
+                        <button class="btn btn-primary mt-20" onclick="loadView('dashboard')">Return to Dashboard</button>
+                    </div>
+                `;
+                return;
+            }
+            
+            const departments = JSON.parse(localStorage.getItem('auditSystemDepartments') || '[]');
+            const lines = JSON.parse(localStorage.getItem('auditSystemLines') || '[]');
+            const sops = JSON.parse(localStorage.getItem('auditSystemSOPs') || '{}');
+            
+            // Filter departments based on user role
+            let allowedDepartments = departments;
+            if (currentUser.role === 'dept_rep' && currentUser.department) {
+                allowedDepartments = [currentUser.department];
+            } else if (currentUser.role === 'supervisor' && currentUser.department) {
+                allowedDepartments = [currentUser.department];
+            }
+            
+            // Filter lines based on user role
+            let allowedLines = lines;
+            if (currentUser.role === 'supervisor' && currentUser.line) {
+                allowedLines = [currentUser.line];
+            }
+            
+            contentDiv.innerHTML = `
+                <div class="form-container">
+                    <h3 class="mb-20">Create New Audit</h3>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="audit-department">Department *</label>
+                            <select id="audit-department" ${allowedDepartments.length === 1 ? 'disabled' : ''}>
+                                ${allowedDepartments.map(dept => `
+                                    <option value="${dept}" ${currentUser.department === dept ? 'selected' : ''}>${dept}</option>
+                                `).join('')}
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="audit-line">Line (for Sewing only)</label>
+                            <select id="audit-line">
+                                <option value="">Not Applicable</option>
+                                ${allowedLines.map(line => `
+                                    <option value="${line}" ${currentUser.line === line ? 'selected' : ''}>${line}</option>
+                                `).join('')}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="audit-pass-threshold">Pass Threshold (%) *</label>
+                        <input type="number" id="audit-pass-threshold" min="0" max="100" value="70">
+                    </div>
+                    
+                    <hr class="mb-20">
+                    
+                    <div id="audit-questions-container"></div>
+                    
+                    <div class="form-actions">
+                        <button class="btn btn-outline" onclick="loadView('audits')">Cancel</button>
+                        <button class="btn btn-primary" id="submit-audit-btn">Submit Audit</button>
+                    </div>
+                </div>
+            `;
+            
+            // Load questions for the selected department
+            const departmentSelect = document.getElementById('audit-department');
+            loadQuestionsForDepartment(departmentSelect.value);
+            
+            // Update questions when department changes
+            departmentSelect.addEventListener('change', function() {
+                loadQuestionsForDepartment(this.value);
+            });
+            
+            // Handle audit submission
+            document.getElementById('submit-audit-btn').addEventListener('click', submitAudit);
+        };
+
+        const loadQuestionsForDepartment = (department) => {
+            const sops = JSON.parse(localStorage.getItem('auditSystemSOPs') || '{}');
+            const questions = sops[department] || [];
+            const container = document.getElementById('audit-questions-container');
+            
+            container.innerHTML = `
+                <h4 class="mb-20">${department} Audit Questions</h4>
+                ${questions.map((q, index) => `
+                    <div class="question-container" data-question-id="${q.id}">
+                        <div class="question-header">
+                            <div class="question-text">${index + 1}. ${q.text}</div>
+                            <div>Max Score: ${q.maxScore}</div>
+                        </div>
+                        
+                        <div class="score-selector">
+                            ${[1,2,3,4,5].map(score => `
+                                <div class="score-option" data-score="${score}">
+                                    <span class="score-value">${score}</span>
+                                    <span class="score-label">${getScoreLabel(score)}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                        
+                        <div class="form-row mt-10">
+                            <div class="form-group">
+                                <label for="comment-${q.id}">Auditor Comment</label>
+                                <textarea id="comment-${q.id}" rows="2" placeholder="Enter comment..."></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="self-eval-${q.id}">Self-Evaluation (Optional)</label>
+                                <textarea id="self-eval-${q.id}" rows="2" placeholder="Self-evaluation comment..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                `).join('')}
+            `;
+            
+            // Add click handlers for score options
+            container.querySelectorAll('.score-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const parent = this.closest('.question-container');
+                    parent.querySelectorAll('.score-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    this.classList.add('selected');
+                });
+            });
+        };
+
+        const getScoreLabel = (score) => {
+            const labels = {
+                1: 'Critical',
+                2: 'Needs Improvement',
+                3: 'Satisfactory',
+                4: 'Good',
+                5: 'Excellent'
+            };
+            return labels[score] || 'N/A';
+        };
+
+        const submitAudit = () => {
+            const department = document.getElementById('audit-department').value;
+            const line = document.getElementById('audit-line').value;
+            const passThreshold = parseInt(document.getElementById('audit-pass-threshold').value);
+            
+            // Validate
+            if (!department) {
+                alert('Please select a department');
+                return;
+            }
+            
+            // Collect question responses
+            const questions = [];
+            let totalScore = 0;
+            let maxScore = 0;
+            let isValid = true;
+            
+            document.querySelectorAll('.question-container').forEach(container => {
+                const questionId = parseInt(container.dataset.questionId);
+                const selectedScore = container.querySelector('.score-option.selected');
+                
+                if (!selectedScore) {
+                    isValid = false;
+                    container.style.border = '1px solid var(--danger)';
+                    return;
+                }
+                
+                const score = parseInt(selectedScore.dataset.score);
+                const comment = document.getElementById(`comment-${questionId}`).value;
+                const selfEval = document.getElementById(`self-eval-${questionId}`).value;
+                
+                questions.push({
+                    id: questionId,
+                    score: score,
+                    comment: comment,
+                    selfEval: selfEval
+                });
+                
+                totalScore += score;
+                maxScore += 5; // Each question has max score of 5
+            });
+            
+            if (!isValid) {
+                alert('Please select a score for all questions');
+                return;
+            }
+            
+            // Calculate percentage and status
+            const percentage = (totalScore / maxScore) * 100;
+            const status = percentage >= passThreshold ? 'passed' : 'failed';
+            
+            // Create audit object
+            const audits = JSON.parse(localStorage.getItem('auditSystemAudits') || '[]');
+            const newAuditId = audits.length > 0 ? Math.max(...audits.map(a => a.id)) + 1 : 1;
+            
+            const newAudit = {
+                id: newAuditId,
+                department: department,
+                line: line || null,
+                auditorId: currentUser.id,
+                auditorName: currentUser.name,
+                auditorRole: currentUser.role,
+                date: new Date().toISOString().split('T')[0],
+                weekRange: getWeekRange(new Date()),
+                questions: questions,
+                score: totalScore,
+                maxScore: maxScore,
+                percentage: percentage,
+                status: status,
+                passThreshold: passThreshold
+            };
+            
+            // Save to localStorage
+            audits.push(newAudit);
+            localStorage.setItem('auditSystemAudits', JSON.stringify(audits));
+            
+            alert('Audit submitted successfully!');
+            loadView('audits');
+        };
+
+        // Reports
+        const loadReports = () => {
+            const audits = JSON.parse(localStorage.getItem('auditSystemAudits') || '[]');
+            const filteredAudits = filterAuditsByWeek(audits);
+            
+            contentDiv.innerHTML = `
+                <div class="cards-container">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Export Data</div>
+                            <div class="card-icon primary">
+                                <i class="fas fa-file-export"></i>
+                            </div>
+                        </div>
+                        <div class="card-value">CSV Export</div>
+                        <div class="card-change">Download all audit data</div>
+                        <button class="btn btn-primary mt-10 w-100" onclick="exportToCSV()">
+                            <i class="fas fa-download"></i> Download CSV
+                        </button>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Top Department</div>
+                            <div class="card-icon success">
+                                <i class="fas fa-trophy"></i>
+                            </div>
+                        </div>
+                        <div id="top-dept-value" class="card-value">Calculating...</div>
+                        <div class="card-change">This week</div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Bottom Department</div>
+                            <div class="card-icon danger">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                        </div>
+                        <div id="bottom-dept-value" class="card-value">Calculating...</div>
+                        <div class="card-change">Needs attention</div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Top Sewing Line</div>
+                            <div class="card-icon warning">
+                                <i class="fas fa-industry"></i>
+                            </div>
+                        </div>
+                        <div id="top-line-value" class="card-value">Calculating...</div>
+                        <div class="card-change">Best performing line</div>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <h3>Detailed Audit Report</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Audit ID</th>
+                                <th>Department</th>
+                                <th>Line</th>
+                                <th>Auditor</th>
+                                <th>Date</th>
+                                <th>Score</th>
+                                <th>Status</th>
+                                <th>Week</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${filteredAudits.map(audit => `
+                                <tr>
+                                    <td>${audit.id}</td>
+                                    <td>${audit.department}</td>
+                                    <td>${audit.line || 'N/A'}</td>
+                                    <td>${audit.auditorName}</td>
+                                    <td>${audit.date}</td>
+                                    <td>${audit.percentage.toFixed(1)}%</td>
+                                    <td><span class="badge ${audit.status === 'passed' ? 'badge-success' : 'badge-danger'}">${audit.status.toUpperCase()}</span></td>
+                                    <td>${audit.weekRange.start} to ${audit.weekRange.end}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            // Calculate top/bottom departments and lines
+            calculatePerformanceMetrics(filteredAudits);
+        };
+
+        // Admin Panel
+        const loadAdmin = () => {
+            if (currentUser.role !== 'admin') {
+                contentDiv.innerHTML = `
+                    <div class="text-center p-20">
+                        <h3><i class="fas fa-ban"></i> Access Denied</h3>
+                        <p class="mt-20">Only Administrators can access this section.</p>
+                        <button class="btn btn-primary mt-20" onclick="loadView('dashboard')">Return to Dashboard</button>
+                    </div>
+                `;
+                return;
+            }
+            
+            const users = JSON.parse(localStorage.getItem('auditSystemUsers') || '[]');
+            const departments = JSON.parse(localStorage.getItem('auditSystemDepartments') || '[]');
+            const audits = JSON.parse(localStorage.getItem('auditSystemAudits') || '[]');
+            
+            contentDiv.innerHTML = `
+                <div class="cards-container">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">System Users</div>
+                            <div class="card-icon primary">
+                                <i class="fas fa-users"></i>
+                            </div>
+                        </div>
+                        <div class="card-value">${users.length}</div>
+                        <div class="card-change">
+                            <a href="#users" style="color: var(--primary); text-decoration: none;">Manage Users</a>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Departments</div>
+                            <div class="card-icon success">
+                                <i class="fas fa-building"></i>
+                            </div>
+                        </div>
+                        <div class="card-value">${departments.length}</div>
+                        <div class="card-change">Active in system</div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Total Audits</div>
+                            <div class="card-icon warning">
+                                <i class="fas fa-clipboard-list"></i>
+                            </div>
+                        </div>
+                        <div class="card-value">${audits.length}</div>
+                        <div class="card-change">
+                            <a href="#cleanup" style="color: var(--warning); text-decoration: none;">Cleanup Incomplete</a>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">SOPs</div>
+                            <div class="card-icon danger">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                        </div>
+                        <div class="card-value">${Object.keys(JSON.parse(localStorage.getItem('auditSystemSOPs') || '{}')).length}</div>
+                        <div class="card-change">
+                            <a href="#sops" style="color: var(--danger); text-decoration: none;">Manage SOPs</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <h3>System Information</h3>
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td><strong>Application Version</strong></td>
+                                <td>Garment Factory Audit System v1.0</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Total Storage Used</strong></td>
+                                <td>${calculateStorageSize()} KB</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Last Data Update</strong></td>
+                                <td>${new Date().toLocaleDateString()}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Default Pass Threshold</strong></td>
+                                <td>70%</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Week Definition</strong></td>
+                                <td>Saturday to Thursday (6 days)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        };
+
+        // User Management
+        const loadUserManagement = () => {
+            if (currentUser.role !== 'admin') {
+                contentDiv.innerHTML = `
+                    <div class="text-center p-20">
+                        <h3><i class="fas fa-ban"></i> Access Denied</h3>
+                        <p class="mt-20">Only Administrators can access this section.</p>
+                        <button class="btn btn-primary mt-20" onclick="loadView('dashboard')">Return to Dashboard</button>
+                    </div>
+                `;
+                return;
+            }
+            
+            const users = JSON.parse(localStorage.getItem('auditSystemUsers') || '[]');
+            
+            contentDiv.innerHTML = `
+                <div class="table-container">
+                    <div class="card-header" style="margin-bottom: 20px;">
+                        <h3 style="margin: 0;">User Management</h3>
+                        <button class="btn btn-primary" onclick="openAddUserModal()">
+                            <i class="fas fa-plus"></i> Add User
+                        </button>
+                    </div>
+                    
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Username</th>
+                                <th>Role</th>
+                                <th>Department</th>
+                                <th>Line</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-table">
+                            ${users.map(user => `
+                                <tr>
+                                    <td>${user.id}</td>
+                                    <td>${user.name}</td>
+                                    <td>${user.username}</td>
+                                    <td><span class="badge ${getRoleBadgeClass(user.role)}">${getRoleName(user.role)}</span></td>
+                                    <td>${user.department || 'N/A'}</td>
+                                    <td>${user.line || 'N/A'}</td>
+                                    <td>${user.created}</td>
+                                    <td>
+                                        <button class="btn btn-outline btn-sm" onclick="editUser(${user.id})">Edit</button>
+                                        ${user.id !== currentUser.id ? `<button class="btn btn-danger btn-sm" onclick="deleteUser(${user.id})">Delete</button>` : ''}
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        };
+
+        // SOP Management
+        const loadSOPManagement = () => {
+            if (currentUser.role !== 'admin') {
+                contentDiv.innerHTML = `
+                    <div class="text-center p-20">
+                        <h3><i class="fas fa-ban"></i> Access Denied</h3>
+                        <p class="mt-20">Only Administrators can access this section.</p>
+                        <button class="btn btn-primary mt-20" onclick="loadView('dashboard')">Return to Dashboard</button>
+                    </div>
+                `;
+                return;
+            }
+            
+            const sops = JSON.parse(localStorage.getItem('auditSystemSOPs') || '{}');
+            const departments = JSON.parse(localStorage.getItem('auditSystemDepartments') || '[]');
+            
+            contentDiv.innerHTML = `
+                <div class="form-container">
+                    <h3 class="mb-20">SOP Management</h3>
+                    
+                    <div class="form-group">
+                        <label for="sop-department">Select Department</label>
+                        <select id="sop-department">
+                            ${departments.map(dept => `
+                                <option value="${dept}">${dept}</option>
+                            `).join('')}
+                        </select>
+                    </div>
+                    
+                    <div id="sop-questions-list" class="mb-20"></div>
+                    
+                    <div class="form-group">
+                        <button class="btn btn-outline" onclick="addSOPQuestion()">
+                            <i class="fas fa-plus"></i> Add Question
+                        </button>
+                        <button class="btn btn-primary" onclick="saveSOP()">
+                            <i class="fas fa-save"></i> Save SOP
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            loadSOPQuestions(departments[0]);
+            
+            // When department changes, load its SOP
+            document.getElementById('sop-department').addEventListener('change', function() {
+                loadSOPQuestions(this.value);
+            });
+        };
+
+        const loadSOPQuestions = (department) => {
+            const sops = JSON.parse(localStorage.getItem('auditSystemSOPs') || '{}');
+            const questions = sops[department] || [{ id: 1, text: "", maxScore: 5 }];
+            
+            const container = document.getElementById('sop-questions-list');
+            container.innerHTML = `
+                <h4>${department} - Audit Questions</h4>
+                ${questions.map((q, index) => `
+                    <div class="question-container" data-question-index="${index}">
+                        <div class="form-row">
+                            <div class="form-group" style="flex: 3;">
+                                <label>Question ${index + 1}</label>
+                                <input type="text" class="sop-question-text" value="${q.text}" placeholder="Enter question text...">
+                            </div>
+                            <div class="form-group" style="flex: 1;">
+                                <label>Max Score</label>
+                                <select class="sop-max-score">
+                                    <option value="5" ${q.maxScore === 5 ? 'selected' : ''}>5</option>
+                                    <option value="4" ${q.maxScore === 4 ? 'selected' : ''}>4</option>
+                                    <option value="3" ${q.maxScore === 3 ? 'selected' : ''}>3</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="flex: 0.5; padding-top: 25px;">
+                                <button class="btn btn-danger" onclick="removeSOPQuestion(${index})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('')}
+            `;
+        };
+
+        const addSOPQuestion = () => {
+            const container = document.getElementById('sop-questions-list');
+            const questions = container.querySelectorAll('.question-container');
+            const newIndex = questions.length;
+            
+            const newQuestion = document.createElement('div');
+            newQuestion.className = 'question-container';
+            newQuestion.dataset.questionIndex = newIndex;
+            newQuestion.innerHTML = `
+                <div class="form-row">
+                    <div class="form-group" style="flex: 3;">
+                        <label>Question ${newIndex + 1}</label>
+                        <input type="text" class="sop-question-text" placeholder="Enter question text...">
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label>Max Score</label>
+                        <select class="sop-max-score">
+                            <option value="5">5</option>
+                            <option value="4">4</option>
+                            <option value="3">3</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex: 0.5; padding-top: 25px;">
+                        <button class="btn btn-danger" onclick="removeSOPQuestion(${newIndex})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            container.appendChild(newQuestion);
+        };
+
+        const removeSOPQuestion = (index) => {
+            const container = document.getElementById('sop-questions-list');
+            const questionToRemove = container.querySelector(`[data-question-index="${index}"]`);
+            if (questionToRemove) {
+                questionToRemove.remove();
+                
+                // Update indices
+                const remainingQuestions = container.querySelectorAll('.question-container');
+                remainingQuestions.forEach((q, i) => {
+                    q.dataset.questionIndex = i;
+                    q.querySelector('label').textContent = `Question ${i + 1}`;
+                    q.querySelector('button').setAttribute('onclick', `removeSOPQuestion(${i})`);
+                });
+            }
+        };
+
+        const saveSOP = () => {
+            const department = document.getElementById('sop-department').value;
+            const questions = [];
+            
+            document.querySelectorAll('#sop-questions-list .question-container').forEach((container, index) => {
+                const text = container.querySelector('.sop-question-text').value;
+                const maxScore = parseInt(container.querySelector('.sop-max-score').value);
+                
+                if (text.trim()) {
+                    questions.push({
+                        id: index + 1,
+                        text: text,
+                        maxScore: maxScore
+                    });
+                }
+            });
+            
+            if (questions.length === 0) {
+                alert('Please add at least one question');
+                return;
+            }
+            
+            const sops = JSON.parse(localStorage.getItem('auditSystemSOPs') || '{}');
+            sops[department] = questions;
+            localStorage.setItem('auditSystemSOPs', JSON.stringify(sops));
+            
+            alert('SOP saved successfully!');
+        };
+
+        // Cleanup
+        const loadCleanup = () => {
+            if (currentUser.role !== 'admin') {
+                contentDiv.innerHTML = `
+                    <div class="text-center p-20">
+                        <h3><i class="fas fa-ban"></i> Access Denied</h3>
+                        <p class="mt-20">Only Administrators can access this section.</p>
+                        <button class="btn btn-primary mt-20" onclick="loadView('dashboard')">Return to Dashboard</button>
+                    </div>
+                `;
+                return;
+            }
+            
+            const audits = JSON.parse(localStorage.getItem('auditSystemAudits') || '[]');
+            const incompleteAudits = audits.filter(a => a.percentage === 0);
+            
+            contentDiv.innerHTML = `
+                <div class="form-container">
+                    <h3 class="mb-20">Cleanup Incomplete Audits</h3>
+                    
+                    <div class="card mb-20 ${incompleteAudits.length > 0 ? 'danger' : 'success'}" style="border-left: 5px solid ${incompleteAudits.length > 0 ? 'var(--danger)' : 'var(--success)'};">
+                        <div class="p-20">
+                            <h4><i class="fas ${incompleteAudits.length > 0 ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i> 
+                            ${incompleteAudits.length} Incomplete Audits Found</h4>
+                            <p class="mt-10">These are audits with 0% score (likely abandoned during creation).</p>
+                        </div>
+                    </div>
+                    
+                    ${incompleteAudits.length > 0 ? `
+                        <div class="table-container mb-20">
+                            <h4>Incomplete Audits</h4>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Department</th>
+                                        <th>Auditor</th>
+                                        <th>Date</th>
+                                        <th>Score</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${incompleteAudits.map(a => `
+                                        <tr>
+                                            <td>${a.id}</td>
+                                            <td>${a.department}</td>
+                                            <td>${a.auditorName}</td>
+                                            <td>${a.date}</td>
+                                            <td>${a.percentage}%</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button class="btn btn-danger" onclick="cleanupIncompleteAudits()">
+                                <i class="fas fa-broom"></i> Delete All Incomplete Audits
+                            </button>
+                        </div>
+                    ` : `
+                        <div class="text-center p-20">
+                            <h4><i class="fas fa-check-circle" style="color: var(--success);"></i> No cleanup needed!</h4>
+                            <p class="mt-20">All audits in the system are complete.</p>
+                        </div>
+                    `}
+                </div>
+            `;
+        };
+
+        // ========== HELPER FUNCTIONS ==========
+        const filterAuditsByWeek = (audits) => {
+            const now = new Date();
+            let startDate, endDate;
+            
+            if (currentWeekFilter === 'current') {
+                const weekRange = getWeekRange(now);
+                startDate = weekRange.start;
+                endDate = weekRange.end;
+            } else if (currentWeekFilter === 'last') {
+                const lastWeek = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                const weekRange = getWeekRange(lastWeek);
+                startDate = weekRange.start;
+                endDate = weekRange.end;
+            } else {
+                // Show all audits
+                return audits;
+            }
+            
+            return audits.filter(audit => {
+                const auditDate = audit.date;
+                return auditDate >= startDate && auditDate <= endDate;
+            });
+        };
+
+        const getRoleBadgeClass = (role) => {
+            const classes = {
+                'admin': 'badge-danger',
+                'auditor': 'badge-primary',
+                'dept_rep': 'badge-success',
+                'supervisor': 'badge-warning'
+            };
+            return classes[role] || 'badge-secondary';
+        };
+
+        const calculateStorageSize = () => {
+            let total = 0;
+            for (let key in localStorage) {
+                if (localStorage.hasOwnProperty(key)) {
+                    total += localStorage[key].length * 2; // Approximate size in bytes
+                }
+            }
+            return (total / 1024).toFixed(2);
+        };
+
+        const calculatePerformanceMetrics = (audits) => {
+            // Group by department
+            const deptScores = {};
+            const lineScores = {};
+            
+            audits.forEach(audit => {
+                // Department scores
+                if (!deptScores[audit.department]) {
+                    deptScores[audit.department] = { total: 0, count: 0 };
+                }
+                deptScores[audit.department].total += audit.percentage;
+                deptScores[audit.department].count++;
+                
+                // Line scores (for sewing lines)
+                if (audit.line) {
+                    if (!lineScores[audit.line]) {
+                        lineScores[audit.line] = { total: 0, count: 0 };
+                    }
+                    lineScores[audit.line].total += audit.percentage;
+                    lineScores[audit.line].count++;
+                }
+            });
+            
+            // Calculate averages and find top/bottom
+            let topDept = { name: 'N/A', avg: 0 };
+            let bottomDept = { name: 'N/A', avg: 100 };
+            let topLine = { name: 'N/A', avg: 0 };
+            
+            for (const dept in deptScores) {
+                const avg = deptScores[dept].total / deptScores[dept].count;
+                if (avg > topDept.avg) {
+                    topDept = { name: dept, avg };
+                }
+                if (avg < bottomDept.avg) {
+                    bottomDept = { name: dept, avg };
+                }
+            }
+            
+            for (const line in lineScores) {
+                const avg = lineScores[line].total / lineScores[line].count;
+                if (avg > topLine.avg) {
+                    topLine = { name: line, avg };
+                }
+            }
+            
+            // Update DOM
+            const topDeptElem = document.getElementById('top-dept-value');
+            const bottomDeptElem = document.getElementById('bottom-dept-value');
+            const topLineElem = document.getElementById('top-line-value');
+            
+            if (topDeptElem) topDeptElem.textContent = topDept.name !== 'N/A' ? `${topDept.name} (${topDept.avg.toFixed(1)}%)` : 'No data';
+            if (bottomDeptElem) bottomDeptElem.textContent = bottomDept.name !== 'N/A' ? `${bottomDept.name} (${bottomDept.avg.toFixed(1)}%)` : 'No data';
+            if (topLineElem) topLineElem.textContent = topLine.name !== 'N/A' ? `${topLine.name} (${topLine.avg.toFixed(1)}%)` : 'No data';
+        };
+
+        // ========== CHART FUNCTIONS ==========
+        const renderDepartmentPerformanceChart = (audits) => {
+            // Group audits by department
+            const deptData = {};
+            audits.forEach(audit => {
+                if (!deptData[audit.department]) {
+                    deptData[audit.department] = { total: 0, count: 0 };
+                }
+                deptData[audit.department].total += audit.percentage;
+                deptData[audit.department].count++;
+            });
+            
+            // Calculate averages
+            const departments = Object.keys(deptData);
+            const averages = departments.map(dept => deptData[dept].total / deptData[dept].count);
+            
+            // Get canvas context
+            const ctx = document.getElementById('dept-performance-chart').getContext('2d');
+            
+            // Create chart
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: departments,
+                    datasets: [{
+                        label: 'Average Score %',
+                        data: averages,
+                        backgroundColor: 'rgba(67, 97, 238, 0.7)',
+                        borderColor: 'rgba(67, 97, 238, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        };
+
+        const renderPassFailChart = (audits) => {
+            const passed = audits.filter(a => a.status === 'passed').length;
+            const failed = audits.filter(a => a.status === 'failed').length;
+            
+            const ctx = document.getElementById('pass-fail-chart').getContext('2d');
+            
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Passed', 'Failed'],
+                    datasets: [{
+                        data: [passed, failed],
+                        backgroundColor: [
+                            'rgba(76, 201, 240, 0.7)',
+                            'rgba(247, 37, 133, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(76, 201, 240, 1)',
+                            'rgba(247, 37, 133, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((value / total) * 100);
+                                    return `${label}: ${value} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        };
+
+        // ========== MODAL FUNCTIONS ==========
+        window.viewAuditDetails = (auditId) => {
+            const audits = JSON.parse(localStorage.getItem('auditSystemAudits') || '[]');
+            const audit = audits.find(a => a.id === auditId);
+            
+            if (!audit) {
+                alert('Audit not found');
+                return;
+            }
+            
+            const sops = JSON.parse(localStorage.getItem('auditSystemSOPs') || '{}');
+            const questions = sops[audit.department] || [];
+            
+            let content = `
+                <h4>${audit.department}${audit.line ? ` - ${audit.line}` : ''}</h4>
+                <p><strong>Date:</strong> ${audit.date} | <strong>Week:</strong> ${audit.weekRange.start} to ${audit.weekRange.end}</p>
+                <p><strong>Auditor:</strong> ${audit.auditorName} (${getRoleName(audit.auditorRole)})</p>
+                
+                <div class="card mb-20 ${audit.status === 'passed' ? 'success' : 'danger'}" style="border-left: 5px solid ${audit.status === 'passed' ? 'var(--success)' : 'var(--danger)'};">
+                    <div class="p-20">
+                        <h3>Final Score: ${audit.percentage.toFixed(1)}%</h3>
+                        <p>Status: <span class="badge ${audit.status === 'passed' ? 'badge-success' : 'badge-danger'}">${audit.status.toUpperCase()}</span></p>
+                        <p>Pass Threshold: ${audit.passThreshold}%</p>
+                    </div>
+                </div>
+                
+                <h4>Audit Questions & Scores</h4>
+            `;
+            
+            audit.questions.forEach((q, index) => {
+                const questionText = questions.find(sopQ => sopQ.id === q.id)?.text || `Question ${q.id}`;
+                
+                content += `
+                    <div class="question-container mb-10">
+                        <div class="question-text"><strong>${index + 1}. ${questionText}</strong></div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Score</label>
+                                <div class="score-value" style="font-size: 1.8rem;">${q.score}/5</div>
+                                <div>${getScoreLabel(q.score)}</div>
+                            </div>
+                            <div class="form-group">
+                                <label>Auditor Comment</label>
+                                <div style="padding: 10px; background: rgba(0,0,0,0.2); border-radius: 5px; min-height: 40px;">${q.comment || 'No comment'}</div>
+                            </div>
+                            <div class="form-group">
+                                <label>Self-Evaluation</label>
+                                <div style="padding: 10px; background: rgba(0,0,0,0.2); border-radius: 5px; min-height: 40px;">${q.selfEval || 'No self-evaluation'}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('audit-detail-content').innerHTML = content;
+            auditDetailModal.classList.add('active');
+        };
+
+        window.openAddUserModal = (userId = null) => {
+            const isEdit = userId !== null;
+            const users = JSON.parse(localStorage.getItem('auditSystemUsers') || '[]');
+            const departments = JSON.parse(localStorage.getItem('auditSystemDepartments') || '[]');
+            const lines = JSON.parse(localStorage.getItem('auditSystemLines') || '[]');
+            
+            let user = null;
+            if (isEdit) {
+                user = users.find(u => u.id === userId);
+            }
+            
+            document.getElementById('user-modal-title').textContent = isEdit ? 'Edit User' : 'Add User';
+            
+            let content = `
+                <form id="user-form">
+                    <div class="form-group">
+                        <label for="user-name">Full Name *</label>
+                        <input type="text" id="user-name" value="${user ? user.name : ''}" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="user-username">Username *</label>
+                        <input type="text" id="user-username" value="${user ? user.username : ''}" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="user-password">${isEdit ? 'New Password (leave blank to keep current)' : 'Password *'}</label>
+                        <input type="password" id="user-password" ${isEdit ? '' : 'required'}>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="user-role">Role *</label>
+                            <select id="user-role" required>
+                                <option value="admin" ${user && user.role === 'admin' ? 'selected' : ''}>Administrator</option>
+                                <option value="auditor" ${user && user.role === 'auditor' ? 'selected' : ''}>Auditor</option>
+                                <option value="dept_rep" ${user && user.role === 'dept_rep' ? 'selected' : ''}>Department Representative</option>
+                                <option value="supervisor" ${user && user.role === 'supervisor' ? 'selected' : ''}>Supervisor</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="user-department">Department</label>
+                            <select id="user-department">
+                                <option value="">Not Applicable</option>
+                                ${departments.map(dept => `
+                                    <option value="${dept}" ${user && user.department === dept ? 'selected' : ''}>${dept}</option>
+                                `).join('')}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="user-line">Line (for Sewing only)</label>
+                        <select id="user-line">
+                            <option value="">Not Applicable</option>
+                            ${lines.map(line => `
+                                <option value="${line}" ${user && user.line === line ? 'selected' : ''}>${line}</option>
+                            `).join('')}
+                        </select>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-outline close-modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">${isEdit ? 'Update User' : 'Add User'}</button>
+                    </div>
+                    
+                    ${isEdit ? `<input type="hidden" id="user-id" value="${userId}">` : ''}
+                </form>
+            `;
+            
+            document.getElementById('user-modal-content').innerHTML = content;
+            userModal.classList.add('active');
+            
+            // Handle form submission
+            document.getElementById('user-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveUser(isEdit);
+            });
+        };
+
+        const saveUser = (isEdit) => {
+            const users = JSON.parse(localStorage.getItem('auditSystemUsers') || '[]');
+            
+            const name = document.getElementById('user-name').value;
+            const username = document.getElementById('user-username').value;
+            const password = document.getElementById('user-password').value;
+            const role = document.getElementById('user-role').value;
+            const department = document.getElementById('user-department').value;
+            const line = document.getElementById('user-line').value;
+            
+            // Validate
+            if (!name || !username || (!isEdit && !password)) {
+                alert('Please fill all required fields');
+                return;
+            }
+            
+            // Check for duplicate username (if new user or username changed)
+            if (users.some(u => u.username === username && (!isEdit || u.id !== parseInt(document.getElementById('user-id').value)))) {
+                alert('Username already exists');
+                return;
+            }
+            
+            if (isEdit) {
+                const userId = parseInt(document.getElementById('user-id').value);
+                const userIndex = users.findIndex(u => u.id === userId);
+                
+                if (userIndex !== -1) {
+                    users[userIndex].name = name;
+                    users[userIndex].username = username;
+                    if (password) {
+                        users[userIndex].password = password;
+                    }
+                    users[userIndex].role = role;
+                    users[userIndex].department = department || null;
+                    users[userIndex].line = line || null;
+                }
+            } else {
+                const newId = users.length > 0 ? Math.max(...users.map(u => u.id)) + 1 : 1;
+                users.push({
+                    id: newId,
+                    name: name,
+                    username: username,
+                    password: password,
+                    role: role,
+                    department: department || null,
+                    line: line || null,
+                    created: new Date().toISOString().split('T')[0]
+                });
+            }
+            
+            localStorage.setItem('auditSystemUsers', JSON.stringify(users));
+            
+            // If editing current user, update current session
+            if (isEdit && currentUser.id === parseInt(document.getElementById('user-id').value)) {
+                const updatedUser = users.find(u => u.id === currentUser.id);
+                currentUser = updatedUser;
+                localStorage.setItem('auditSystemCurrentUser', JSON.stringify(updatedUser));
+                showApp(); // Refresh UI
+            }
+            
+            alert(`User ${isEdit ? 'updated' : 'added'} successfully!`);
+            userModal.classList.remove('active');
+            loadUserManagement();
+        };
+
+        window.editUser = (userId) => {
+            openAddUserModal(userId);
+        };
+
+        window.deleteUser = (userId) => {
+            if (!confirm('Are you sure you want to delete this user?')) return;
+            
+            const users = JSON.parse(localStorage.getItem('auditSystemUsers') || '[]');
+            const updatedUsers = users.filter(u => u.id !== userId);
+            
+            // Prevent deleting current user
+            if (currentUser.id === userId) {
+                alert('Cannot delete the currently logged in user');
+                return;
+            }
+            
+            localStorage.setItem('auditSystemUsers', JSON.stringify(updatedUsers));
+            alert('User deleted successfully!');
+            loadUserManagement();
+        };
+
+        window.deleteAudit = (auditId) => {
+            if (!confirm('Are you sure you want to delete this audit?')) return;
+            
+            const audits = JSON.parse(localStorage.getItem('auditSystemAudits') || '[]');
+            const updatedAudits = audits.filter(a => a.id !== auditId);
+            
+            localStorage.setItem('auditSystemAudits', JSON.stringify(updatedAudits));
+            alert('Audit deleted successfully!');
+            loadAudits();
+        };
+
+        window.cleanupIncompleteAudits = () => {
+            if (!confirm('This will delete all incomplete audits (0% score). Continue?')) return;
+            
+            const audits = JSON.parse(localStorage.getItem('auditSystemAudits') || '[]');
+            const completeAudits = audits.filter(a => a.percentage > 0);
+            
+            localStorage.setItem('auditSystemAudits', JSON.stringify(completeAudits));
+            alert(`Deleted ${audits.length - completeAudits.length} incomplete audits`);
+            loadCleanup();
+        };
+
+        window.exportToCSV = () => {
+            const audits = JSON.parse(localStorage.getItem('auditSystemAudits') || '[]');
+            
+            // Define CSV headers
+            let csv = 'Audit ID,Department,Line,Auditor,Auditor Role,Date,Score %,Status,Pass Threshold,Week Start,Week End\n';
+            
+            // Add data rows
+            audits.forEach(audit => {
+                csv += `${audit.id},"${audit.department}","${audit.line || ''}","${audit.auditorName}","${audit.auditorRole}",${audit.date},${audit.percentage.toFixed(2)}%,${audit.status},${audit.passThreshold}%,${audit.weekRange.start},${audit.weekRange.end}\n`;
+            });
+            
+            // Create download link
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `audit-report-${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        };
+    </script>
+</body>
+</html>
